@@ -1,0 +1,69 @@
+
+<view class='pa-30' >
+  <view class='bg-m ra-10 pa-40 text-center' >
+    <image class="avatar" style='width: 150rpx;height: 150rpx;' src="{{ico}}" mode='aspectFill'></image>
+    <view class="nixing" >
+      <view class="nickName" >
+      <view class="nickName1"  style="position: absolute; left: 209rpx; top: 108rpx; width: 193rpx; height: 50rpx; display: block; box-sizing: border-box">用户名：</view>
+      <view class="nickName2"   style="position: relative; left: 249rpx; top: 0rpx; width: 317rpx; height: 50rpx; display: block; box-sizing: border-box">{{userName}}</view>
+      </view>
+      <view class="realName">
+        <view class="realName1"  style="width: 179rpx; height: 50rpx; display: block; box-sizing: border-box; position: relative; left: 108rpx; top: 24rpx"> 学校</view>
+        <view class="nickName2"   style="position: relative; left: 251rpx; top: -26rpx; width: 336rpx; height: 50rpx; display: block; box-sizing: border-box">{{realName}}</view>
+      </view>     
+    </view>
+  </view>
+
+ 
+  <view class='panel panel-between item-center ma-t20  border-b' bindtap='LeaveRecordView'>
+    <view class='panel-start item-center'>
+      <image src='/images/zj1.png' class='icon-35'></image>
+      <text class='fo-28'>管理员审核</text>
+    </view>
+    <view>
+      <image src='/images/right.png' class='icon-25'></image>
+    </view>
+  </view>
+  
+  <view class='panel panel-between item-center border-b' bindtap="PasswordModView">
+    <view class='panel-start item-center'>
+      <image class='icon-35' src='/images/6.png'></image>
+      <text class='fo-28'>密码修改</text>
+    </view>
+    <view>
+      <image src='/images/right.png' class='icon-25'></image>
+    </view>
+  </view>
+
+  <view class='panel panel-between item-center border-b' bindtap="AvatarModView">
+    <view class='panel-start item-center'>
+      <image class='icon-35' src='/images/5.png'></image>
+      <text class='fo-28'>头像修改</text>
+    </view>
+    <view>
+      <image src='/images/right.png' class='icon-25'></image>
+    </view>
+  </view>
+  <view class='panel panel-between item-center border-b' bindtap="PatrolRecordView">
+    <view class='panel-start item-center'>
+      <image src='/images/7.png' class='icon-35'></image>
+      <text class='fo-28'>发布记录</text>
+    </view>
+    <view>
+      <image src='/images/right.png' class='icon-25'></image>
+    </view>
+  </view>
+
+
+
+
+  <view class='panel panel-between item-center' bindtap="LoginOut">
+  <view class='panel-start item-center'>
+    <image src='/images/7.png' class='icon-35'></image>
+    <text class='fo-28'>退出登录 </text>
+  </view>
+  <view>
+      <image src='/images/right.png' class='icon-25'></image>
+    </view>
+</view>
+</view>

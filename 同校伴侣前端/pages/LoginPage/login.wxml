@@ -1,0 +1,15 @@
+<view class="container">
+<image src="../../images/bg.jpg" mode=""/>
+  <view class="title">账号密码登录</view>
+  <view class="form">
+    <view class="input-container">
+      <text class="label">账号：</text>
+      <input class="input" placeholder="请输入账号" bindinput="handleAccountInput" />
+    </view>
+    <view class="input-container">
+      <text class="label">密码：</text>
+      <input class="input" type="password" placeholder="请输入密码" bindinput="handlePasswordInput" />
+    </view>
+    <button class="button" bindtap="handleLogin">登录</button>
+  </view>
+</view>

@@ -1,0 +1,49 @@
+{
+	"pages": [
+		"pages/PersonalPage/PersonalPage",
+		"pages/LoginPage/login",
+		"pages/AvatarModPage/AvatarModPage",
+		"pages/index/index"
+
+	],
+	"window": {
+		"backgroundTextStyle": "light",
+		"navigationBarTitleText": "同校交友平台",
+		"navigationBarBackgroundColor": "#FF7A34",
+		"navigationBarTextStyle": "white"
+	},
+	"permission": {
+		"scope.userLocation": {
+			"desc": "获取您的地理位置信息"
+		}
+	},
+	"sitemapLocation": "sitemap.json",
+	"requiredPrivateInfos": [
+		"getLocation"
+	],
+	"tabBar": {
+		"color": "#a9b7b7",
+		"selectedColor": "#11cd6e",
+		"borderStyle": "white",
+		"list": [
+			{
+				"selectedIconPath": "images/icon_home_selected.png",
+				"iconPath": "images/icon_home.png",
+				"pagePath": "pages/index/index",
+				"text": "首页"
+			},
+			{
+				"selectedIconPath": "images/icon-start-full.png",
+				"iconPath": "images/icon-start-emty.png",
+				"pagePath": "pages/AvatarModPage/AvatarModPage",
+				"text": "表白墙"
+			},
+			{
+				"selectedIconPath": "images/icon_member_selected.png",
+				"iconPath": "images/icon_member.png",
+				"pagePath": "pages/PersonalPage/PersonalPage",
+				"text": "我"
+			}
+		]
+	}
+}

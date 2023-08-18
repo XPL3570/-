@@ -1,0 +1,44 @@
+<!-- pages/index/index.wxml -->
+<view class="container">
+<!-- bannar图 -->
+  <swiper indicator-dots="{{indicatorDots}}" 
+        autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" circular="true"> 
+      <block wx:for="{{arr}}"> 
+        <swiper-item> 
+            <image src="{{item}}" class="slide-image" width="355" height="150"/> 
+        </swiper-item> 
+      </block> 
+</swiper>
+
+<view  bindtap='CheckOutView' class="mainbody">
+    <view class='mainset'  >
+      <image class='mainimg' src='/images/3.png'  ></image>
+   </view>
+   <view class='mainword'
+  >发布地址定位
+    </view>
+</view>
+  
+  <view  bindtap='LeaveRecordView' class="mainbody" >
+    <view class='mainset'>
+      <image src='/images/7.png' class='mainimg' ></image> 
+    </view> 
+    <view class='mainword'>学校认证</view>
+  </view>
+
+  <view bindtap='PatrolListView' class="mainbody">
+    <view class='mainset' >
+      <image src='/images/16.png' class='mainimg'></image>
+    </view> 
+    <view class='mainword'>评论回复</view>
+  </view>
+
+  <view  bindtap='PatrolRecordView' class="mainbody">
+    <view class='mainset'>
+      <image src='/images/7.png' class='mainimg'  ></image>
+    </view> 
+    <view class='mainword'>表白墙投稿</view>
+  </view>
+
+
+</view>
