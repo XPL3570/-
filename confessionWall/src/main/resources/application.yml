@@ -1,0 +1,17 @@
+server:
+  port: 8088
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/con_wall?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: zhangjie
+    driver-class-name: com.mysql.jdbc.Driver
+
+mybatis-plus:
+  # 搜索指定包别名
+  typeAliasesPackage: com.confession.pojo
+  # 配置mapper的扫描，找到所有的mapper.xml映射文件
+  mapperLocations: classpath*:mapper/**/*Mapper.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
