@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author 作者
- * @since 2023年08月19日
+ * @since 2023年08月20日
  */
 @Getter
 @Setter
@@ -27,37 +27,37 @@ public class School implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * å­¦æ ¡ID
+     * 学校ID
      */
     @TableId(value = "Id", type = IdType.AUTO)
     private Integer id;
 
     /**
-     * å­¦æ ¡åç§°
+     * 学校名称
      */
     @TableField("SchoolName")
     private String schoolName;
 
     /**
-     * å¤´åƒåœ°å€
+     * 头像地址
      */
     @TableField("AvatarURL")
     private String avatarURL;
 
     /**
-     * æè¿°å†…å®¹
+     * 描述内容
      */
     @TableField("Description")
     private String description;
 
     /**
-     * åˆ›å»ºè€…ID
+     * 创建者ID
      */
     @TableField("CreatorId")
     private Integer creatorId;
 
     /**
-     * åˆ›å»ºæ—¶é—´
+     * 创建时间
      */
     @TableField("CreateTime")
     private LocalDateTime createTime;

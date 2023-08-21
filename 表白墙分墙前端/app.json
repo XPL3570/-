@@ -1,48 +1,41 @@
 {
 	"pages": [
-		"pages/PersonalPage/PersonalPage",
-		"pages/LoginPage/login",
-		"pages/AvatarModPage/AvatarModPage",
-		"pages/index/index"
-
+		"pages/index/index",
+		"pages/selectSchool/selectSchool",
+		"pages/selectSchool/registerSchool/registerSchool",
+		"pages/submit/submit",
+		"pages/personal/personal",
+		"pages/personal/avatarMod/avatarMod"
 	],
 	"window": {
 		"backgroundTextStyle": "light",
-		"navigationBarTitleText": "同校交友平台",
-		"navigationBarBackgroundColor": "#FF7A34",
-		"navigationBarTextStyle": "white"
-	},
-	"permission": {
-		"scope.userLocation": {
-			"desc": "获取您的地理位置信息"
-		}
+		"navigationBarBackgroundColor": "#fff",
+		"navigationBarTitleText": "同校表白墙分墙",
+		"navigationBarTextStyle": "black"
 	},
 	"sitemapLocation": "sitemap.json",
-	"requiredPrivateInfos": [
-		"getLocation"
-	],
 	"tabBar": {
 		"color": "#a9b7b7",
 		"selectedColor": "#11cd6e",
 		"borderStyle": "white",
 		"list": [
 			{
-				"selectedIconPath": "images/icon_home_selected.png",
-				"iconPath": "images/icon_home.png",
 				"pagePath": "pages/index/index",
-				"text": "首页"
+				"text": "首页",
+				"iconPath": "image/首页.png",
+				"selectedIconPath": "image/首页 (1).png"
 			},
 			{
-				"selectedIconPath": "images/icon-start-full.png",
-				"iconPath": "images/icon-start-emty.png",
-				"pagePath": "pages/AvatarModPage/AvatarModPage",
-				"text": "表白墙"
+				"pagePath": "pages/submit/submit",
+				"text": "表白",
+				"iconPath": "/image/icon_添加.png",
+				"selectedIconPath": "image/icon_添加 (1).png"
 			},
 			{
-				"selectedIconPath": "images/icon_member_selected.png",
-				"iconPath": "images/icon_member.png",
-				"pagePath": "pages/PersonalPage/PersonalPage",
-				"text": "我"
+				"pagePath": "pages/personal/personal",
+				"text": "我",
+				"iconPath": "image/个人中心 (1).png",
+				"selectedIconPath": "image/个人中心 (2).png"
 			}
 		]
 	}

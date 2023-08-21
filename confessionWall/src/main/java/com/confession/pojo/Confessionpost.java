@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author 作者
- * @since 2023年08月19日
+ * @since 2023年08月20日
  */
 @Getter
 @Setter
@@ -27,43 +27,43 @@ public class Confessionpost implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * å‘å¸ƒå†…å®¹ID
+     * 发布内容ID
      */
     @TableId(value = "Id", type = IdType.AUTO)
     private Integer id;
 
     /**
-     * æ‰€å±žè¡¨ç™½å¢™ID
+     * 所属表白墙ID
      */
     @TableField("WallId")
     private Integer wallId;
 
     /**
-     * å‘å¸ƒè€…ç”¨æˆ·ID
+     * 发布者用户ID
      */
     @TableField("UserId")
     private Integer userId;
 
     /**
-     * å‘å¸ƒå†…å®¹æ–‡å­—
+     * 发布内容文字
      */
     @TableField("TextContent")
     private String textContent;
 
     /**
-     * å‘å¸ƒå†…å®¹å›¾ç‰‡URL
+     * 发布内容图片URL
      */
     @TableField("ImageURL")
     private String imageURL;
 
     /**
-     * åˆ›å»ºæ—¶é—´
+     * 创建时间
      */
     @TableField("CreateTime")
     private LocalDateTime createTime;
 
     /**
-     * é€»è¾‘åˆ é™¤æ ‡å¿—
+     * 逻辑删除标志
      */
     @TableField("IsDeleted")
     private Boolean deleted;

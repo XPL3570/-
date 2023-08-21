@@ -6,6 +6,7 @@
     <resultMap id="BaseResultMap" type="com.confession.pojo.Comment">
         <id column="Id" property="id" />
         <result column="ConfessionPostReviewId" property="confessionPostReviewId" />
+        <result column="ParentCommentId" property="parentCommentId" />
         <result column="UserId" property="userId" />
         <result column="CommentContent" property="commentContent" />
         <result column="CommentTime" property="commentTime" />
@@ -14,7 +15,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        Id, ConfessionPostReviewId, UserId, CommentContent, CommentTime, IsDeleted
+        Id, ConfessionPostReviewId, ParentCommentId, UserId, CommentContent, CommentTime, IsDeleted
     </sql>
 
 </mapper>

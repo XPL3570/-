@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author 作者
- * @since 2023年08月19日
+ * @since 2023年08月20日
  */
 @Getter
 @Setter
@@ -27,49 +27,49 @@ public class Confessionwall implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * è¡¨ç™½å¢™ID
+     * 表白墙ID
      */
     @TableId(value = "Id", type = IdType.AUTO)
     private Integer id;
 
     /**
-     * å­¦æ ¡ID
+     * 学校ID
      */
     @TableField("SchoolId")
     private Integer schoolId;
 
     /**
-     * åˆ›å»ºè€…ç”¨æˆ·ID
+     * 创建者用户ID
      */
     @TableField("CreatorUserId")
     private Integer creatorUserId;
 
     /**
-     * å¤´åƒåœ°å€
+     * 头像地址
      */
     @TableField("AvatarURL")
     private String avatarURL;
 
     /**
-     * è¡¨ç™½å¢™åå­—
+     * 表白墙名字
      */
     @TableField("WallName")
     private String wallName;
 
     /**
-     * è¡¨ç™½å¢™æè¿°
+     * 表白墙描述
      */
     @TableField("Description")
     private String description;
 
     /**
-     * åˆ›å»ºæ—¶é—´
+     * 创建时间
      */
     @TableField("CreateTime")
     private LocalDateTime createTime;
 
     /**
-     * çŠ¶æ€ï¼Œ0è¡¨ç¤ºæ­£å¸¸ï¼Œ1è¡¨ç¤ºè¢«ç¦ç”¨
+     * 状态，0表示正常，1表示被禁用
      */
     @TableField("Status")
     private Integer status;

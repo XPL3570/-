@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author 作者
- * @since 2023年08月19日
+ * @since 2023年08月20日
  */
 @Getter
 @Setter
@@ -27,37 +27,37 @@ public class Admin implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * ç®¡ç†å‘˜ID
+     * 管理员ID
      */
     @TableId(value = "Id", type = IdType.AUTO)
     private Integer id;
 
     /**
-     * å­¦æ ¡ID
+     * 学校ID
      */
     @TableField("SchoolId")
     private Integer schoolId;
 
     /**
-     * ç”¨æˆ·ID
+     * 用户ID
      */
     @TableField("UserId")
     private Integer userId;
 
     /**
-     * æ‰‹æœºå·
+     * 手机号
      */
     @TableField("PhoneNumber")
     private String phoneNumber;
 
     /**
-     * å¾®ä¿¡å·
+     * 微信号
      */
     @TableField("WeChatId")
     private String weChatId;
 
     /**
-     * åˆ›å»ºæ—¶é—´
+     * 创建时间
      */
     @TableField("CreateTime")
     private LocalDateTime createTime;

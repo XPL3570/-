@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author 作者
- * @since 2023年08月19日
+ * @since 2023年08月20日
  */
 @Getter
 @Setter
@@ -27,37 +27,43 @@ public class Comment implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * è¯„è®ºè®°å½•ID
+     * 评论记录ID
      */
     @TableId(value = "Id", type = IdType.AUTO)
     private Integer id;
 
     /**
-     * å…³è”çš„è¡¨ç™½å¢™å‘å¸ƒå†…å®¹å®¡æ ¸è¡¨ID
+     * 关联的表白墙发布内容审核表ID
      */
     @TableField("ConfessionPostReviewId")
     private Integer confessionPostReviewId;
 
     /**
-     * ç”¨æˆ·ID
+     * 父级评论ID
+     */
+    @TableField("ParentCommentId")
+    private Integer parentCommentId;
+
+    /**
+     * 用户ID
      */
     @TableField("UserId")
     private Integer userId;
 
     /**
-     * è¯„è®ºå†…å®¹
+     * 评论内容
      */
     @TableField("CommentContent")
     private String commentContent;
 
     /**
-     * è¯„è®ºæ—¶é—´
+     * 评论时间
      */
     @TableField("CommentTime")
     private LocalDateTime commentTime;
 
     /**
-     * é€»è¾‘åˆ é™¤æ ‡å¿—
+     * 逻辑删除标志
      */
     @TableField("IsDeleted")
     private Boolean deleted;

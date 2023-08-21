@@ -1,4 +1,4 @@
-package com.confession.config;
+package com.confession.comm;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.generator.AutoGenerator;
@@ -29,7 +29,7 @@ public class CodeGeneration {
 
 
         DataSourceConfig dsc = new DataSourceConfig.Builder
-                ("jdbc:mysql://localhost:3306/con_wall?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true",
+                ("jdbc:mysql://localhost:3306/con_wall?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false",
                         "root","zhangjie")
                 .dbQuery(mySqlQuery).build();
         //通过datasourceConfig创建AutoGenerator

@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author 作者
- * @since 2023年08月19日
+ * @since 2023年08月20日
  */
 @Getter
 @Setter
@@ -27,49 +27,49 @@ public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * ç”¨æˆ·ID
+     * 用户ID
      */
     @TableId(value = "Id", type = IdType.AUTO)
     private Integer id;
 
     /**
-     * ç”¨æˆ·å
+     * 用户名
      */
     @TableField("Username")
     private String username;
 
     /**
-     * å­¦æ ¡ID
+     * 学校ID
      */
     @TableField("SchoolId")
     private Integer schoolId;
 
     /**
-     * å¾®ä¿¡ID
+     * 微信ID
      */
-    @TableField("WechatId")
-    private String wechatId;
+    @TableField("OpenId")
+    private String openId;
 
     /**
-     * åˆ›å»ºæ—¶é—´
+     * 创建时间
      */
     @TableField("CreateTime")
     private LocalDateTime createTime;
 
     /**
-     * å¾®ä¿¡è´¦å·
+     * 微信账号
      */
     @TableField("WXAccount")
     private String wXAccount;
 
     /**
-     * æ€§åˆ«ï¼Œ0è¡¨ç¤ºå¥³æ€§ï¼Œ1è¡¨ç¤ºç”·æ€§ï¼ŒNULLè¡¨ç¤ºæœªçŸ¥
+     * 性别，0表示女性，1表示男性，NULL表示未知
      */
     @TableField("Gender")
     private Boolean gender;
 
     /**
-     * å¤´åƒåœ°å€
+     * 头像地址
      */
     @TableField("AvatarURL")
     private String avatarURL;

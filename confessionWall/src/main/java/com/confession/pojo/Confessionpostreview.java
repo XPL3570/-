@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author 作者
- * @since 2023年08月19日
+ * @since 2023年08月20日
  */
 @Getter
 @Setter
@@ -27,31 +27,31 @@ public class Confessionpostreview implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * å®¡æ ¸è®°å½•ID
+     * 审核记录ID
      */
     @TableId(value = "Id", type = IdType.AUTO)
     private Integer id;
 
     /**
-     * å‘å¸ƒå†…å®¹IDåˆ—è¡¨
+     * 发布内容ID列表
      */
     @TableField("PostIds")
     private String postIds;
 
     /**
-     * å®¡æ ¸äººID
+     * 审核人ID
      */
     @TableField("ReviewerId")
     private Integer reviewerId;
 
     /**
-     * å®¡æ ¸çŠ¶æ€
+     * 审核状态
      */
     @TableField("ReviewStatus")
     private String reviewStatus;
 
     /**
-     * å®¡æ ¸æ—¶é—´
+     * 审核时间
      */
     @TableField("ReviewTime")
     private LocalDateTime reviewTime;

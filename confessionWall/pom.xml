@@ -19,6 +19,25 @@
         <mybatis-plus.version>3.4.3</mybatis-plus.version>
     </properties>
     <dependencies>
+<!--        请求参数校验-->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.9.6</version>
+        </dependency>
+
+        <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt</artifactId>
+        <version>0.9.1</version>
+        </dependency>
         <!--        MP代码生成器依赖-->
         <dependency>
             <groupId>com.baomidou</groupId>
