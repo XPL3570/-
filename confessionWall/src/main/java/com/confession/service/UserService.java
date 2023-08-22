@@ -13,5 +13,20 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface UserService extends IService<User> {
 
+    /**
+     * 查询数据库的Openid的用户
+     *
+     * @param openid
+     * @return
+     */
     User findByOpenid(String openid);
+
+    /**
+     * 通过
+     * @param code
+     * @return
+     */
+    String codeByOpenid(String code);
+
+
 }

@@ -11,7 +11,7 @@ public enum ResultCodeEnum {
     SUCCESS(200,"成功"),
     FAIL(201, "失败"),
     PARAM_ERROR( 202, "参数不正确"),
-    SERVICE_ERROR(203, "服务异常"),
+    GET_OPENID_FAIL(203,"获取open异常"),
     DATA_ERROR(204, "数据异常"),
     DATA_UPDATE_ERROR(205, "数据版本异常"),
 
@@ -19,7 +19,7 @@ public enum ResultCodeEnum {
     PERMISSION(209, "没有权限"),
 
     CODE_ERROR(210, "验证码错误"),
-//    LOGIN_MOBLE_ERROR(211, "账号不正确"),
+
     LOGIN_DISABLED_ERROR(212, "该用户已被禁用"),
     REGISTER_MOBLE_ERROR(213, "手机号已被使用"),
     LOGIN_AURH(214, "需要登录"),
