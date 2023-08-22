@@ -1,5 +1,5 @@
 server:
-  port: 8088
+  port: 2204
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/con_wall?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
@@ -20,3 +20,4 @@ mybatis-plus:
 wechat:
   app-id: wxade44f34c116d260
   app-secret: 28e18de4781d84bd1badab528cf736a6
+  msgDataFormat: JSON

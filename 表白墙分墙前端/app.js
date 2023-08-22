@@ -1,31 +1,36 @@
+var request=require('./utils/request')
+
 App({
-	globalData: {
-	  token: null
-	},
 	onLaunch: function () {
-	  // 登录
 	  wx.login({
 		success: res => {
-		  // 发送 res.code 到后台换取 openId, sessionKey, unionId   没有成功发现是第一次登录就会跳转页面拿着code+学校重新发起注册请求
+		  // 发送 res.code 到后台获取openid查询用户是否登录过  没有则跳转好选择学校处注册
 		  wx.request({
-			url: 'http://localhost/login',
-			method: 'POST',
-			data: {
-			  code: res.code
-			},
+			  url: 'http://localhost:2204/api/user/login',
+			  method:'POST',
+			  header: {
+				'content-type': 'application/json'
+			  },
+			data:JSON.stringify(res.code),
 			success: res => {
-			  if (res.data.token) {
+			  if (res.data.code===200) {
 				// 保存 token 到全局变量
 				this.globalData.token = res.data.token;
+				this.globalData.token = res.data.userInfo;
 				// 跳转到主页面
 				wx.switchTab({
 				  url: '/pages/index/index'
 				});
-			  } else {
-				// 跳转到选择学校页面
-				wx.navigateTo({
-				  url: '/pages/selectSchool/selectSchool?code=' + code
-				});
+			  }
+			  if(res.data.code===206){ //206表示用户没有选择学校注册
+				wx.redirectTo({
+					url: '/pages/selectSchool/selectSchool'
+				  });
+				  wx.showToast({
+					title: '选择好您的学校之后会自动绑定贵校表白墙',
+					icon: 'none', // success, loading, none
+					duration: 3000
+				  });
 			  }
 			},
 			fail: err => {
@@ -39,7 +44,8 @@ App({
 	  });
 	},
   globalData: {
-	userInfo: null,
-	token: null
+	apiUrl: 'http://localhost:2204',
+	token:null,
+	userInfo:{}
   }
 })

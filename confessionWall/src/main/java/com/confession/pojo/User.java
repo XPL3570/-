@@ -1,9 +1,7 @@
 package com.confession.pojo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import lombok.Getter;
@@ -57,16 +55,22 @@ public class User implements Serializable {
     private LocalDateTime createTime;
 
     /**
+     * 创建时间
+     */
+    @TableField("UpdateTime")
+    private LocalDateTime updateTime;
+
+    /**
      * 微信账号
      */
     @TableField("WXAccount")
     private String wXAccount;
 
     /**
-     * 性别，0表示女性，1表示男性，NULL表示未知
+     * 性别:1 表示男性，2 表示女性，0 表示未知
      */
     @TableField("Gender")
-    private Boolean gender;
+    private Integer gender;
 
     /**
      * 头像地址
