@@ -21,12 +21,7 @@ public class JwtConfig {
     public static final long EXPIRE = 1000 * 60 * 60 * 24; //token过期时间
     public static final String APP_SECRET = "zhangjie"; //秘钥，加盐
 
-    //	@param id 当前用户ID
-    //	@param issuer 该JWT的签发者，是否使用是可选的
-    //	@param subject 该JWT所面向的用户，是否使用是可选的
-    //	@param ttlMillis 什么时候过期，这里是一个Unix时间戳，是否使用是可选的
-    //	@param audience 接收该JWT的一方，是否使用是可选的
-    //生成token字符串的方法
+
     public static String getJwtToken(User user) {
 
         String JwtToken = Jwts.builder()
@@ -39,7 +34,7 @@ public class JwtConfig {
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRE))    //设置签证失效的时间
                 //自定义的信息，这里存储id和姓名信息
                 .claim("id", user.getId())  //设置token主体部分 ，存储用户信息
-                .claim("UserName", user.getUsername())
+                .claim("UserName", user.getUserName())
                 .claim("openId",user.getOpenId())
                 //下面是第三部分
                 .signWith(SignatureAlgorithm.HS256, APP_SECRET)

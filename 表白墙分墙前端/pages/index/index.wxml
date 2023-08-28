@@ -1,23 +1,13 @@
 <view class="container">
-  <!-- 轮播图 -->
-  <swiper indicator-dots="{{true}}" autoplay="{{true}}" interval="{{2000}}" duration="{{500}}">
-  <block wx:for="{{imageUrls}}" wx:key="index">
-    <swiper-item>
-      <image src="{{item}}" mode="aspectFill"></image>
-    </swiper-item>
-  </block>
-</swiper>
-
-  <!-- 表白墙标题 -->
+     <!-- 轮播图 -->
+	 <swiper swiperData="{{ swiperData }}" indicatorDots="{{ swiperOptions.indicatorDots }}" autoplay="{{ swiperOptions.autoplay }}" interval="{{ swiperOptions.interval }}" duration="{{ swiperOptions.duration }}"></swiper>
+	 
   <view class="title">表白墙</view>
-
-  <!-- 表白列表 -->
   <view class="list">
-    <!-- 表白列表项 -->
+
     <view class="item">
       <view class="content">表白内容</view>
       <view class="time">发布时间</view>
     </view>
-    <!-- 其他表白列表项 -->
-  </view>
+	</view>
 </view>

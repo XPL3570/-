@@ -1,10 +1,9 @@
 {
 	"pages": [
-		
 		"pages/index/index",
 		"pages/selectSchool/selectSchool",
 		"pages/selectSchool/registerSchool/registerSchool",
-		"pages/submit/submit",
+		"pages/release/release",
 		"pages/personal/personal",
 		"pages/personal/avatarMod/avatarMod"
 	],
@@ -14,6 +13,9 @@
 		"navigationBarTitleText": "同校表白墙分墙",
 		"navigationBarTextStyle": "black"
 	},
+	"usingComponents": {
+		"van-toast": "@vant/weapp/toast"
+	  },	  
 	"sitemapLocation": "sitemap.json",
 	"tabBar": {
 		"color": "#a9b7b7",
@@ -27,7 +29,7 @@
 				"selectedIconPath": "image/首页 (1).png"
 			},
 			{
-				"pagePath": "pages/submit/submit",
+				"pagePath": "pages/release/release",
 				"text": "表白",
 				"iconPath": "/image/icon_添加.png",
 				"selectedIconPath": "image/icon_添加 (1).png"

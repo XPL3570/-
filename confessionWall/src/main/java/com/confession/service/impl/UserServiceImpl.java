@@ -44,15 +44,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public String codeByOpenid(String code) {
+    public String  codeByOpenid(String code) {
         // 例如，调用微信开放平台的接口，通过 code 获取用户的 openid 和 session_key
         String appId = wechatConfig.getAppId();
         String secret = wechatConfig.getAppSecret();
+        System.out.println("code="+code);
+
 
         String url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + appId +
                 "&secret=" + secret +
                 "&js_code=" + code +
                 "&grant_type=authorization_code";
+        System.out.println(url);
 
         RestTemplate restTemplate = new RestTemplate();
 
@@ -60,6 +63,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         if (response.getStatusCode() == HttpStatus.OK) {
             String responseBody = response.getBody();
+            System.out.println(responseBody);
             // 使用 Fastjson 解析返回的 JSON 数据
             JSONObject json = JSONObject.parseObject(responseBody.toString());
             return json.getString("openid");

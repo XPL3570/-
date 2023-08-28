@@ -21,6 +21,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(WallException.class)
     @ResponseBody
     public Result errer2(WallException e) {
+        System.out.println("异常码"+e.getCode()+"，异常信息"+e.getMessage());
         return Result.build(e.getCode(), e.getMessage());
     }
 

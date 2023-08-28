@@ -5,9 +5,9 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.confession.pojo.User">
         <id column="Id" property="id" />
-        <result column="Username" property="username" />
+        <result column="Username" property="userName" />
         <result column="SchoolId" property="schoolId" />
-        <result column="WechatId" property="wechatId" />
+        <result column="OpenId" property="openId" />
         <result column="CreateTime" property="createTime" />
         <result column="WXAccount" property="wXAccount" />
         <result column="Gender" property="gender" />

@@ -1,25 +1,18 @@
 package com.confession.controller;
 
 
-import com.alibaba.fastjson.JSONObject;
 import com.confession.comm.JwtConfig;
 import com.confession.comm.Result;
-import com.confession.config.WechatConfig;
+import com.confession.globalConfig.exception.WallException;
 import com.confession.pojo.School;
 import com.confession.pojo.User;
+import com.confession.request.LoginRequest;
 import com.confession.request.RegisterRequest;
 import com.confession.service.SchoolService;
 import com.confession.service.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,8 +31,11 @@ public class UserController {
     private SchoolService schoolService;
 
     @PostMapping("login")
-    public Result login(@RequestBody String code) {
-        String openid = userService.codeByOpenid(code);
+    public Result login(@RequestBody LoginRequest request) {
+        String openid = userService.codeByOpenid(request.getCode());
+        if (openid == null) {
+            throw new WallException("获取openid失败", 244);
+        }
         // 根据 openid 查询数据库，看是否已存在该用户
         User user = userService.findByOpenid(openid);
         if (user == null) {
@@ -52,12 +48,16 @@ public class UserController {
 
         return Result.ok(responseMap);
 
-
     }
 
-
+    /**
+     * 用户没有使用过小程序，传递用户参数注册，openId数据库有唯一键，这里不查询数据库是否存在该openId了
+     *
+     * @param request
+     * @return
+     */
     @PostMapping("register")
-    public Result register(@RequestBody RegisterRequest request) throws JsonProcessingException {
+    public Result register(@RequestBody RegisterRequest request) {
         System.out.println(request);
 
         // 查询学校是否存在
@@ -69,14 +69,19 @@ public class UserController {
             String openid = userService.codeByOpenid(code);
             user.setOpenId(openid);
             user.setSchoolId(school.getId());
-            user.setUsername(request.getUserName());
+            user.setUserName(request.getUserName());
             user.setAvatarURL(request.getAvatarUrl());
-            userService.save(user);
+            try {
+                userService.save(user);
+            } catch (Exception e) {
+                System.out.println("用户openId是" + user.getOpenId() + "已经存在，注册失败");
+                return Result.build(201, "该用户已经存在，注册失败");
+            }
             // 生成 token
             String token = JwtConfig.getJwtToken(user);
             Map<String, Object> map = new HashMap<>();
             map.put("token", token);
-            map.put("userInfo", user);
+            map.put("userInfo", user);  //这里后面可以做一个过滤，把学校名字放进去
             // 返回 token 到小程序端
             return Result.ok(map);
         } else {
