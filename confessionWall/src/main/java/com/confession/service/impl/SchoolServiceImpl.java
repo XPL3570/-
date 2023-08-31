@@ -1,8 +1,8 @@
 package com.confession.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.confession.pojo.School;
 import com.confession.mapper.SchoolMapper;
+import com.confession.pojo.School;
 import com.confession.service.SchoolService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -32,4 +32,5 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
         School school = schoolMapper.selectOne(wrapper);
         return school;
     }
+
 }

@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author 作者
- * @since 2023年08月28日
+ * @since 2023年08月31日
  */
 @Getter
 @Setter
@@ -46,6 +46,12 @@ public class Confessionpost implements Serializable {
     private Integer userId;
 
     /**
+     * 发布标题
+     */
+    @TableField("Title")
+    private String title;
+
+    /**
      * 发布内容文字
      */
     @TableField("TextContent")
@@ -58,10 +64,16 @@ public class Confessionpost implements Serializable {
     private String imageURL;
 
     /**
-     *  时间
+     * 投稿时间
      */
     @TableField("CreateTime")
     private LocalDateTime createTime;
+
+    /**
+     * 实际发布时间
+     */
+    @TableField("PublishTime")
+    private LocalDateTime publishTime;
 
     /**
      * 逻辑删除标志

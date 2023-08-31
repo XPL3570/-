@@ -54,8 +54,8 @@ public class CodeGeneration {
          * 包配置
          */
         PackageConfig packages = new PackageConfig.Builder()
+                .parent("code_z")//父包名。如果为空，将下面子包名必须写全部， 否则就只需写子包名
                 .entity("pojo")//实体类包名
-                .parent("com.confession")//父包名。如果为空，将下面子包名必须写全部， 否则就只需写子包名
                 .controller("controller")//控制层包名
                 .mapper("mapper")//mapper层包名
                 .xml("mapper.xml")//数据访问层xml包名

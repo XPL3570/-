@@ -1,6 +1,7 @@
 package com.confession.controller;
 
 import com.confession.comm.Result;
+import com.confession.request.DeleteImageRequest;
 import com.confession.request.UploadImageRequest;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
@@ -18,9 +21,43 @@ import java.util.Random;
 @RestController
 public class ImageController {
 
-    private static final String UPLOAD_PATH = "e:\\表白墙项目图片上传地址\\"; // 设置图片上传路径
+    private static final String UPLOAD_PATH = "e:\\表白墙项目图片上传地址\\"; // 设置图片上传路径，这里是windows系统的
 
-    private static final String DOMAIN_NAME_ADDRESS="http://127.0.0.1:2204";  //后面可以改成读取配置文件，设置成域名
+    private static final String DOMAIN_NAME_ADDRESS="http://127.0.0.1:2204/upload/";  //后面可以改成读取配置文件，设置成域名
+
+    @PostMapping("/deleteImage")
+    public Result deleteImage(@RequestBody DeleteImageRequest request) {
+        try {
+            // 提取图片的相对路径或文件名
+            String imagePath = getImagePathFromUrl(request.getDeleteUrl());
+
+            // 构建图片的完整路径
+            String fullPath = UPLOAD_PATH + imagePath;
+
+            File imageFile = new File(fullPath);
+            if (imageFile.exists()) { // 判断图片文件是否存在
+                if (imageFile.delete()) { // 删除图片文件
+                    return Result.ok("删除成功");
+                } else {
+                    return Result.fail("删除失败");
+                }
+            } else {
+                return Result.fail("图片不存在");
+            }
+        } catch (Exception e) {
+            return Result.fail("删除异常：" + e.getMessage());
+        }
+    }
+    private String getImagePathFromUrl(String imageUrl) {
+        try {
+            // 去掉域名和端口部分，只保留相对路径或文件名
+            return imageUrl.replace(DOMAIN_NAME_ADDRESS, "");
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid image URL: " + imageUrl);
+        }
+    }
+
+
 
     @PostMapping("/uploadImage")
     public Result uploadImage(@RequestBody UploadImageRequest request) {
@@ -46,20 +83,18 @@ public class ImageController {
                 fos.write(imageBytes);
             }
             // 返回图片地址
-            return Result.ok(DOMAIN_NAME_ADDRESS+"/upload/" + fileName);
+            return Result.ok(DOMAIN_NAME_ADDRESS + fileName);
         } catch (IOException e) {
             e.printStackTrace();
             return Result.build(500, "图片上传失败");
         }
     }
-
     private String generateFileName(String fileExtension) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
         String datePrefix = dateFormat.format(new Date());
         String randomSuffix = generateRandomSuffix(6); // 生成6位随机数或英文字母
         return datePrefix + randomSuffix + fileExtension;
     }
-
     private String generateRandomSuffix(int length) {
         Random random = new Random();
         StringBuilder sb = new StringBuilder();
@@ -96,10 +131,7 @@ public class ImageController {
         } else if (headerBytes[0] == (byte) 0x42 && headerBytes[1] == (byte) 0x4D) {
             extension = "bmp";
         }
-
         return extension;
     }
-
-
 
 }

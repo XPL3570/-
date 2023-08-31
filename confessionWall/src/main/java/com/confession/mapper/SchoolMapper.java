@@ -1,7 +1,8 @@
 package com.confession.mapper;
 
-import com.confession.pojo.School;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.confession.pojo.School;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

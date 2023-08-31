@@ -1,7 +1,7 @@
 package com.confession.service;
 
-import com.confession.pojo.School;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.confession.pojo.School;
 
 /**
  * <p>

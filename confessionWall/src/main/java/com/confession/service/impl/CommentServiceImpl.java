@@ -1,7 +1,7 @@
 package com.confession.service.impl;
 
-import com.confession.pojo.Comment;
 import com.confession.mapper.CommentMapper;
+import com.confession.pojo.Comment;
 import com.confession.service.CommentService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;

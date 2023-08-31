@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
 
+
 /**
  * <p>
  *  前端控制器
@@ -14,8 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2023年08月20日
  */
 @RestController
-@RequestMapping("/confessionwall")
-public class ConfessionwallController {
+@RequestMapping("/api/confession")
+public class ConfessionWallController {
+
+
+
+
+
 
 }
 

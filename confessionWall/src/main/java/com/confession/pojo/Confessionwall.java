@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author 作者
- * @since 2023年08月28日
+ * @since 2023年08月31日
  */
 @Getter
 @Setter
@@ -40,7 +40,7 @@ public class Confessionwall implements Serializable {
     private Integer schoolId;
 
     /**
-     *  者用户ID
+     * 创建者用户ID
      */
     @TableField("CreatorUserId")
     private Integer creatorUserId;
@@ -64,7 +64,7 @@ public class Confessionwall implements Serializable {
     private String description;
 
     /**
-     *  时间
+     * 创建时间
      */
     @TableField("CreateTime")
     private LocalDateTime createTime;

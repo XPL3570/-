@@ -1,7 +1,7 @@
 package com.confession.mapper;
 
-import com.confession.pojo.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.confession.pojo.User;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
