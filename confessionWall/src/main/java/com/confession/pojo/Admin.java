@@ -4,11 +4,12 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
-import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -16,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author 作者
- * @since 2023年08月20日
+ * @since 2023年08月28日
  */
 @Getter
 @Setter
@@ -45,6 +46,12 @@ public class Admin implements Serializable {
     private Integer userId;
 
     /**
+     * 表白墙ID
+     */
+    @TableField("ConfessionWallId")
+    private Integer confessionWallId;
+
+    /**
      * 手机号
      */
     @TableField("PhoneNumber")
@@ -57,10 +64,16 @@ public class Admin implements Serializable {
     private String weChatId;
 
     /**
-     * 创建时间
+     *  时间
      */
     @TableField("CreateTime")
     private LocalDateTime createTime;
+
+    /**
+     * 权限标识，0表示普通管理员，1表示超级管理员
+     */
+    @TableField("Permission")
+    private Integer permission;
 
 
 }

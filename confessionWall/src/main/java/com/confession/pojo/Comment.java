@@ -4,11 +4,12 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
-import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -16,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author 作者
- * @since 2023年08月20日
+ * @since 2023年08月28日
  */
 @Getter
 @Setter
@@ -33,7 +34,7 @@ public class Comment implements Serializable {
     private Integer id;
 
     /**
-     * 关联的表白墙发布内容审核表ID
+     * 关联的表白墙发布内容表ID
      */
     @TableField("ConfessionPostReviewId")
     private Integer confessionPostReviewId;

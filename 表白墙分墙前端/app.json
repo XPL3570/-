@@ -5,12 +5,13 @@
 		"pages/selectSchool/registerSchool/registerSchool",
 		"pages/release/release",
 		"pages/personal/personal",
-		"pages/personal/avatarMod/avatarMod"
+		"pages/personal/avatarMod/avatarMod",
+		"pages/personal/nameMod/nameMod"
 	],
 	"window": {
 		"backgroundTextStyle": "light",
 		"navigationBarBackgroundColor": "#fff",
-		"navigationBarTitleText": "同校表白墙分墙",
+		"navigationBarTitleText": "同校表白墙",
 		"navigationBarTextStyle": "black"
 	},
 	"usingComponents": {

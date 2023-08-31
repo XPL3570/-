@@ -4,11 +4,12 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
-import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -16,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author 作者
- * @since 2023年08月20日
+ * @since 2023年08月28日
  */
 @Getter
 @Setter
@@ -57,7 +58,7 @@ public class Confessionpost implements Serializable {
     private String imageURL;
 
     /**
-     * 创建时间
+     *  时间
      */
     @TableField("CreateTime")
     private LocalDateTime createTime;
@@ -67,6 +68,12 @@ public class Confessionpost implements Serializable {
      */
     @TableField("IsDeleted")
     private Boolean deleted;
+
+    /**
+     * 发布状态，0表示待审核，1表示审核通过，2表示审核拒绝
+     */
+    @TableField("PostStatus")
+    private Integer postStatus;
 
 
 }

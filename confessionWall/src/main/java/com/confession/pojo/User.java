@@ -1,12 +1,15 @@
 package com.confession.pojo;
 
-import com.baomidou.mybatisplus.annotation.*;
-
-import java.io.Serializable;
-import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -14,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author 作者
- * @since 2023年08月20日
+ * @since 2023年08月28日
  */
 @Getter
 @Setter
@@ -33,8 +36,8 @@ public class User implements Serializable {
     /**
      * 用户名
      */
-    @TableField("UserName")
-    private String userName;
+    @TableField("Username")
+    private String username;
 
     /**
      * 学校ID
@@ -43,7 +46,7 @@ public class User implements Serializable {
     private Integer schoolId;
 
     /**
-     * 微信ID
+     * 微信唯一ID
      */
     @TableField("OpenId")
     private String openId;
@@ -55,7 +58,7 @@ public class User implements Serializable {
     private LocalDateTime createTime;
 
     /**
-     * 创建时间
+     * 更新时间
      */
     @TableField("UpdateTime")
     private LocalDateTime updateTime;
@@ -67,7 +70,7 @@ public class User implements Serializable {
     private String wXAccount;
 
     /**
-     * 性别:1 表示男性，2 表示女性，0 表示未知
+     * 性别，1表示男性，2表示女性，0表示未知
      */
     @TableField("Gender")
     private Integer gender;
@@ -77,6 +80,12 @@ public class User implements Serializable {
      */
     @TableField("AvatarURL")
     private String avatarURL;
+
+    /**
+     * 用户状态，0表示正常，1表示被禁止发布，2表示禁止评论，3表示评论和发布都不可以
+     */
+    @TableField("Status")
+    private Integer status;
 
 
 }

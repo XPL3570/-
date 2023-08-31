@@ -1,6 +1,7 @@
 package com.confession.comm;
 
 
+import com.confession.globalConfig.exception.WallException;
 import com.confession.pojo.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -11,10 +12,8 @@ import org.springframework.util.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
-/**
- * @author dailyblue
- * @since 2022/6/23
- */
+import static com.confession.comm.ResultCodeEnum.LOGIN_AURH;
+
 public class JwtConfig {
 
     //常量
@@ -34,26 +33,46 @@ public class JwtConfig {
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRE))    //设置签证失效的时间
                 //自定义的信息，这里存储id和姓名信息
                 .claim("id", user.getId())  //设置token主体部分 ，存储用户信息
-                .claim("UserName", user.getUserName())
+                .claim("UserName", user.getUsername())
                 .claim("openId",user.getOpenId())
+                .claim("schoolId",user.getSchoolId())
                 //下面是第三部分
                 .signWith(SignatureAlgorithm.HS256, APP_SECRET)
                 .compact();
+        String prefixedToken = "PREFIX_" + JwtToken; // 添加前缀
         // 生成的字符串就是jwt信息，这个通常要返回出去
-        return JwtToken;
+        return prefixedToken;
     }
 
-    /**
-     * 判断token是否存在与有效
-     * 直接判断字符串形式的jwt字符串
-     *
-     * @param jwtToken
-     * @return
-     */
+
+
+    public static Integer getIdByJwtToken(HttpServletRequest request) {
+//        System.out.println(request.toString());
+        String jwtToken = request.getHeader("authentication");
+        System.out.println("jwtToken: "+jwtToken);
+        if (StringUtils.isEmpty(jwtToken)) {
+            throw new WallException(LOGIN_AURH); // 抛出异常
+        }
+        // 移除前缀
+        String cleanToken = jwtToken.replaceFirst("^PREFIX_", "");
+
+        try {
+            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(APP_SECRET).parseClaimsJws(cleanToken);
+            Claims claims = claimsJws.getBody();
+            return claims.get("id", Integer.class); // 解析为整数类型
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new WallException("Token解析失败",222); // 抛出异常
+        }
+    }
+
+
+
     public static boolean checkToken(String jwtToken) {
         if (StringUtils.isEmpty(jwtToken)) return false;
         try {
-            Jwts.parser().setSigningKey(APP_SECRET).parseClaimsJws(jwtToken);
+            String cleanToken = jwtToken.replaceFirst("^PREFIX_", ""); // 清除前缀
+            Jwts.parser().setSigningKey(APP_SECRET).parseClaimsJws(cleanToken);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -61,38 +80,18 @@ public class JwtConfig {
         return true;
     }
 
-    /**
-     * 判断token是否存在与有效
-     * 因为通常jwt都是在请求头中携带，此方法传入的参数是请求
-     *
-     * @param request
-     * @return
-     */
+
     public static boolean checkToken(HttpServletRequest request) {
         try {
-            String jwtToken = request.getHeader("token");//注意名字必须为token才能获取到jwt
+            String jwtToken = request.getHeader("Authentication");//注意名字必须为token才能获取到jwt
             if (StringUtils.isEmpty(jwtToken)) return false;
-            Jwts.parser().setSigningKey(APP_SECRET).parseClaimsJws(jwtToken);
+            String cleanToken = jwtToken.replaceFirst("^PREFIX_", ""); // 清除前缀
+            Jwts.parser().setSigningKey(APP_SECRET).parseClaimsJws(cleanToken);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
         return true;
-    }
-
-    /**
-     * 根据token字符串获取会员id
-     * 这个方法也直接从http的请求中获取id的
-     *
-     * @param request
-     * @return
-     */
-    public static String getMemberIdByJwtToken(HttpServletRequest request) {
-        String jwtToken = request.getHeader("token");
-        if (StringUtils.isEmpty(jwtToken)) return "";
-        Jws<Claims> claimsJws = Jwts.parser().setSigningKey(APP_SECRET).parseClaimsJws(jwtToken);
-        Claims claims = claimsJws.getBody();
-        return claims.get("id").toString();
     }
 
     /**
@@ -101,7 +100,8 @@ public class JwtConfig {
      * @return
      */
     public static Claims parseJWT(String jwt) {
-        Claims claims = Jwts.parser().setSigningKey(APP_SECRET).parseClaimsJws(jwt).getBody();
+        String cleanToken = jwt.replaceFirst("^PREFIX_", ""); // 清除前缀
+        Claims claims = Jwts.parser().setSigningKey(APP_SECRET).parseClaimsJws(cleanToken).getBody();
         return claims;
     }
 }
