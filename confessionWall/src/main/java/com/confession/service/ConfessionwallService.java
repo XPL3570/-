@@ -13,4 +13,11 @@ import com.confession.pojo.Confessionwall;
  */
 public interface ConfessionwallService extends IService<Confessionwall> {
 
+    /**
+     * 查询学校id下的的一个墙id，这里如果是多个就返回第一个
+     * @param schoolId
+     * @return
+     */
+    Integer selectSchoolInWallIdOne(Integer schoolId);
+
 }

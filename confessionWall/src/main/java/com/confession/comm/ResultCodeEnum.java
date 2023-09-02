@@ -15,6 +15,7 @@ public enum ResultCodeEnum {
     DATA_ERROR(204, "数据异常"),
     DATA_UPDATE_ERROR(205, "数据版本异常"),
 
+    CONTRIBUTE_OVER_LIMIT(216,"每天投稿超过限制，请稍后重试"),
     LOGIN_AUTH(208, "未登陆"),
     PERMISSION(209, "没有权限"),
 

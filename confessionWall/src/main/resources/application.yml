@@ -8,6 +8,10 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
 
 mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-value: true
+      logic-not-delete-value: false
   # 搜索指定包别名
   typeAliasesPackage: com.confession.pojo
   # 配置mapper的扫描，找到所有的mapper.xml映射文件
@@ -22,13 +26,11 @@ wechat:
   app-secret: 28e18de4781d84bd1badab528cf736a6
   msgDataFormat: JSON
 
-#wx:
-#  miniapp:
-#    configs:
-#      - appid: wxade44f34c116d260
-#        secret: 28e18de4781d84bd1badab528cf736a6
-#        token: #微信小程序消息服务器配置的token
-#        aesKey: #微信小程序消息服务器配置的EncodingAESKey
-#        msgDataFormat: JSON
+
+wall:
+  admin:
+    daily-post-limit: 10 #墙每天投稿上限数量
+  user:
+    daily-post-limit: 3
 
 

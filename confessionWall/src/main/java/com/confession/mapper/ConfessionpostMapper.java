@@ -3,6 +3,9 @@ package com.confession.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.confession.pojo.Confessionpost;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.time.LocalDate;
 
 /**
  * <p>
@@ -14,5 +17,13 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface ConfessionpostMapper extends BaseMapper<Confessionpost> {
+
+    /**
+     * 查询用户当天的发布数量
+     * @param userId
+     * @param date
+     * @return
+     */
+    int getPostCountByUserIdAndDate(@Param("userId") Integer userId, @Param("date") LocalDate date);
 
 }

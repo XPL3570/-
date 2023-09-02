@@ -13,11 +13,12 @@ CREATE TABLE User (
                       Gender TINYINT(2) DEFAULT NULL COMMENT '性别，1表示男性，2表示女性，0表示未知',
                       AvatarURL VARCHAR(255) COMMENT '头像地址',
                       Status TINYINT(2) DEFAULT 0 COMMENT '用户状态，0表示正常，1表示被禁止发布，2表示禁止评论，3表示评论和发布都不可以',
+                      IsDeleted BOOLEAN DEFAULT FALSE COMMENT '逻辑删除标志',
                       UNIQUE INDEX idx_openid (OpenId)
 );
 INSERT INTO `user` VALUES (1, '照抄且报错', 1, 'owFJn5JydzwLQx52JN9p7CtpzHFo',
                            '2023-08-30 16:22:28', '2023-08-30 16:22:28', NULL, NULL,
-                           'http://127.0.0.1:2204/upload/20230830162221rLLzXX.jpg', 0);
+                           'http://127.0.0.1:2204/upload/20230830162221rLLzXX.jpg', 0,0);
 
 
 -- 删除学校表（School）如果存在
@@ -30,14 +31,15 @@ CREATE TABLE School (
                         AvatarURL VARCHAR(255) COMMENT '头像地址',
                         Description TEXT COMMENT '描述内容',
                         CreatorId INT COMMENT '创建者ID',
-                        CreateTime DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'
+                        CreateTime DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                        IsDeleted BOOLEAN DEFAULT FALSE COMMENT '逻辑删除标志'
 );
 INSERT INTO School (SchoolName, AvatarURL, Description, CreatorId, CreateTime)
 VALUES ('学校A', 'https://example.com/avatar1.jpg', '这是学校A的描述', 1, '2023-08-30 16:22:28'),
        ('学校B', 'https://example.com/avatar2.jpg', '这是学校B的描述', 2, '2023-08-30 16:22:28');
 
 
--- 删除表白墙表（ConfessionWall）如果
+-- 删除表白墙表（ConfessionWall）
 DROP TABLE IF EXISTS ConfessionWall;
 -- 表白墙表（ConfessionWall）
 CREATE TABLE ConfessionWall (
@@ -48,7 +50,8 @@ CREATE TABLE ConfessionWall (
                                 WallName VARCHAR(255) COMMENT '表白墙名字',
                                 Description VARCHAR(255) NOT NULL COMMENT '表白墙描述',
                                 CreateTime DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                                Status TINYINT COMMENT '状态，0表示正常，1表示被禁用'
+                                Status TINYINT COMMENT '状态，0表示正常，1表示被禁用',
+                                IsDeleted BOOLEAN DEFAULT FALSE COMMENT '逻辑删除标志'
 );
 -- ConfessionWall 表测试数据
 INSERT INTO ConfessionWall (SchoolId, CreatorUserId, AvatarURL, WallName, Description, CreateTime, Status)
@@ -56,7 +59,7 @@ VALUES (1, 1, 'https://example.com/avatar1.jpg', '表白墙A', '这是表白墙A
        (2, 2, 'https://example.com/avatar2.jpg', '表白墙B', '这是表白墙B的描述', '2023-08-30 16:22:28', 1);
 
 DROP TABLE IF EXISTS ConfessionPost;
--- 表白墙发布内容表（ConfessionPost）
+-- 发布内容表（ConfessionPost）
 CREATE TABLE ConfessionPost (
                                 Id INT PRIMARY KEY AUTO_INCREMENT COMMENT '发布内容ID',
                                 WallId INT COMMENT '所属表白墙ID',
@@ -66,8 +69,8 @@ CREATE TABLE ConfessionPost (
                                 ImageURL VARCHAR(500) COMMENT '发布内容图片URL',
                                 CreateTime DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '投稿时间',
                                 PublishTime DATETIME COMMENT '实际发布时间',
-                                IsDeleted BOOLEAN DEFAULT FALSE COMMENT '逻辑删除标志',
-                                PostStatus TINYINT COMMENT '发布状态，0表示待审核，1表示审核通过，2表示审核拒绝'
+                                PostStatus TINYINT COMMENT '发布状态，0表示待审核，1表示审核通过，2表示审核拒绝',
+                                IsDeleted BOOLEAN DEFAULT FALSE COMMENT '逻辑删除标志'
 );
 
 -- ConfessionPost 表测试数据
@@ -108,7 +111,8 @@ CREATE TABLE Admin (
                        PhoneNumber VARCHAR(20) COMMENT '手机号',
                        WeChatId VARCHAR(50) COMMENT '微信号',
                        CreateTime DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '时间',
-                       Permission TINYINT COMMENT '权限标识，0表示普通管理员，1表示超级管理员'
+                       Permission TINYINT COMMENT '权限标识，0表示普通管理员，1表示超级管理员',
+                       IsDeleted BOOLEAN DEFAULT FALSE COMMENT '逻辑删除标志'
 );
 
 -- Admin 表测试数据

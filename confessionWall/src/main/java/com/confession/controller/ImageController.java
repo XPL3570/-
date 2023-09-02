@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
@@ -66,8 +64,8 @@ public class ImageController {
             byte[] imageBytes = Base64Utils.decodeFromString(request.getBase64Image());
 
             // 检查图片大小是否超过4MB
-            if (imageBytes.length > 3 * 1024 * 1024) {
-                return Result.build(400, "上传的图片大小超过3MB");
+            if (imageBytes.length > 2 * 1024 * 1024) {
+                return Result.build(400, "上传的图片大小超过2MB");
             }
 
             // 获取图片后缀

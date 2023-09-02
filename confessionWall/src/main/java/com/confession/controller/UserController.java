@@ -10,6 +10,7 @@ import com.confession.request.LoginRequest;
 import com.confession.request.RegisterRequest;
 import com.confession.request.UpdateAvatarRequest;
 import com.confession.request.UpdateNameRequest;
+import com.confession.service.ConfessionwallService;
 import com.confession.service.SchoolService;
 import com.confession.service.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +36,14 @@ public class UserController {
     @Resource
     private SchoolService schoolService;
 
+    @Resource
+    private ConfessionwallService confessionwallService;
+
+    /** 这里登录会查询学校id绑定一个墙id
+     *
+     * @param request
+     * @return token和userInfo和墙id
+     */
     @PostMapping("login")
     public Result login(@RequestBody LoginRequest request) {
         String openid = userService.codeByOpenid(request.getCode());
@@ -46,10 +55,14 @@ public class UserController {
         if (user == null) {
             return Result.build(206, "请选择学校");
         }
+        //查询该学校下的一个墙id，如果有多个就返回第一个
+        Integer wallId=confessionwallService.selectSchoolInWallIdOne(user.getSchoolId());
+
         String token = JwtConfig.getJwtToken(user);
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("token", token);
         responseMap.put("userInfo", user);
+        responseMap.put("wallId",wallId);
         System.out.println(token);
         return Result.ok(responseMap);
 

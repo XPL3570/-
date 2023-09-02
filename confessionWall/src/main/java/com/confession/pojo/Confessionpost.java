@@ -1,9 +1,6 @@
 package com.confession.pojo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -76,16 +73,17 @@ public class Confessionpost implements Serializable {
     private LocalDateTime publishTime;
 
     /**
-     * 逻辑删除标志
-     */
-    @TableField("IsDeleted")
-    private Boolean deleted;
-
-    /**
      * 发布状态，0表示待审核，1表示审核通过，2表示审核拒绝
      */
     @TableField("PostStatus")
     private Integer postStatus;
+
+    /**
+     * 逻辑删除标志
+     */
+    @TableField("IsDeleted")
+    @TableLogic
+    private Boolean deleted;
 
 
 }

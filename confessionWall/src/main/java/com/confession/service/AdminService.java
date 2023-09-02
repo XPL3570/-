@@ -13,4 +13,11 @@ import com.confession.pojo.Admin;
  */
 public interface AdminService extends IService<Admin> {
 
+    /**
+     *  判断是不是该墙的管理员，或者超级管理员直接通过
+     * @param userId
+     * @param wallId
+     * @return
+     */
+    boolean isAdmin(Integer userId, Integer wallId);
 }
