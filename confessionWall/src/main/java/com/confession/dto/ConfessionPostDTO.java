@@ -1,8 +1,11 @@
 package com.confession.dto;
 
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class ConfessionPostDTO {
@@ -13,9 +16,14 @@ public class ConfessionPostDTO {
     private Integer userId;
     private String title;
     private String textContent;
-    private String imageURL;
-    private LocalDateTime createTime;
-    private LocalDateTime publishTime;
-    private Integer postStatus;
+    private List<String> imageURL;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime publishTime;
+
+    private Integer postStatus;
 }
+

@@ -10,6 +10,13 @@
 		"miniprogram": {
 			"list": [
 				{
+					"name": "个人中心",
+					"pathName": "pages/personal/personal",
+					"query": "",
+					"launchMode": "default",
+					"scene": null
+				},
+				{
 					"name": "表白页面",
 					"pathName": "pages/release/release",
 					"query": "",

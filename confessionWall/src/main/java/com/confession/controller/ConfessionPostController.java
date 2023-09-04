@@ -1,6 +1,7 @@
 package com.confession.controller;
 
 
+import com.confession.comm.PageTool;
 import com.confession.comm.Result;
 import com.confession.config.WallConfig;
 import com.confession.dto.ConfessionPostDTO;
@@ -49,9 +50,9 @@ public class ConfessionPostController {
      * 查看用户审核过的投稿记录
      */
     @GetMapping("/published")
-    public Result<List<ConfessionPostDTO>> getPublishedPosts() {
+    public Result<List<ConfessionPostDTO>> getPublishedPosts(PageTool pageTool) {
         Integer userId = JwtInterceptor.getUser().getId(); // 从 Thread 中获取用户ID
-        List<ConfessionPostDTO> posts = confessionPostService.getPublishedPosts(userId);
+        List<ConfessionPostDTO> posts = confessionPostService.getPublishedPosts(userId,pageTool);
         return Result.ok(posts);
     }
 
@@ -60,12 +61,11 @@ public class ConfessionPostController {
      * @return
      */
     @GetMapping("/pending")
-    public Result<List<ConfessionPostDTO>> getPendingPosts() {
+    public Result<List<ConfessionPostDTO>> getPendingPosts(PageTool pageTool) {
         Integer userId = JwtInterceptor.getUser().getId(); // 从 Thread 中获取用户ID
-        List<ConfessionPostDTO> posts = confessionPostService.getPendingPosts(userId);
+        List<ConfessionPostDTO> posts = confessionPostService.getPendingPosts(userId,pageTool);
         return Result.ok(posts);
     }
-
 
 
 

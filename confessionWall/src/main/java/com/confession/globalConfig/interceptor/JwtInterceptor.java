@@ -3,7 +3,7 @@ package com.confession.globalConfig.interceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.confession.comm.JwtConfig;
+import com.confession.config.JwtConfig;
 import com.confession.pojo.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;

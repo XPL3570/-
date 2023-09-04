@@ -1,4 +1,4 @@
-package com.confession.comm;
+package com.confession.config;
 
 
 import com.confession.globalConfig.exception.WallException;

@@ -1,6 +1,7 @@
 package com.confession.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.confession.comm.PageTool;
 import com.confession.dto.ConfessionPostDTO;
 import com.confession.pojo.Confessionpost;
 import com.confession.request.ConfessionPostRequest;
@@ -34,13 +35,13 @@ public interface ConfessionpostService extends IService<Confessionpost> {
      * 查询审核过状态的用户投稿记录
      * @return
      */
-    List<ConfessionPostDTO> getPublishedPosts(Integer userId);
+    List<ConfessionPostDTO> getPublishedPosts(Integer userId, PageTool pageTool);
 
     /**
      * 查询正在审核的用户投稿记录
      * @return
      */
-    List<ConfessionPostDTO> getPendingPosts(Integer userId);
+    List<ConfessionPostDTO> getPendingPosts(Integer userId, PageTool pageTool);
 
 
 

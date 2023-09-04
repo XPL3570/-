@@ -1,7 +1,7 @@
 package com.confession.controller;
 
 
-import com.confession.comm.JwtConfig;
+import com.confession.config.JwtConfig;
 import com.confession.comm.Result;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.pojo.School;

@@ -1,6 +1,8 @@
 package com.confession.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.confession.comm.PageTool;
 import com.confession.dto.ConfessionPostDTO;
 import com.confession.mapper.ConfessionpostMapper;
 import com.confession.pojo.Confessionpost;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,23 +42,24 @@ public class ConfessionpostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         return true;
     }
     @Override
-    public List<ConfessionPostDTO> getPublishedPosts(Integer userId) {
-        return getPostsByStatus(userId, 1);
+    public List<ConfessionPostDTO> getPublishedPosts(Integer userId, PageTool pageTool) {
+        return getPostsByStatus(pageTool,userId, 1);
     }
 
     @Override
-    public List<ConfessionPostDTO> getPendingPosts(Integer userId) {
-        return getPostsByStatus(userId, 0);
+    public List<ConfessionPostDTO> getPendingPosts(Integer userId,PageTool pageTool) {
+        return getPostsByStatus(pageTool,userId, 0);
     }
-    private List<ConfessionPostDTO> getPostsByStatus(Integer userId, Integer postStatus) {
+    private List<ConfessionPostDTO> getPostsByStatus(PageTool pageTool,Integer userId, Integer postStatus) {
         LambdaQueryWrapper<Confessionpost> wrapper = new LambdaQueryWrapper<>();
         if (postStatus == 0) {
-            wrapper.notIn(Confessionpost::getPostStatus, 0);
+            wrapper.in(Confessionpost::getPostStatus, 0);
         } else {
-            wrapper.in(Confessionpost::getPostStatus, postStatus);
+            wrapper.notIn(Confessionpost::getPostStatus, 0);
         }
         wrapper.eq(Confessionpost::getUserId, userId);
-        List<Confessionpost> list = confessionpostMapper.selectList(wrapper);
+        wrapper.orderByDesc(Confessionpost::getCreateTime); // 添加倒序排序条件
+        List<Confessionpost> list = confessionpostMapper.selectPage(pageTool.buildPage(), wrapper).getRecords();
         return list.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -68,7 +72,7 @@ public class ConfessionpostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         dto.setUserId(post.getUserId());
         dto.setTitle(post.getTitle());
         dto.setTextContent(post.getTextContent());
-        dto.setImageURL(post.getImageURL());
+        dto.setImageURL(Arrays.asList(post.getImageURL().split(";")));
         dto.setCreateTime(post.getCreateTime());
         dto.setPublishTime(post.getPublishTime());
         dto.setPostStatus(post.getPostStatus());

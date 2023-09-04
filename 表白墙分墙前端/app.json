@@ -6,7 +6,9 @@
 		"pages/release/release",
 		"pages/personal/personal",
 		"pages/personal/avatarMod/avatarMod",
-		"pages/personal/nameMod/nameMod"
+		"pages/personal/nameMod/nameMod",
+		"pages/personal/submitRecord/submitRecord",
+		"pages/personal/submitApplication/submitApplication"
 	],
 	"window": {
 		"backgroundTextStyle": "light",
