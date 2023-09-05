@@ -1,13 +1,8 @@
 <view class="container">
      <!-- 轮播图 -->
 	 <swiper swiperData="{{ swiperData }}" indicatorDots="{{ swiperOptions.indicatorDots }}" autoplay="{{ swiperOptions.autoplay }}" interval="{{ swiperOptions.interval }}" duration="{{ swiperOptions.duration }}"></swiper>
-	 
-  <view class="title">表白墙</view>
-  <view class="list">
+  <view class="title">{{title}}</view>
 
-    <view class="item">
-      <view class="content">表白内容</view>
-      <view class="time">发布时间</view>
-    </view>
-	</view>
+  
+
 </view>

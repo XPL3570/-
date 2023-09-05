@@ -4,6 +4,7 @@ package com.confession.controller;
 import com.confession.config.JwtConfig;
 import com.confession.comm.Result;
 import com.confession.globalConfig.exception.WallException;
+import com.confession.pojo.Confessionwall;
 import com.confession.pojo.School;
 import com.confession.pojo.User;
 import com.confession.request.LoginRequest;
@@ -56,13 +57,13 @@ public class UserController {
             return Result.build(206, "请选择学校");
         }
         //查询该学校下的一个墙id，如果有多个就返回第一个
-        Integer wallId=confessionwallService.selectSchoolInWallIdOne(user.getSchoolId());
+        Confessionwall wall = confessionwallService.selectSchoolInWallOne(user.getSchoolId());
 
         String token = JwtConfig.getJwtToken(user);
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("token", token);
         responseMap.put("userInfo", user);
-        responseMap.put("wallId",wallId);
+        responseMap.put("wall",wall);
         System.out.println(token);
         return Result.ok(responseMap);
 

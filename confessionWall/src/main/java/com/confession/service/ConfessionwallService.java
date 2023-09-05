@@ -18,6 +18,6 @@ public interface ConfessionwallService extends IService<Confessionwall> {
      * @param schoolId
      * @return
      */
-    Integer selectSchoolInWallIdOne(Integer schoolId);
+    Confessionwall selectSchoolInWallOne(Integer schoolId);
 
 }

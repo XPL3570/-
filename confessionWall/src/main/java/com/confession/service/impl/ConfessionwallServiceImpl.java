@@ -26,12 +26,12 @@ import static com.confession.comm.ResultCodeEnum.DATA_ERROR;
 public class ConfessionwallServiceImpl extends ServiceImpl<ConfessionwallMapper, Confessionwall> implements ConfessionwallService {
     @Resource
     private ConfessionwallMapper confessionwallMapper;
-    public Integer selectSchoolInWallIdOne(Integer schoolId) {
+    public Confessionwall selectSchoolInWallOne(Integer schoolId) {
         LambdaQueryWrapper<Confessionwall> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Confessionwall::getSchoolId,schoolId);
         List<Confessionwall> wallList = confessionwallMapper.selectList(wrapper);
         if (wallList!=null){
-            return wallList.get(0).getId(); //拿到第一个墙id
+            return wallList.get(0); //拿到第一个墙id
         }else {
             throw new WallException(DATA_ERROR);
         }

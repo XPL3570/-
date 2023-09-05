@@ -1,5 +1,6 @@
 {
 	"usingComponents": {
-		"swiper":"../../components/swiper/swiper"
+		"swiper":"../../components/swiper/swiper",
+		"van-skeleton": "@vant/weapp/skeleton/index"
 	  }
   }

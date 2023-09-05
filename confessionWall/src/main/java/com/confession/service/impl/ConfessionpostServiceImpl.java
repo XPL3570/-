@@ -1,6 +1,7 @@
 package com.confession.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.confession.comm.PageTool;
 import com.confession.dto.ConfessionPostDTO;
@@ -38,7 +39,7 @@ public class ConfessionpostServiceImpl extends ServiceImpl<ConfessionpostMapper,
 
     @Override
     public boolean filterContent(ConfessionPostRequest confessionRequest) {
-        // 过滤内容的逻辑 todo
+        // 过滤内容的逻辑 对内容的长度等做校验 todo
         return true;
     }
     @Override
@@ -58,9 +59,13 @@ public class ConfessionpostServiceImpl extends ServiceImpl<ConfessionpostMapper,
             wrapper.notIn(Confessionpost::getPostStatus, 0);
         }
         wrapper.eq(Confessionpost::getUserId, userId);
-        wrapper.orderByDesc(Confessionpost::getCreateTime); // 添加倒序排序条件
-        List<Confessionpost> list = confessionpostMapper.selectPage(pageTool.buildPage(), wrapper).getRecords();
-        return list.stream()
+        wrapper.orderByDesc(Confessionpost::getCreateTime); // 添加倒序排序条件  todo  后面看是否改成id倒序
+        // 设置分页信息
+        Page<Confessionpost> page = new Page<>(pageTool.getPage(), pageTool.getLimit());
+
+        IPage<Confessionpost> iPage = confessionpostMapper.selectPage(page, wrapper);
+
+        return iPage.getRecords().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
@@ -76,6 +81,7 @@ public class ConfessionpostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         dto.setCreateTime(post.getCreateTime());
         dto.setPublishTime(post.getPublishTime());
         dto.setPostStatus(post.getPostStatus());
+        dto.setIsAnonymous(post.getIsAnonymous());
         return dto;
     }
 }

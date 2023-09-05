@@ -25,5 +25,6 @@ public class ConfessionPostDTO {
     private LocalDateTime publishTime;
 
     private Integer postStatus;
+    private Integer isAnonymous;
 }
 

@@ -10,4 +10,5 @@ public class ConfessionPostRequest {
     private String title;
     private String textContent;
     private String imageURL;
+    private Integer isAnonymous;
 }

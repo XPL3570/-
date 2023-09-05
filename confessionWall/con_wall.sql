@@ -70,6 +70,7 @@ CREATE TABLE ConfessionPost (
                                 CreateTime DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '投稿时间',
                                 PublishTime DATETIME COMMENT '实际发布时间',
                                 PostStatus TINYINT COMMENT '发布状态，0表示待审核，1表示审核通过，2表示审核拒绝',
+                                IsAnonymous BOOLEAN DEFAULT FALSE COMMENT '是否匿名',
                                 IsDeleted BOOLEAN DEFAULT FALSE COMMENT '逻辑删除标志'
 );
 

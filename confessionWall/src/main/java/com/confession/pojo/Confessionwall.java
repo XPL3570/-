@@ -72,6 +72,7 @@ public class Confessionwall implements Serializable {
     @TableField("Status")
     private Integer status;
 
+
     /**
      * 逻辑删除标志
      */

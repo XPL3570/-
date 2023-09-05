@@ -50,7 +50,7 @@ public class ConfessionPostController {
      * 查看用户审核过的投稿记录
      */
     @GetMapping("/published")
-    public Result<List<ConfessionPostDTO>> getPublishedPosts(PageTool pageTool) {
+    public Result<List<ConfessionPostDTO>> getPublishedPosts(@ModelAttribute PageTool pageTool) {
         Integer userId = JwtInterceptor.getUser().getId(); // 从 Thread 中获取用户ID
         List<ConfessionPostDTO> posts = confessionPostService.getPublishedPosts(userId,pageTool);
         return Result.ok(posts);
@@ -61,7 +61,7 @@ public class ConfessionPostController {
      * @return
      */
     @GetMapping("/pending")
-    public Result<List<ConfessionPostDTO>> getPendingPosts(PageTool pageTool) {
+    public Result<List<ConfessionPostDTO>> getPendingPosts(@ModelAttribute PageTool pageTool) {
         Integer userId = JwtInterceptor.getUser().getId(); // 从 Thread 中获取用户ID
         List<ConfessionPostDTO> posts = confessionPostService.getPendingPosts(userId,pageTool);
         return Result.ok(posts);
@@ -112,6 +112,7 @@ public class ConfessionPostController {
         confessionPost.setImageURL(confessionRequest.getImageURL());
         confessionPost.setTitle(confessionRequest.getTitle());
         confessionPost.setTextContent(confessionRequest.getTextContent());
+        confessionPost.setIsAnonymous(confessionRequest.getIsAnonymous());
         confessionPost.setPostStatus(status);
 
         confessionPostService.save(confessionPost);

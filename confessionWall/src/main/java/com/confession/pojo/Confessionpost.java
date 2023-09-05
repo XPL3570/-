@@ -79,6 +79,12 @@ public class Confessionpost implements Serializable {
     private Integer postStatus;
 
     /**
+     * 发布状态，0表示待审核，1表示审核通过，2表示审核拒绝
+     */
+    @TableField("isAnonymous")
+    private Integer isAnonymous;
+
+    /**
      * 逻辑删除标志
      */
     @TableField("IsDeleted")

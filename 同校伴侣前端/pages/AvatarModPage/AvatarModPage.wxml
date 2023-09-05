@@ -1,7 +1,0 @@
-<view class="container">
-  <view class="avatar-container">
-    <image class="avatar" src="{{avatarUrl}}"></image>
-  </view>
-
-  <button class="upload-button green-button" bindtap="uploadAvatar">上传头像</button>
-</view>

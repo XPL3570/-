@@ -1,7 +1,12 @@
 .container {
 	background-color: #f5f5f5;
-	padding: 20rpx;
+	padding: 15rpx;
   }
-
+  .title {
+	text-align: center;
+	font-size: 44rpx;
+	margin-top: 15rpx;
+  }
+  
   
   
