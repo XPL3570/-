@@ -2,7 +2,7 @@
      <!-- 轮播图 -->
 	 <swiper swiperData="{{ swiperData }}" indicatorDots="{{ swiperOptions.indicatorDots }}" autoplay="{{ swiperOptions.autoplay }}" interval="{{ swiperOptions.interval }}" duration="{{ swiperOptions.duration }}"></swiper>
   <view class="title">{{title}}</view>
-
+	
   
 
 </view>
