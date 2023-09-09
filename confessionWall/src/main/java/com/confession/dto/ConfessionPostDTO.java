@@ -14,17 +14,21 @@ public class ConfessionPostDTO {
     private Integer id;
     private Integer wallId;
     private Integer userId;
+    private UserDTO userInfo;
     private String title;
     private String textContent;
     private List<String> imageURL;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime publishTime;
 
     private Integer postStatus;
     private Integer isAnonymous;
+
+    private List<CommentDTO> mainComments;
+    private List<CommentDTO> subComments;
 }
 

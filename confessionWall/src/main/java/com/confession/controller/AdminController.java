@@ -1,32 +1,32 @@
 package com.confession.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.confession.comm.RedisConstant;
 import com.confession.comm.Result;
 import com.confession.config.WallConfig;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
-import com.confession.mapper.ConfessionwallMapper;
 import com.confession.pojo.Confessionpost;
 import com.confession.request.ConfessionPostRequest;
 import com.confession.service.AdminService;
 import com.confession.service.ConfessionpostService;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-
 import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.util.concurrent.TimeUnit;
 
 import static com.confession.comm.ResultCodeEnum.CONTRIBUTE_OVER_LIMIT;
-import static com.confession.comm.ResultCodeEnum.DATA_ERROR;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author 作者
@@ -46,8 +46,12 @@ public class AdminController {
     @Resource
     private WallConfig wallConfig;
 
+    @Resource
+    private RedisTemplate redisTemplate;
+
     /**
-     *  发布投稿，直接通过
+     * 发布投稿，直接通过
+     *
      * @param confessionRequest
      * @return
      */
@@ -75,6 +79,12 @@ public class AdminController {
         confessionPost.setPostStatus(1); // 直接设置为审核通过
 
         confessionPostService.save(confessionPost);
+
+        //保存到redis
+        String key = RedisConstant.CONFESSION_PREFIX + confessionPost.getWallId();
+        ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
+        zSetOperations.add(key, confessionPost, confessionPost.getPublishTime().toEpochSecond(ZoneOffset.UTC));
+        redisTemplate.expire(key, 3, TimeUnit.DAYS);
 
         return Result.ok();
     }

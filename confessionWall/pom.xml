@@ -18,10 +18,20 @@
         <spring-boot.version>2.7.14</spring-boot.version>
         <mybatis-plus.version>3.4.3</mybatis-plus.version>
     </properties>
+
+<!--    redis配置-->
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
 
 
-
+        <!-- pool 对象池 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+        </dependency>
 
         <!--        请求参数校验-->
         <dependency>
@@ -30,12 +40,12 @@
             <version>3.0.0</version>
         </dependency>
 
-
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>1.2.83</version>
         </dependency>
+
 
         <!--添加 Alibaba 数据源-->
         <dependency>
@@ -44,6 +54,10 @@
             <version>1.1.20</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jdbc</artifactId>
+        </dependency>
 
         <dependency>
         <groupId>io.jsonwebtoken</groupId>

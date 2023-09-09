@@ -3,6 +3,7 @@ package com.confession.pojo;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 @Setter
 @Accessors(chain = true)
 @TableName("confessionpost")
+@ToString
 public class Confessionpost implements Serializable {
 
     private static final long serialVersionUID = 1L;

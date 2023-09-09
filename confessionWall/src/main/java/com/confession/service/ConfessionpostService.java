@@ -43,6 +43,15 @@ public interface ConfessionpostService extends IService<Confessionpost> {
      */
     List<ConfessionPostDTO> getPendingPosts(Integer userId, PageTool pageTool);
 
+    /**
+     * 查询内容以及评论
+     * @param wallId  墙id
+     * @param timestamp  查询这个时间戳之后的数据
+     * @param count  要查询几条
+     * @return
+     */
+    List<ConfessionPostDTO> getPostsAfterTimestamp(Integer wallId, Long timestamp, Integer count);
+
 
 
 }
