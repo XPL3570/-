@@ -71,13 +71,14 @@ public class ConfessionpostServiceImpl extends ServiceImpl<ConfessionpostMapper,
     public List<ConfessionPostDTO> getPostsAfterTimestamp(Integer wallId, Long timestamp, Integer count) {
         LambdaQueryWrapper<Confessionpost> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Confessionpost::getWallId, wallId)
-                .gt(Confessionpost::getPublishTime, LocalDateTime.ofEpochSecond(timestamp, 0, ZoneOffset.UTC))
+//                .gt(Confessionpost::getPublishTime, LocalDateTime.ofEpochSecond(timestamp, 0, ZoneOffset.UTC))
                 .eq(Confessionpost::getPostStatus, 1)
-                .orderByAsc(Confessionpost::getId)
+//                .orderByAsc(Confessionpost::getPublishTime)
+                .orderByAsc(Confessionpost::getId)  //todo 标注，是要按照时间来倒序查询的，为了测试
                 .last("LIMIT " + count);
 
         List<Confessionpost> list = confessionpostMapper.selectList(queryWrapper);
-        return list.stream().map(this::convertToDTO).collect(Collectors.toList());
+        return list.stream().map(this::convertToDTOAll).collect(Collectors.toList());
     }
 
 
@@ -100,6 +101,7 @@ public class ConfessionpostServiceImpl extends ServiceImpl<ConfessionpostMapper,
                 .collect(Collectors.toList());
     }
 
+    //处理投稿数据，不要评论
     private ConfessionPostDTO convertToDTO(Confessionpost post) {
         ConfessionPostDTO dto = new ConfessionPostDTO();
         dto.setId(post.getId());
@@ -110,8 +112,30 @@ public class ConfessionpostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         dto.setImageURL(Arrays.asList(post.getImageURL().split(";")));
         dto.setCreateTime(post.getCreateTime());
         dto.setPublishTime(post.getPublishTime());
-//        dto.setPostStatus(post.getPostStatus());  //发布状态，这里查询就是发布的，状态就是1  就不要了
         dto.setIsAnonymous(post.getIsAnonymous());
+        dto.setPostStatus(post.getPostStatus());  //发布状态，这里查询就是发布的，状态就是1  就不要了
+//        if (post.getIsAnonymous()==0){
+//            dto.setUserInfo(userService.getUserFromRedisOrDatabase(post.getUserId()));
+//
+//        }
+//        dto.setMainComments(commentService.viewRecordsOnId(post.getId(), true));
+//        dto.setSubComments(commentService.viewRecordsOnId(post.getId(), false));
+        return dto;
+    }
+    //处理投稿数据，所有
+    private ConfessionPostDTO convertToDTOAll(Confessionpost post) {
+        ConfessionPostDTO dto = this.convertToDTO(post);
+//        ConfessionPostDTO dto = new ConfessionPostDTO();
+//        dto.setId(post.getId());
+//        dto.setWallId(post.getWallId());
+//        dto.setUserId(post.getUserId());
+//        dto.setTitle(post.getTitle());
+//        dto.setTextContent(post.getTextContent());
+//        dto.setImageURL(Arrays.asList(post.getImageURL().split(";")));
+//        dto.setCreateTime(post.getCreateTime());
+//        dto.setPublishTime(post.getPublishTime());
+//        dto.setIsAnonymous(post.getIsAnonymous());
+
         if (post.getIsAnonymous()==0){
             dto.setUserInfo(userService.getUserFromRedisOrDatabase(post.getUserId()));
 

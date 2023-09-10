@@ -70,6 +70,9 @@ public class ImageController {
 
             // 获取图片后缀
             String fileExtension = getImageExtensionFromBase64(request.getBase64Image());
+            if(fileExtension==null||fileExtension==""){
+                fileExtension="png";
+            }
 
             // 根据日期和随机数生成文件名，并加上文件扩展名
             String fileName = generateFileName("."+fileExtension);
