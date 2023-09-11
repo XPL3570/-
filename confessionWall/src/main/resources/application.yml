@@ -52,5 +52,6 @@ wall:
     daily-post-limit: 10 #墙每天投稿上限数量
   user:
     daily-post-limit: 3
+    comment-limit: 3  #每天评论数量限制
 
 

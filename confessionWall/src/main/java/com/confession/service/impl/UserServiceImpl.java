@@ -108,9 +108,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 // 处理其他类型的值，或者抛出异常，取决于实际需求
             }
         }
-
         User dbUser = getById(userId);
-
         if (dbUser != null) {
             UserDTO userDTO = new UserDTO();
             userDTO.setUsername(dbUser.getUsername());

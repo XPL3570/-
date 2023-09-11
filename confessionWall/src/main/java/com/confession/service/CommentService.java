@@ -23,7 +23,7 @@ public interface CommentService extends IService<Comment> {
      * @param userId  评论人id
      * @return
      */
-    boolean  publishCommentReply(PostCommentRequest request,Integer userId);
+    Integer  publishCommentReply(PostCommentRequest request,Integer userId);
 
 
 

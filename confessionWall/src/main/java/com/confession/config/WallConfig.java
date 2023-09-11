@@ -13,4 +13,7 @@ public class WallConfig {
 
     @Value("${wall.user.daily-post-limit}")
     private int userDailyPostLimit;
+
+    @Value("${wall.user.comment-limit}")
+    private int userDailyCommentLimit;
 }
