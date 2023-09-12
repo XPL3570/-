@@ -2,6 +2,7 @@
 	"pages": [
 		"pages/index/index",
 		"pages/test/test",
+		"pages/czj/czj",
 		"pages/selectSchool/selectSchool",
 		"pages/selectSchool/registerSchool/registerSchool",
 		"pages/release/release",
