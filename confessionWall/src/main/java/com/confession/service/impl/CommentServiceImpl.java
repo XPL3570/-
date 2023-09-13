@@ -49,7 +49,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
         int count = commentMapper.getCommentCountByUserIdAndDate(userId, LocalDate.now());
         System.out.println(count);
-        if (count>wallConfig.getUserDailyCommentLimit()){  //判断是否超过每天评论限制
+        if (count>=wallConfig.getUserDailyCommentLimit()){  //判断是否超过每天评论限制
             throw new WallException(COMMENT_OVER_LIMIT);
         }
         Comment comment = new Comment();
