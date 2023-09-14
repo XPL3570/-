@@ -1,6 +1,7 @@
 package com.confession.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.confession.comm.PageTool;
 import com.confession.dto.CommentDTO;
 import com.confession.pojo.Comment;
 import com.confession.request.PostCommentRequest;
@@ -36,7 +37,11 @@ public interface CommentService extends IService<Comment> {
      */
     List<CommentDTO> viewRecordsOnId(Integer contentId,boolean isMain);
 
-
-
-
+    /**  查询用户半年内的发布的评论的回复
+     *
+     * @param userId
+     * @param pageTool
+     * @return
+     */
+    List<CommentDTO> getRepliesToUserComments(Integer userId, PageTool pageTool);
 }

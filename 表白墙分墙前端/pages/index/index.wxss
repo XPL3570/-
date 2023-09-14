@@ -7,6 +7,121 @@
 	font-size: 44rpx;
 	margin-top: 15rpx;
   }
-  
+	
+	.swiper{
+    padding: 0 10rpx;
+}
+image{
+	width: 100%;
+}
+
+.zj{
+	padding: 10rpx;
+}
+.userinfo{
+	display: flex;
+	font-size:32rpx;
+	align-items: center; /* 垂直居中对齐 */
+	height: 70rpx; /* 自定义高度 */
+	margin-left: 30rpx;
+}
+.nimin {
+  text-align: center;
+  font-size: 36rpx;
+  flex: 1;
+}
+.avatar {
+  width: 65rpx;
+  height: 65rpx;
+	border-radius: 50%;
+	margin-right: 20rpx;
+}
+
+.comment-user{
+	display: flex;
+	font-size:31rpx;
+	align-items: center; /* 垂直居中对齐 */
+	height: 40rpx; /* 自定义高度 */
+	margin-left: 0rpx;
+	margin-top: 8rpx;
+}
+.comment-avatar {
+  width: 57rpx;
+  height: 57rpx;
+	border-radius: 50%;
+	margin-right: 20rpx;
+}
+
+.comment-container {
+	display: flex;
+	flex-wrap: nowrap ;
+	align-items: flex-start;
+	height: 80rpx;
+}
+
+.input-container {
+  width: 80%;
+}
+.image-zj{
+	display: flex;
+	justify-content: flex-start;
+	height: 157rpx;
+}
+
+.button-container {	
+  margin-top: 10rpx;
+}
+
+.comment-main{
+	font-size: 32rpx;
+	margin-left: 18rpx;
+	padding: 17rpx;
+	padding-top: 5rpx;
+}
+
+.comment-avatar-zj{
+	width: 50rpx;
+  height: 50rpx;
+	border-radius: 50%;
+	margin-right: 20rpx;
+}
+
+.comment-hf{
+	font-size: 24prx;
+	opacity: 0.55;
+	margin-left: 20rpx;
+}
+
+.comment-time{
+	padding-left: 70rpx;
+	font-size: 25rpx;
+	opacity: 0.5;
+}
+
+.comment-zj{
+	font-size: 30rpx;
+	opacity: 0.9;
+}
+
+.comment-sub{
+	font-size: 30rpx;
+	padding: 19rpx;
+	height: 44rpx;
+	margin-left: 50rpx;
+}
+
+.popup-content {
+  display: flex;
+	align-items: center;
+}
+
+.popup-input {
+  flex-grow: 1;
+  margin-right: 10rpx;
+}
+.popup-buttom{
+	padding-right: 20rpx;
+}
+
   
   

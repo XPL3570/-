@@ -1,13 +1,17 @@
 package com.confession.controller;
 
 
+import com.confession.comm.PageTool;
 import com.confession.comm.Result;
+import com.confession.dto.CommentDTO;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
+import com.confession.pojo.Comment;
 import com.confession.request.PostCommentRequest;
 import com.confession.service.CommentService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * <p>
@@ -49,6 +53,17 @@ public class CommentController {
         } else {
             return Result.fail();
         }
+    }
+
+    /**
+     * 查询用户评论回复 -半年内
+     */
+    @GetMapping("repliesWithComments")
+    public Result repliesWithComments(@ModelAttribute PageTool pageTool){
+        Integer userId = JwtInterceptor.getUser().getId();
+        List<CommentDTO> comments = commentService.getRepliesToUserComments(userId,pageTool);
+
+        return Result.ok(comments);
     }
 
 

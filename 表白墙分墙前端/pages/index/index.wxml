@@ -1,8 +1,86 @@
-<view class="container">
-     <!-- 轮播图 -->
-	 <swiper swiperData="{{ swiperData }}" indicatorDots="{{ swiperOptions.indicatorDots }}" autoplay="{{ swiperOptions.autoplay }}" interval="{{ swiperOptions.interval }}" duration="{{ swiperOptions.duration }}"></swiper>
-  <view class="title">{{title}}</view>
+<!-- 在页面内添加对应的节点 -->
+<van-notify id="van-notify" />
+
+<van-notice-bar
+  left-icon="volume-o"
+  text="欢迎来到阿巴阿巴表白墙！        您的投稿是我不懈的动力，"
+/>
+<view class="swiper">
+    <swiper class="myswiper" indicator-dots="{{ true }}" autoplay="{{ true }}" interval="{{ 2000 }}" duration="{{ 1000 }}" indicator-color="#843454" indicator-active-color="#f56554">
+        <block wx:for="{{ swiperData }}" wx:key="index">
+            <swiper-item>
+                <image mode="widthFix" src="{{ item }}"> sssss</image>
+            </swiper-item>
+        </block>
+    </swiper>
+		<view class="title">{{title}}</view>
+		<view wx:for="{{confession}}" wx:key="index" class="zj" wx:for-index="outIndex">
+	<view slot="title" class="userinfo">
+		<block wx:if="{{!item.userInfo.avatarURL || !item.userInfo.username}}">
+			<view class="nimin">匿名投稿</view>
+		</block>
+		<block wx:else>
+			<image class="avatar" src="{{item.userInfo.avatarURL}}"></image>
+			<text>{{item.userInfo.username}}</text>
+		</block>
+	</view>
+	<van-cell title="{{item.title}}" size="large" label="{{item.publishTime}}" />
+	<view class="comment-main">{{item.textContent}}</view>
+	<van-cell wx:if="{{item.imageURL[0]}}">
+		<view class="image-zj">
+			<block wx:for="{{item.imageURL}}" wx:key="index">
+				<van-image width="157rpx" height="157rpx" fit="cover" src="{{item}}" bindtap="handleImageTap" data-out-index="{{outIndex}}" data-image="{{item}}" />
+			</block>
+		</view>
+	</van-cell>
+	<view class="comment-container">
+		<view class="input-container">
+			<!-- 评论功能 -->
+			<van-field class="comment-input" value="{{ item.submitMainComment }}" placeholder="请输入评论" data-out-index="{{outIndex}}" bind:input="handleInput"></van-field>
+		</view>
+		<view class="button-container">
+			<van-button type="primary" plain round size="small" data-out-index="{{outIndex}}" bindtap="handleSubmit">提交</van-button>
+		</view>
+	</view>
+	<!-- 展示主评论 -->
+	<view wx:for="{{item.mainComments}}" wx:key="index" wx:for-index="zjIndex">
+		<view>
+			<van-cell value="{{item.commentTime}}" is-link="{{confession[outIndex].subCommentsExist[zjIndex]===true}}" arrow-direction="{{item.commentContentVisible ? 'up' : 'down'}}" bind:tap="expandComments" data-out-index="{{outIndex}}" data-zj-index="{{zjIndex}}">
+
+				<view slot="title" class="comment-user">
+					<image class="comment-avatar" src="{{item.avatarURL}}"></image>
+					<span>{{item.userName}}</span>
+				</view>
+			</van-cell>
+			<!-- 点击这里回复主评论  拿到主评论的在mainComments里面的下标-->
+			<view class="comment-main" data-out-index="{{outIndex}}" data-zj-id="{{item.id}}" data-reply-name="{{item.userName}}"  data-main-index="{{zjIndex}}" catchtap="handleTap">{{item.commentContent}}</view>
+
 	
-  
+			<!-- 展示子评论 -->
+			<view wx:if="{{item.commentContentVisible}}" style="margin-left: 30rpx;">
+				<view wx:for="{{confession[outIndex].mainComments[zjIndex].showComments}}" wx:key="index">
+					<view class="comment-user">
+						<image class="comment-avatar-zj" src="{{item.avatarURL}}"></image>
+						<span class="comment-zj">{{item.userName}}</span>
+						<span class="comment-hf">回复：</span>
+						<span class="comment-zj">{{item.parentName}}</span>
+					</view>
+					<span class="comment-time">{{item.commentTime}}</span>
+					<!-- 这里是子评论回复 -->
+					<view class="comment-sub"  data-reply-name="{{item.userName}}" data-zj-id="{{item.id}}" data-out-index="{{outIndex}}"  data-main-index="{{zjIndex}}"  catchtap="handleTap" >{{item.commentContent}}</view>
+				</view>
+			</view>
+		</view>
+	</view>
+</view>
+
+		<!-- 弹出层回复界面 -->
+		<van-popup show="{{showPopup}}" bind:close="onClose" position="bottom" overlay="true" close-on-click-overlay="{{true}}" safe-area-inset-bottom="{{true}}" >
+				<view class="popup-content">
+					<van-field class="popup-input" value="{{replyContent}}"  bind:change="replyChange" placeholder="回复 {{replyName}}"></van-field>
+					<van-button class="popup-buttom" plain hairline type="primary" size="small" bind:tap="onConfirm">发送评论</van-button>
+				</view>
+			</van-popup>
 
 </view>
+

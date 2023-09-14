@@ -1,7 +1,9 @@
 package com.confession.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.confession.comm.PageTool;
 import com.confession.config.WallConfig;
 import com.confession.dto.CommentDTO;
 import com.confession.dto.UserDTO;
@@ -21,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.confession.comm.ResultCodeEnum.COMMENT_OVER_LIMIT;
-import static com.confession.comm.ResultCodeEnum.CONTRIBUTE_OVER_LIMIT;
 
 /**
  * <p>
@@ -49,7 +50,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
         int count = commentMapper.getCommentCountByUserIdAndDate(userId, LocalDate.now());
         System.out.println(count);
-        if (count>=wallConfig.getUserDailyCommentLimit()){  //判断是否超过每天评论限制
+        if (count >= wallConfig.getUserDailyCommentLimit()) {  //判断是否超过每天评论限制
             throw new WallException(COMMENT_OVER_LIMIT);
         }
         Comment comment = new Comment();
@@ -68,7 +69,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Override
     public List<CommentDTO> viewRecordsOnId(Integer contentId, boolean isMain) {
         LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Comment::getConfessionPostReviewId,contentId);
+        wrapper.eq(Comment::getConfessionPostReviewId, contentId);
         List<Comment> list = commentMapper.selectList(wrapper);
         List<CommentDTO> comments = new ArrayList<>();
         for (Comment comment : list) {
@@ -80,6 +81,27 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             if ((isMain && comment.getParentCommentId() == null) || (!isMain && comment.getParentCommentId() != null)) {
                 comments.add(commentDTO);
             }
+        }
+        return comments;
+    }
+
+    @Override
+    public List<CommentDTO> getRepliesToUserComments(Integer userId, PageTool pageTool) {
+        Page<Comment> page = new Page<>(pageTool.getPage(), pageTool.getLimit());
+        LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.inSql(Comment::getParentCommentId, "SELECT Id FROM comment WHERE userId = " + userId)
+                .ge(Comment::getCommentTime, LocalDateTime.now().minusMonths(6))
+                .ne(Comment::getUserId, userId)
+                .orderByDesc(Comment::getCommentTime);
+        List<Comment> list = commentMapper.selectPage(page, queryWrapper).getRecords();
+        List<CommentDTO> comments = new ArrayList<>();
+        for (Comment comment : list) {
+            UserDTO userDTO = userService.getUserFromRedisOrDatabase(comment.getUserId());
+            CommentDTO commentDTO = new CommentDTO();
+            BeanUtils.copyProperties(comment, commentDTO);
+            commentDTO.setUserName(userDTO.getUsername());
+            commentDTO.setAvatarURL(userDTO.getAvatarURL());
+            comments.add(commentDTO);
         }
         return comments;
     }

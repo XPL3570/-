@@ -2,7 +2,6 @@
 	"pages": [
 		"pages/index/index",
 		"pages/test/test",
-		"pages/czj/czj",
 		"pages/selectSchool/selectSchool",
 		"pages/selectSchool/registerSchool/registerSchool",
 		"pages/release/release",
@@ -10,7 +9,9 @@
 		"pages/personal/avatarMod/avatarMod",
 		"pages/personal/nameMod/nameMod",
 		"pages/personal/submitRecord/submitRecord",
-		"pages/personal/submitApplication/submitApplication"
+		"pages/personal/submitApplication/submitApplication",
+		"pages/personal/administratorReview/administratorReview",
+		"pages/personal/commentResponse/commentResponse"
 	],
 	"window": {
 		"backgroundTextStyle": "light",
@@ -35,7 +36,7 @@
 			},
 			{
 				"pagePath": "pages/release/release",
-				"text": "表白",
+				"text": "投稿",
 				"iconPath": "/image/icon_添加.png",
 				"selectedIconPath": "image/icon_添加 (1).png"
 			},

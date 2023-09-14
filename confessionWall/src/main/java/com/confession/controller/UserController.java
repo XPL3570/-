@@ -11,6 +11,7 @@ import com.confession.request.LoginRequest;
 import com.confession.request.RegisterRequest;
 import com.confession.request.UpdateAvatarRequest;
 import com.confession.request.UpdateNameRequest;
+import com.confession.service.AdminService;
 import com.confession.service.ConfessionwallService;
 import com.confession.service.SchoolService;
 import com.confession.service.UserService;
@@ -38,6 +39,9 @@ public class UserController {
     private SchoolService schoolService;
 
     @Resource
+    private AdminService adminService;
+
+    @Resource
     private ConfessionwallService confessionwallService;
 
     /** 这里登录会查询学校id绑定一个墙id
@@ -58,13 +62,14 @@ public class UserController {
         }
         //查询该学校下的一个墙id，如果有多个就返回第一个
         Confessionwall wall = confessionwallService.selectSchoolInWallOne(user.getSchoolId());
-
         String token = JwtConfig.getJwtToken(user);
+        boolean isAdmin = adminService.isAdmin(user.getId(), wall.getId());
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("token", token);
         responseMap.put("userInfo", user);
         responseMap.put("wall",wall);
-        System.out.println(token);
+        responseMap.put("isAdmin",isAdmin);
+//        System.out.println(token);
         return Result.ok(responseMap);
 
     }

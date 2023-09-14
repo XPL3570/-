@@ -32,6 +32,8 @@ CREATE TABLE School (
                         Description TEXT COMMENT '描述内容',
                         CreatorId INT COMMENT '创建者ID',
                         CreateTime DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                        CarouselImages TEXT COMMENT '轮播图图片地址',
+                        Prompt VARCHAR(255) comment '学校提示语',
                         IsDeleted BOOLEAN DEFAULT FALSE COMMENT '逻辑删除标志'
 );
 INSERT INTO School (SchoolName, AvatarURL, Description, CreatorId, CreateTime)
@@ -90,7 +92,7 @@ CREATE TABLE Comment (
                          ConfessionPostReviewId INT COMMENT '关联的表白墙发布内容表ID',
                          ParentCommentId INT COMMENT '父级评论ID',
                          UserId INT COMMENT '用户ID',
-                         CommentContent TEXT COMMENT '评论内容',
+                         CommentContent VARCHAR(255) COMMENT '评论内容',
                          CommentTime DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '评论时间',
                          IsDeleted BOOLEAN DEFAULT FALSE COMMENT '逻辑删除标志'
 );

@@ -61,6 +61,18 @@ public class School implements Serializable {
     private LocalDateTime createTime;
 
     /**
+     * 轮播图地址
+     */
+    @TableField("CarouselImages")
+    private String carouselImages;
+
+    /**
+     * 提示语
+     */
+    @TableField("Prompt")
+    private String prompt;
+
+    /**
      * 逻辑删除标志
      */
     @TableField("IsDeleted")

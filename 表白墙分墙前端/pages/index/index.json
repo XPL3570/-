@@ -1,6 +1,18 @@
 {
 	"usingComponents": {
-		"swiper":"../../components/swiper/swiper",
-		"van-skeleton": "@vant/weapp/skeleton/index"
-	  }
-  }
+		"van-notice-bar": "@vant/weapp/notice-bar/index",
+		"van-cell": "@vant/weapp/cell/index",
+		"van-cell-group": "@vant/weapp/cell-group/index",
+		"van-collapse": "@vant/weapp/collapse/index",
+		"van-collapse-item": "@vant/weapp/collapse-item/index",
+		"van-panel": "@vant/weapp/panel/index",
+		"van-field": "@vant/weapp/field/index",
+		"van-image": "@vant/weapp/image/index",
+		"van-divider": "@vant/weapp/divider/index",
+		"van-button": "@vant/weapp/button/index",
+		"van-popup": "@vant/weapp/popup/index",
+		"van-notify": "@vant/weapp/notify/index"
+	},
+	"onReachBottom": "onReachBottom",
+	"enablePullDownRefresh": true
+}
