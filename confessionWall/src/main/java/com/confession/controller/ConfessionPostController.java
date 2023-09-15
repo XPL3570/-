@@ -10,8 +10,10 @@ import com.confession.globalConfig.exception.WallException;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
 import com.confession.mapper.ConfessionwallMapper;
 import com.confession.pojo.Confessionpost;
+import com.confession.request.AuditRequest;
 import com.confession.request.ConfessionPostRequest;
 import com.confession.request.ReadConfessionRequest;
+import com.confession.service.AdminService;
 import com.confession.service.ConfessionpostService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -28,8 +30,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static com.confession.comm.ResultCodeEnum.CONTRIBUTE_OVER_LIMIT;
-import static com.confession.comm.ResultCodeEnum.DATA_ERROR;
+import static com.confession.comm.ResultCodeEnum.*;
 
 
 /**
@@ -50,6 +51,9 @@ public class ConfessionPostController {
 
     @Resource
     private ConfessionwallMapper confessionwallMapper;
+
+    @Resource
+    private AdminService adminService;
 
     @Resource
     private WallConfig wallConfig;
@@ -179,6 +183,32 @@ public class ConfessionPostController {
         Integer userId = JwtInterceptor.getUser().getId(); // 从 Thread 中获取用户ID
         List<ConfessionPostDTO> posts = confessionPostService.getPendingPosts(userId,pageTool);
         return Result.ok(posts);
+    }
+
+    /**
+     * 查询表白墙下要审核的记录
+     */
+    @GetMapping("admin/pending")
+    public Result getPosts(@RequestParam Integer wallId,@ModelAttribute PageTool pageTool){
+        Integer id = JwtInterceptor.getUser().getId();
+
+        boolean admin = adminService.isAdmin(id, wallId);
+        if (!admin){
+            throw new WallException(LOGIN_ACL);
+        }
+        return Result.ok(confessionPostService.getPendingPostsAdmin(wallId, pageTool));
+    }
+
+    /** 审核请求  这个接口没有超级管理员特权
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("admin/submissionReview")
+    public Result submissionReview(@RequestBody AuditRequest request){
+        Integer id = JwtInterceptor.getUser().getId();
+        confessionPostService.submissionReview(id,request);
+        return Result.ok();
     }
 
 }

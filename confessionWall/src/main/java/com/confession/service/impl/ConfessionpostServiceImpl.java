@@ -1,24 +1,32 @@
 package com.confession.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.confession.comm.PageTool;
 import com.confession.dto.ConfessionPostDTO;
+import com.confession.globalConfig.exception.WallException;
+import com.confession.globalConfig.interceptor.JwtInterceptor;
 import com.confession.mapper.ConfessionpostMapper;
 import com.confession.pojo.Confessionpost;
+import com.confession.request.AuditRequest;
 import com.confession.request.ConfessionPostRequest;
+import com.confession.service.AdminService;
 import com.confession.service.CommentService;
 import com.confession.service.ConfessionpostService;
 import com.confession.service.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.confession.comm.ResultCodeEnum.LOGIN_ACL;
 
 /**
  * <p>
@@ -39,6 +47,9 @@ public class ConfessionpostServiceImpl extends ServiceImpl<ConfessionpostMapper,
 
     @Resource
     private CommentService commentService;
+
+    @Resource
+    private AdminService adminService;
 
     @Override
     public int getPostCountByUserIdAndDate(Integer userId, LocalDate date) {
@@ -63,7 +74,6 @@ public class ConfessionpostServiceImpl extends ServiceImpl<ConfessionpostMapper,
 
 
     @Override
-
     public List<ConfessionPostDTO> getPostsAfterTimestamp(Integer wallId, Long timestamp, Integer count) {
         LambdaQueryWrapper<Confessionpost> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Confessionpost::getWallId, wallId)
@@ -75,6 +85,34 @@ public class ConfessionpostServiceImpl extends ServiceImpl<ConfessionpostMapper,
 
         List<Confessionpost> list = confessionpostMapper.selectList(queryWrapper);
         return list.stream().map(this::convertToDTOAll).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ConfessionPostDTO> getPendingPostsAdmin(Integer wallId,PageTool pageTool) {
+        LambdaQueryWrapper<Confessionpost> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Confessionpost::getPostStatus, 0);
+        // 设置分页信息
+        Page<Confessionpost> page = new Page<>(pageTool.getPage(), pageTool.getLimit());
+
+        IPage<Confessionpost> iPage = confessionpostMapper.selectPage(page, wrapper);
+
+        return iPage.getRecords().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void submissionReview(Integer userId, AuditRequest request) {
+        boolean admin = adminService.isAdmin(userId, request.getWallId());
+        if (!admin){
+            throw new WallException(LOGIN_ACL);
+        }
+        LambdaUpdateWrapper<Confessionpost> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(Confessionpost::getId, request.getId())
+                .set(Confessionpost::getPostStatus, request.getPostStatus());
+        int update = confessionpostMapper.update(null, updateWrapper);
+        System.out.println(update);
+
     }
 
 

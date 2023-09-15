@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.confession.comm.PageTool;
 import com.confession.dto.ConfessionPostDTO;
 import com.confession.pojo.Confessionpost;
+import com.confession.request.AuditRequest;
 import com.confession.request.ConfessionPostRequest;
 
 import java.time.LocalDate;
@@ -53,5 +54,16 @@ public interface ConfessionpostService extends IService<Confessionpost> {
     List<ConfessionPostDTO> getPostsAfterTimestamp(Integer wallId, Long timestamp, Integer count);
 
 
+    /**
+     * 获取墙内要审核的投稿
+     * @param wallId
+     */
+    List<ConfessionPostDTO> getPendingPostsAdmin(Integer wallId,PageTool pageTool);
 
+    /**
+     * 修改投稿的状态
+     * @param id  用户id
+     * @param request 投稿id和要修改的状态
+     */
+    void submissionReview(Integer userId, AuditRequest request);
 }
