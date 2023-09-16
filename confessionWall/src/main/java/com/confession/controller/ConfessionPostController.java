@@ -106,8 +106,6 @@ public class ConfessionPostController {
     }
 
 
-
-
     /**
      *   提交投稿，每个人限制每天投稿次数  todo 这里没有牵扯到缓存
      * @param confessionRequest
@@ -116,7 +114,7 @@ public class ConfessionPostController {
     @PostMapping("submit")
     public Result submitConfessionWall(@RequestBody ConfessionPostRequest confessionRequest) {
         Integer userId = JwtInterceptor.getUser().getId();
-        Integer schoolId = JwtInterceptor.getUser().getSchoolId();
+
 
         //判断该用户每天的投稿有没有超过限制
         int count = confessionPostService.getPostCountByUserIdAndDate(userId, LocalDate.now());
@@ -124,11 +122,12 @@ public class ConfessionPostController {
             throw new WallException(CONTRIBUTE_OVER_LIMIT);
         }
 
-        //查询用户绑定的学校id是否和墙id是否对应，这里只是为了安全，反正这个接口调用次数有限
-        Integer wallInSchool = confessionwallMapper.isWallInSchool(schoolId, confessionRequest.getWallId());
-        if (wallInSchool == null) {
-            throw new WallException(DATA_ERROR);
-        }
+        //查询用户绑定的学校id是否和墙id是否对应，这里只是为了安全，反正这个接口调用次数有限  暂时不要，浪费性能，目前user里面只放id
+//        Integer schoolId = JwtInterceptor.getUser().getSchoolId();
+//        Integer wallInSchool = confessionwallMapper.isWallInSchool(schoolId, confessionRequest.getWallId());
+//        if (wallInSchool == null) {
+//            throw new WallException(DATA_ERROR);
+//        }
 
         boolean hasImage = (confessionRequest.getImageURL() != null && !confessionRequest.getImageURL().isEmpty());
         int status = 0;

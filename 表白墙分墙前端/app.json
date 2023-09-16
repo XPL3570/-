@@ -11,7 +11,8 @@
 		"pages/personal/submitRecord/submitRecord",
 		"pages/personal/submitApplication/submitApplication",
 		"pages/personal/administratorReview/administratorReview",
-		"pages/personal/commentResponse/commentResponse"
+		"pages/personal/commentResponse/commentResponse",
+		"pages/loveWall/loveWall"
 	],
 	"window": {
 		"backgroundTextStyle": "light",

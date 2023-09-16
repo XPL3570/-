@@ -10,15 +10,8 @@
 		"miniprogram": {
 			"list": [
 				{
-					"name": "评论回复",
-					"pathName": "pages/personal/commentResponse/commentResponse",
-					"query": "",
-					"launchMode": "default",
-					"scene": null
-				},
-				{
-					"name": "评论回复-弹出层",
-					"pathName": "pages/czj/czj",
+					"name": "",
+					"pathName": "pages/loveWall/loveWall",
 					"query": "",
 					"launchMode": "default",
 					"scene": null
