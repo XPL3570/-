@@ -17,6 +17,7 @@ import com.confession.service.AdminService;
 import com.confession.service.ConfessionpostService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -74,7 +75,7 @@ public class ConfessionPostController {
         String key=RedisConstant.CONFESSION_PREFIX+request.getWallId();
         Set<Object> pageData = zSetOperations.rangeByScore(key, startTimestamp, endTimestamp);
 
-        System.out.println(pageData);
+//        System.out.println(pageData);
 
         if (pageData != null && !pageData.isEmpty()) {
             List<Object> result;
@@ -204,7 +205,7 @@ public class ConfessionPostController {
      * @return
      */
     @PostMapping("admin/submissionReview")
-    public Result submissionReview(@RequestBody AuditRequest request){
+    public Result submissionReview(@RequestBody @Validated AuditRequest request){
         Integer id = JwtInterceptor.getUser().getId();
         confessionPostService.submissionReview(id,request);
         return Result.ok();

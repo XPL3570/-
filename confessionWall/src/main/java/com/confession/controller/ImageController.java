@@ -4,6 +4,7 @@ import com.confession.comm.Result;
 import com.confession.request.DeleteImageRequest;
 import com.confession.request.UploadImageRequest;
 import org.springframework.util.Base64Utils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,7 +25,7 @@ public class ImageController {
     private static final String DOMAIN_NAME_ADDRESS="http://127.0.0.1:2204/upload/";  //后面可以改成读取配置文件，设置成域名
 
     @PostMapping("/deleteImage")
-    public Result deleteImage(@RequestBody DeleteImageRequest request) {
+    public Result deleteImage(@RequestBody @Validated DeleteImageRequest request) {
         try {
             // 提取图片的相对路径或文件名
             String imagePath = getImagePathFromUrl(request.getDeleteUrl());

@@ -8,6 +8,7 @@ import com.confession.globalConfig.interceptor.JwtInterceptor;
 import com.confession.pojo.Comment;
 import com.confession.request.PostCommentRequest;
 import com.confession.service.CommentService;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -45,7 +46,7 @@ public class CommentController {
      * @return
      */
     @PostMapping("publishReply")
-    public Result publishReply(@RequestBody PostCommentRequest request) {
+    public Result publishReply(@RequestBody @Validated PostCommentRequest request) {
         Integer id = JwtInterceptor.getUser().getId();
         Integer commentId = commentService.publishCommentReply(request, id);
         if (commentId!=null) {

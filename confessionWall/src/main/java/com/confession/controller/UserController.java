@@ -15,6 +15,7 @@ import com.confession.service.AdminService;
 import com.confession.service.ConfessionwallService;
 import com.confession.service.SchoolService;
 import com.confession.service.UserService;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -50,7 +51,10 @@ public class UserController {
      * @return token和userInfo和墙id
      */
     @PostMapping("login")
-    public Result login(@RequestBody LoginRequest request) {
+    public Result login(@RequestBody  LoginRequest request) {
+        if (request.getCode()==null||request.getCode()==""){
+            throw new WallException("code不能是null", 201);
+        }
         String openid = userService.codeByOpenid(request.getCode());
         if (openid == null) {
             throw new WallException("获取openid失败", 244);
@@ -69,7 +73,7 @@ public class UserController {
         responseMap.put("userInfo", user);
         responseMap.put("wall",wall);
         responseMap.put("isAdmin",isAdmin);
-//        System.out.println(token);
+        System.out.println("token="+token);
         return Result.ok(responseMap);
 
     }
@@ -118,13 +122,13 @@ public class UserController {
 
     @PostMapping("/avatar")
     public Result updateAvatar(HttpServletRequest req,
-                               @RequestBody UpdateAvatarRequest request) {
+                               @RequestBody @Validated UpdateAvatarRequest request) {
         return updateUserAttribute(req, "avatar", request.getAvatarUrl());
     }
 
     @PostMapping("/name")
     public Result updateName(HttpServletRequest req,
-                                     @RequestBody UpdateNameRequest request) {
+                                     @RequestBody @Validated UpdateNameRequest request) {
         return updateUserAttribute(req, "name", request.getUsername());
     }
 

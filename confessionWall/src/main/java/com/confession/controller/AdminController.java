@@ -12,6 +12,7 @@ import com.confession.service.AdminService;
 import com.confession.service.ConfessionpostService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,7 +57,7 @@ public class AdminController {
      * @return
      */
     @PostMapping("/submit")
-    public Result submitConfessionPostAsAdmin(@RequestBody ConfessionPostRequest confessionRequest) {
+    public Result submitConfessionPostAsAdmin(@RequestBody @Validated ConfessionPostRequest confessionRequest) {
         Integer userId = JwtInterceptor.getUser().getId();
 
         // 校验管理员身份
