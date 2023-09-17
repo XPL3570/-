@@ -2,9 +2,7 @@ package com.confession.request;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 @Data
 public class LotteryRequest {
@@ -20,6 +18,8 @@ public class LotteryRequest {
      * 性别 0男   1女
      */
     @NotNull(message = "性别不能为空")
+    @Min(value = 0, message = "性别必须是0或1")
+    @Max(value = 1, message = "性别必须是0或1")
     private Integer gender;
 
     /**

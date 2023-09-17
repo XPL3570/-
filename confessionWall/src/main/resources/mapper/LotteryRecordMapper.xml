@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.confession.mapper.LotteryRecordMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="LotteryRecordMap" type="com.confession.pojo.LotteryRecord">
+        <id property="id" column="Id" />
+        <result property="lotteryId" column="LotteryId" />
+        <result property="userId" column="UserId" />
+        <result property="drawAt" column="DrawAt" />
+    </resultMap>
+
+    <select id="selectLotteriesByUserId" resultMap="LotteryRecordMap">
+        SELECT *
+        FROM lotteryrecord
+        WHERE UserId = #{userId}
+    </select>
+
+    <select id="countDailyRecords" resultType="int">
+        SELECT COUNT(*)
+        FROM LotteryRecord
+        WHERE UserId = #{userId}
+          AND DrawAt >= CURDATE()
+    </select>
+
+    <select id="countMonthlyRecords" resultType="int">
+        SELECT COUNT(*)
+        FROM LotteryRecord
+        WHERE UserId = #{userId}
+          AND DrawAt >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+    </select>
+
+    <select id="countYearlyRecords" resultType="int">
+        SELECT COUNT(*)
+        FROM LotteryRecord
+        WHERE UserId = #{userId}
+          AND DrawAt >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+    </select>
+
+    <select id="countTotalRecords" resultType="int">
+        SELECT COUNT(*)
+        FROM LotteryRecord
+        WHERE UserId = #{userId}
+    </select>
+
+</mapper>

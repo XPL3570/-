@@ -53,5 +53,12 @@ wall:
   user:
     daily-post-limit: 3
     comment-limit: 3  #每天评论数量限制
+  lottery:   #恋爱墙投递和读取配置   只能选择一个  投递和拿的限制都是一样的
+    strategy: ONCE    # YEARLY, MONTHLY, DAILY, ONCE 其中之一  ONCE是一共只能放的
+    limit:    #次数限制
+      daily: 2     #天次数
+      yearly: 2   #年次数
+      monthly: 3   #月次数
+      total: 20   #总次数
 
 

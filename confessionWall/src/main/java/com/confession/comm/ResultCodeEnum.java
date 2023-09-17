@@ -26,6 +26,8 @@ public enum ResultCodeEnum {
     REGISTER_MOBLE_ERROR(213, "手机号已被使用"),
     LOGIN_AURH(214, "需要登录"),
     LOGIN_ACL(215, "没有权限"),
+    SUBMISSION_EXCEEDS_LIMIT(238,"放入恋爱箱超过限制，请稍后重试"),
+    WITHDRAWAL_EXCEEDS_LIMIT(239,"抽纸条数量超过限制，请稍后重试"),
     ;
 
     private Integer code;
