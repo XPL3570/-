@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.confession.mapper.LotteryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.confession.pojo.Lottery">
+        <id column="Id" property="id" />
+        <result column="SchoolId" property="schoolId" />
+        <result column="UserId" property="userId" />
+        <result column="ImageUrl" property="imageUrl" />
+        <result column="ContactInfo" property="contactInfo" />
+        <result column="Introduction" property="introduction" />
+        <result column="Gender" property="gender" />
+        <result column="CreatedAt" property="createdAt" />
+        <result column="DrawCount" property="drawCount" />
+        <result column="IsDeleted" property="deleted" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        Id, SchoolId, UserId, ImageUrl, ContactInfo, Introduction,Gender, CreatedAt, DrawCount, IsDeleted
+    </sql>
+
+    <!-- 查询过去一年该用户的记录数 -->
+    <select id="countYearlyRecords" resultType="int">
+        SELECT COUNT(*)
+        FROM Lottery
+        WHERE UserId = #{userId}
+          AND CreatedAt >= DATE_SUB(NOW(), INTERVAL 1 YEAR)
+          AND IsDeleted = 0
+    </select>
+
+    <!-- 查询过去一个月该用户的记录数 -->
+    <select id="countMonthlyRecords" resultType="int">
+        SELECT COUNT(*)
+        FROM Lottery
+        WHERE UserId = #{userId}
+          AND CreatedAt >= DATE_SUB(NOW(), INTERVAL 1 MONTH)
+          AND IsDeleted = 0
+    </select>
+
+    <!-- 查询过去一天该用户的记录数 -->
+    <select id="countDailyRecords" resultType="int">
+        SELECT COUNT(*)
+        FROM Lottery
+        WHERE UserId = #{userId}
+          AND CreatedAt >= DATE_SUB(NOW(), INTERVAL 1 DAY)
+          AND IsDeleted = 0
+    </select>
+
+    <!-- 查询该用户的总记录数 -->
+    <select id="countTotalRecords" resultType="int">
+        SELECT COUNT(*)
+        FROM Lottery
+        WHERE UserId = #{userId}
+          AND IsDeleted = 0
+    </select>
+
+
+</mapper>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.confession.mapper.UserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.confession.pojo.User">
+        <id column="Id" property="id" />
+        <result column="Username" property="username" />
+        <result column="SchoolId" property="schoolId" />
+        <result column="OpenId" property="openId" />
+        <result column="CreateTime" property="createTime" />
+        <result column="UpdateTime" property="updateTime" />
+        <result column="WXAccount" property="wXAccount" />
+        <result column="Gender" property="gender" />
+        <result column="AvatarURL" property="avatarURL" />
+        <result column="Status" property="status" />
+        <result column="IsDeleted" property="deleted" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        Id, Username, SchoolId, OpenId, CreateTime, UpdateTime, WXAccount, Gender, AvatarURL, Status,IsDeleted
+    </sql>
+
+</mapper>

@@ -1,0 +1,12 @@
+{
+	"navigationBarTitleText": "投稿审核",
+		"usingComponents": {
+		"van-cell": "@vant/weapp/cell/index",
+	  "van-image": "@vant/weapp/image/index",
+		"van-divider": "@vant/weapp/divider/index",
+	"van-button": "@vant/weapp/button/index",
+	"van-dialog": "@vant/weapp/dialog/index"
+	},
+	"onReachBottom": "onReachBottom",
+    "enablePullDownRefresh": true
+}

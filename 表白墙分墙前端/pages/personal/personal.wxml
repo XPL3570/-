@@ -1,0 +1,78 @@
+<view class='pa-30'>
+	<view class='bg-m ra-10 pa-40 text-center'>
+		<image class="avatar" style='width: 150rpx;height: 150rpx;' src="{{avatarUrl}}" mode='aspectFill'></image>
+		<view class="nixing" style="display: flex;">
+			<view class="nickName1">用户名：</view>
+			<view class="nickName2" style="flex: 1;">{{userName}}</view>
+		</view>
+	</view>
+
+
+	<view class='panel panel-between item-center ma-t20  border-b' bindtap='NameModView'>
+		<view class='panel-start item-center'>
+			<image class='icon-58r' src='/image/修改.png'></image>
+			<text class='fo-28'>修改名字</text>
+		</view>
+		<view>
+			<image src='/image/right.png' class='icon-25'></image>
+		</view>
+	</view>
+
+	<view class='panel panel-between item-center border-b' bindtap="AvatarModView">
+		<view class='panel-start item-center'>
+			<image class='icon-58r' src='/image/修改头像重新上传.png'></image>
+			<text class='fo-28'>头像修改</text>
+		</view>
+		<view>
+			<image src='/image/right.png' class='icon-25'></image>
+		</view>
+	</view>
+	<view class='panel panel-between item-center border-b' bindtap="SubmitRecordView">
+		<view class='panel-start item-center'>
+			<image src='/image/记录.png' class='icon-65r'></image>
+			<text class='fo-28'>投稿记录</text>
+		</view>
+		<view>
+			<image src='/image/right.png' class='icon-25'></image>
+		</view>
+	</view>
+	<view class='panel panel-between item-center border-b' bindtap="SubmitApplicationView">
+		<view class='panel-start item-center'>
+			<image src='/image/发布.png' class='icon-65r'></image>
+			<text class='fo-28'>投稿申请</text>
+		</view>
+		<view>
+			<image src='/image/right.png' class='icon-25'></image>
+		</view>
+	</view>
+	<view class='panel panel-between item-center border-b' bindtap="CommentResponseView">
+		<view class='panel-start item-center'>
+			<image src='/image/消息.png' class='icon-65r'></image>
+			<text class='fo-28'>评论回复</text>
+		</view>
+		<view>
+			<image src='/image/right.png' class='icon-25'></image>
+		</view>
+	</view>
+
+	<view wx:if="{{isAdmin}}" class='panel panel-between item-center border-b' bindtap="AdministratorReviewView">
+		<view class='panel-start item-center'>
+			<image src='/image/审批.png' class='icon-65r'></image>
+			<text class='fo-28'>投稿审核</text>
+		</view>
+		<view>
+			<image src='/image/right.png' class='icon-25'></image>
+		</view>
+	</view>
+
+	<view class='panel panel-between item-center' bindtap="shareFriends">
+		<view class='panel-start item-center'>
+			<image src='/image/分享.png' class='icon-65r'></image>
+			<text class='fo-28'>分享好友</text>
+		</view>
+		<view>
+			<image src='/image/right.png' class='icon-25'></image>
+		</view>
+	</view>
+	<van-share-sheet show="{{ showShare }}" title="立即分享给好友" options="{{ options }}" bind:select="onSelect" bind:close="onClose" />
+</view>

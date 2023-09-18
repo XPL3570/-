@@ -1,0 +1,9 @@
+/* registerSchool.wxss */
+
+.container {
+	padding: 20rpx;
+  }
+  
+  .van-field {
+	margin-bottom: 20rpx;
+  }

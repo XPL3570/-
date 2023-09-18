@@ -1,0 +1,21 @@
+<view class="container">
+  <van-field
+    label="学校名称"
+    placeholder="请输入学校名称"
+    value="{{ schoolName }}"
+    bind:input="onInputSchoolName"
+  ></van-field>
+  <van-field
+    label="微信号"
+    placeholder="请输入微信号"
+    value="{{ wechat }}"
+    bind:input="onInputWechat"
+  ></van-field>
+  <van-field
+    label="手机号"
+    placeholder="请输入手机号"
+    value="{{ phone }}"
+    bind:input="onInputPhone"
+  ></van-field>
+  <van-button type="primary" bind:tap="onSubmit">提交</van-button>
+</view>

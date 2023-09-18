@@ -1,0 +1,9 @@
+<view class="swiper">
+    <swiper class="myswiper" indicator-dots="{{ indicatorDots }}" autoplay="{{ autoplay }}" interval="{{ interval }}" duration="{{ duration }}" indicator-color="#843454" indicator-active-color="#f56554">
+        <block wx:for="{{ swiperData }}" wx:key="index">
+            <swiper-item>
+                <image mode="widthFix" src="{{ item }}"></image>
+            </swiper-item>
+        </block>
+    </swiper>
+</view>

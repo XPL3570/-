@@ -1,0 +1,129 @@
+/* 调整头像 */
+.avatar {
+	width: 200rpx;
+	height: 200rpx;
+	float: left;
+	margin-top: -40rpx !important;
+	margin-left: -60rpx !important;
+}
+
+.nixing {
+	width: 350rpx;
+	height: 80rpx;
+	margin-top: 0rpx;
+	margin-left: 150rpx;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.icon-65r {
+	padding: 5rpx;
+	width: 65rpx;
+	height: 65rpx;
+	margin-right: 40rpx;
+}
+
+.icon-58r {
+	padding: 5rpx;
+	width: 58rpx;
+	height: 58rpx;
+	margin-right: 44rpx;
+}
+
+.hw {
+	font-size: 50rpx;
+}
+
+.text-center {
+	text-align: center;
+}
+
+.fo-w {
+	color: #fff
+}
+
+.fo-30 {
+	font-size: 30rpx
+}
+
+.ma-t10 {
+	margin-top: 10rpx
+}
+
+.panel-start {
+	display: flex;
+	justify-content: flex-start;
+}
+
+.panel {
+	padding: 33rpx;
+	background: #ffffff
+}
+
+.panel-between {
+	display: flex;
+	justify-content: space-between;
+}
+
+.item-center {
+	align-items: center
+}
+
+.ma-t20 {
+	margin-top: 25rpx
+}
+
+.border-b {
+	border-bottom: solid 1px #e1e1e1
+}
+
+.fo-28 {
+	font-size: 41rpx
+}
+
+.icon-25 {
+	width: 25rpx;
+	height: 25rpx
+}
+
+.bg-m {
+	background: linear-gradient(to right top, #6183dd, #6e42d3);
+}
+
+.ra-10 {
+	border-radius: 10rpx
+}
+
+.pa-40 {
+	padding: 40px;
+}
+
+.text-center {
+	text-align: center;
+}
+
+.pa-30 {
+	padding: 33rpx
+}
+
+.avatar {
+	width: 100rpx;
+	height: 100rpx;
+	border-radius: 130rpx;
+	overflow: hidden;
+	margin: auto;
+	border: 6rpx solid #ffffff;
+}
+
+page {
+	background: #f3f3f3
+}
+
+.btn-1 {
+	background: #ffffff;
+	height: 150rpx;
+	width: 330rpx;
+	border-radius: 10rpx;
+	box-shadow: 0 0 10rpx 0 #e1e1e1
+}

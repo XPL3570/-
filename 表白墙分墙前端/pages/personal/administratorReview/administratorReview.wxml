@@ -1,0 +1,33 @@
+<block wx:if="{{list.length===0}}">
+	<van-divider contentPosition="center" customStyle="color: #1989fa; border-color: #1989fa; font-size: 18px;">
+		暂无待审核投稿
+	</van-divider>
+</block>
+<view wx:for="{{list}}" wx:key="index" wx:for-index="outIndex" class="main">
+	<view class="item-zj">
+		<van-cell title="投稿标题" value="{{item.title}}"></van-cell>
+		<van-cell title="投稿内容" value="{{item.textContent}}"></van-cell>
+		<van-cell title="投稿图片">
+			<view style="display: flex;justify-content: flex-end;">
+				<block wx:if="{{item.imageURL[0]===''}}">
+					<view>无</view>
+				</block>
+				<block wx:else>
+					<block wx:for="{{item.imageURL}}" wx:key="index" wx:for-index="imageIndex">
+						<van-image width="160rpx" height="160rpx" fit="cover" src="{{item}}" bindtap="handleImageTap" data-index="{{index}}" data-image="{{item}}" />
+					</block>
+				</block>
+			</view>
+		</van-cell>
+		<van-cell title="投稿时间" value="{{item.createTime}}"></van-cell>
+		<!-- <van-cell title="匿名发布" value="{{item.isAnonymous === 1?'是':'否'}}"></van-cell> -->
+		<view class="button-zj">
+		<van-button type="primary" style="width: 170rpx;" class="button-x" bindtap="handlePass"
+		data-id="{{item.id}}" data-index="{{outIndex}}"
+		><span>通 过</span></van-button>
+		<van-button type="danger" class="button-x"  bindtap="handleReject" 	data-id="{{item.id}}" data-index="{{outIndex}}">不通过</van-button>
+	</view>
+	</view>
+</view>
+
+<van-dialog id="van-dialog" />

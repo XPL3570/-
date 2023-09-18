@@ -1,0 +1,23 @@
+.page {
+	display: flex;
+	justify-content: center;
+	margin-top: 404rpx;
+	height: 100vh;
+	
+	 /* background-color: #e0e9f1 !important;  */
+  }  
+  .container {
+	width: 90%;
+	text-align: center;
+  }
+  .button-container {
+	display: flex;
+	justify-content: center;
+	margin-top: 80rpx;
+  }
+  
+
+  .custom-button {
+	 width: 404rpx; 
+  }
+  

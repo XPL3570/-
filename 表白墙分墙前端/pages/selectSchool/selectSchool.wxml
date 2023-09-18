@@ -1,0 +1,27 @@
+<view class="container">
+	<button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+  <image class="avatar" src="{{avatarUrl}}"></image>
+</button>
+
+  <van-field
+   type="nickname"
+    label="用户名"
+    required
+    placeholder="自定义或者使用微信名字"
+    value="{{ userName }}"
+    bind:input="onInputUserName"
+    custom-class="input-field"
+  ></van-field>
+
+  <van-field
+    label="绑定学校"
+    required
+    placeholder="请输入学校全名"
+    value="{{ schoolName }}"
+    bind:input="onInputSchoolName"
+    custom-class="input-field"
+  ></van-field>
+
+  <van-button type="primary" bind:tap="onSubmit" custom-class="submit-button">提交</van-button>
+
+</view>

@@ -1,0 +1,8 @@
+{
+	"navigationBarTitleText": "学校入驻",
+	"usingComponents": {
+		"van-field": "@vant/weapp/field/index",
+		"van-button": "@vant/weapp/button/index"
+	  }
+	  
+}

@@ -1,0 +1,124 @@
+<van-notice-bar left-icon="volume-o" speed="{{72}}" text="大家注意：所有信息均是用户发布！本平台只提供匹配！抽取到的纸条也不一定都是本校的！谨防被骗！！！" />
+<van-tabs animated bind:change="handleOuterTabChange">
+	<van-tab title="抽取纸条">
+		<view class="buttons">
+			<view style="margin-top: 44rpx;">
+				<van-button color="linear-gradient(to right, #c2b0ff, #af65f6)" size="large" bind:tap="takeOutX">抽取一个本校男生纸条</van-button>
+			</view>
+
+			<view style="margin-top: 22rpx; ">
+				<van-button color="linear-gradient(to right, #F2BBD3, #E137B9)" size="large" bind:tap="takeOutZ">抽取一个本校女生纸条</van-button>
+			</view>
+
+		</view>
+	</van-tab>
+	<van-tab title="放入纸条">
+		<view class="buttons">
+			<view style="margin-top: 44rpx;">
+				<van-button color="linear-gradient(to right, #c2b0ff, #af65f6)" size="large" bind:tap="drawPaperX">放入一个男生纸条</van-button>
+			</view>
+
+			<view style="margin-top: 22rpx; ">
+				<van-button color="linear-gradient(to right, #F2BBD3, #E137B9)" size="large" bind:tap="drawPaperZ">放入一个女生纸条</van-button>
+			</view>
+		</view>
+	</van-tab>
+
+	<van-tab title="我的纸条" bind:change="handleOuterTabTap">
+		<view style="margin-top: 15rpx;"> </view>
+		<van-tabs type="card" style="margin-top: 10rpx;" active="{{ activeTab }}" bind:change="handleTabChange">
+			<van-tab title="我抽到的纸条">
+				<van-notice-bar wrapable color="#1989fa" background="#ecf9ff" left-icon="info-o" text=" 为保护用户隐私，平台只保存您三个月内获取到的纸条" />
+
+				<view wx:for="{{drawnNote}}" wx:key="index" wx:for-index="outerIndex">
+					<view style="padding: 20rpx;margin-bottom: 20px;">
+						<van-cell title="微信或qq号：" value="{{item.contactInfo}}" />
+						<van-cell title="介绍" value="{{item.introduction}}"  />
+
+						<view style="margin-left: 30rpx;margin-top: 18rpx;">
+							<block wx:if="{{ item.sbzj[0] !== '' }}">
+								<view style="margin-bottom: 20rpx;"> 图片信息：</view>
+								<block wx:for="{{ item.sbzj }}" wx:key="index" wx:for-index="innerIndex">
+									<image src="{{ item }}" data-outer-index="{{ outerIndex }}" data-inner-index="{{ innerIndex }}" bindtap="previewImage01" class="image" mode="aspectFit" style="margin-right: 20rpx;"></image>
+								</block>
+							</block>
+							<block wx:else>
+								<view style="margin-top: 20rpx;">该纸条未放置图片信息</view>
+							</block>
+						</view>
+					</view>
+					<van-divider />
+				</view>
+			</van-tab>
+			<van-tab title="我放入的纸条">
+			
+				<view wx:for="{{insertNote}}" wx:key="index" wx:for-index="outerIndex">
+					<view style="padding: 20rpx;margin-bottom: 20px;">
+						<van-cell title="微信或qq号：" value="{{item.contactInfo}}" />
+						<van-cell title="介绍" value="{{item.introduction}}"  />
+
+						<view style="margin-left: 30rpx;margin-top: 18rpx;">
+							<block wx:if="{{ item.sbzj[0] !== '' }}">
+								<view style="margin-bottom: 20rpx;"> 图片信息：</view>
+								<block wx:for="{{ item.sbzj }}" wx:key="index" wx:for-index="innerIndex">
+									<image src="{{ item }}" data-outer-index="{{ outerIndex }}" data-inner-index="{{ innerIndex }}" bindtap="previewImage02" class="image" mode="aspectFit" style="margin-right: 20rpx;"></image>
+								</block>
+							</block>
+							<block wx:else>
+								<view style="margin-top: 20rpx;">该纸条未放置图片信息</view>
+							</block>
+						</view>
+					</view>
+					<van-divider />
+				</view>
+
+			</van-tab>
+		</van-tabs>
+	</van-tab>
+
+
+</van-tabs>
+
+<van-popup show="{{ show }}" close-on-click-overlay="{{false}}" position="bottom" closeable close-icon="close" custom-style="height: 70%;" bind:close="onClose">
+	<view class="title">
+		<text>请填写信息放入{{carton}}恋爱箱</text>
+	</view>
+	<view class="content">
+		<van-field label="微信或qq号:" placeholder="请输入您的微信号" autosize type="textarea" value="{{ContactInfo}}" bindinput="handleUserInfoInput" required="ture"></van-field>
+		<van-field label="自我介绍:" placeholder="请输入您的介绍,比如兴趣，爱好等等" autosize type="textarea" value="{{Introduction}}" bindinput="handleIntroductionInput" required="ture"></van-field>
+	</view>
+	<view class="uploader">
+		<view style="margin-bottom: 30rpx;">上传您的微信二维码或其他联系方式</view>
+		<van-uploader file-list="{{ fileList }}" image-fit="aspectFill" accept="media" use-before-read bind:before-read="beforeRead" bind:after-read="afterRead" bind:delete="handleDeleteImage" max-count="2" />
+	</view>
+	<view class="zj">
+		<van-button round color="linear-gradient(to right, #3C91B0, #2DBFC0)" bind:tap="handleSubmit">
+			放入恋爱箱
+		</van-button>
+	</view>
+</van-popup>
+
+
+<van-popup show="{{ showZj }}" bind:close="onCloseZj" close-on-click-overlay="{{false}}" position="bottom" closeable close-icon="close" custom-style="height: 80%;">
+	<!-- 这里是展示抽到的纸条 -->
+	<view class="paper-zj">
+		<view class="title">
+			<text>您获取到的{{carton}}纸条</text>
+		</view>
+		<view style="margin-top:30rpx ;">
+			<van-cell title="微信或qq号：  {{paper.contactInfo}}" size="large" />
+			<van-cell title="介绍：   {{paper.introduction}}" size="large" />
+		</view>
+
+		<view class="image-zj">
+			<view style="margin-bottom: 40rpx;"> 微信二维码：</view>
+			<block wx:for="{{ paper.sbzj }}" wx:key="index">
+				<image src="{{ item }}" data-index="{{index}}" bindtap="previewImage" class="image" mode="aspectFit" style="margin-right: 20rpx;"></image>
+
+			</block>
+		</view>
+	</view>
+
+</van-popup>
+
+<van-toast id="van-toast" />

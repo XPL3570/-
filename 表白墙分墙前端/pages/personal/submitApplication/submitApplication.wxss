@@ -1,0 +1,9 @@
+
+  
+  /* 修改 CollapseItem 的高度 */
+  .my-collapse-item {
+	font-size:32rpx;
+	align-items: center; /* 垂直居中对齐 */
+	height: 60rpx; /* 自定义高度 */
+ }
+ 

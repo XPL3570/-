@@ -1,0 +1,16 @@
+{
+	"navigationBarTitleText": "表白墙纸条",
+	"usingComponents": {
+		"van-tab": "@vant/weapp/tab/index",
+	"van-tabs": "@vant/weapp/tabs/index",
+	"van-button": "@vant/weapp/button/index",
+	"van-notice-bar": "@vant/weapp/notice-bar/index",
+	"van-popup": "@vant/weapp/popup/index",
+	"van-uploader": "@vant/weapp/uploader/index",
+	"van-field": "@vant/weapp/field/index",
+	"van-toast": "@vant/weapp/toast/index",
+	"van-cell": "@vant/weapp/cell/index",
+	"van-cell-group": "@vant/weapp/cell-group/index",
+	"van-divider": "@vant/weapp/divider/index"
+	}
+}

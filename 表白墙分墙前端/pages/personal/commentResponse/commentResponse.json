@@ -1,0 +1,6 @@
+{
+	"navigationBarTitleText": "评论回复",
+	"usingComponents": {
+		"van-cell": "@vant/weapp/cell/index"
+	}
+}

@@ -1,0 +1,40 @@
+.content{
+	margin-top:44rpx;
+	margin-left: 20rpx;
+}
+
+.title{
+	display: flex;
+	justify-content: center;
+
+	margin-top: 80rpx;
+	font-size: 41rpx;
+}
+
+.uploader{
+	margin-left: 44rpx;
+	margin-top: 30rpx;
+}
+
+.zj{
+	margin-top: 7rpx;
+	display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.paper-zj{
+	padding: 18rpx;
+	margin-top: 10rpx;
+}
+
+.image-zj{
+	margin-top: 22rpx;
+	margin-left: 30rpx;
+}
+
+.image{
+	width: 200rpx;
+	height: 200rpx;
+}
+

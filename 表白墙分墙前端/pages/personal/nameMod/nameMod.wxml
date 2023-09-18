@@ -1,0 +1,13 @@
+
+<view class="page">
+	<view class="container">
+		<van-field value="{{newUsername}}" bindinput="handleInput" label="新用户名" placeholder="请输入新的用户名" size="large" class="field"/>
+		<view class="button-container">
+			<van-button round type="info" size="large" bind:click="handleUpdateUsername" class="custom-button">
+				确认修改
+			</van-button>
+		</view>
+	</view>
+</view>
+
+<van-notify id="van-notify" />

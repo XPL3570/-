@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.confession.mapper.ConfessionpostMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.confession.pojo.Confessionpost">
+        <id column="Id" property="id" />
+        <result column="WallId" property="wallId" />
+        <result column="UserId" property="userId" />
+        <result column="TextContent" property="textContent" />
+        <result column="ImageURL" property="imageURL" />
+        <result column="CreateTime" property="createTime" />
+        <result column="IsDeleted" property="deleted" />
+        <result column="PostStatus" property="postStatus" />
+        <result column="IsAnonymous" property="isAnonymous" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        Id, WallId, UserId, TextContent, ImageURL, CreateTime, IsDeleted, PostStatus,IsAnonymous
+    </sql>
+
+    <select id="getPostCountByUserIdAndDate" resultType="int">
+        SELECT COUNT(*) FROM confessionpost WHERE userId = #{userId} AND DATE(CreateTime) = CURDATE()
+    </select>
+
+
+
+</mapper>

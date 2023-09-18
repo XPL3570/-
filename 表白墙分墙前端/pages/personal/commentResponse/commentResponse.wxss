@@ -1,0 +1,39 @@
+.zj{
+	padding: 15rpx;
+}
+
+.avatar {
+  width: 65rpx;
+  height: 65rpx;
+	border-radius: 50%;
+	margin-right: 20rpx;
+}
+
+.comment-time{
+	font-size: 25rpx;
+	opacity: 0.5;
+}
+
+.comment-item {
+  display: flex;
+	align-items: center;
+}
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-name {
+  /* font-weight: bold; */
+}
+
+
+
+.reply-text {
+  margin-left: 10rpx;
+  margin-right: 10rpx;
+  color: #999;
+}
+.comment-content {
+  margin-top: 10rpx;
+}

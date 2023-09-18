@@ -1,0 +1,38 @@
+
+.page {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start; /* 上对齐 */
+	min-height: 90vh;
+	padding: 30rpx;
+  }
+  .checkbox{
+	  margin-left: 22rpx;
+	  margin-top: 44rpx;
+  }
+  /* 页面标题样式 */
+  .header {
+	margin-top: 44rpx;
+	font-size: 65rpx;
+	text-align: center;
+  }
+  
+  .content {
+	margin-bottom: 5px;
+	margin-top: 60rpx;
+	width: 100%;
+	max-width: 670rpx;
+  }
+  
+  /* 文件上传组件样式 */
+  .uploader {
+	margin-top: 70rpx;
+	margin-left: 30rpx;
+  }
+  
+  /* 提交按钮样式 */
+  .footer {
+	margin-top: 44rpx;
+	text-align: center;
+  }
+  

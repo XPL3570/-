@@ -1,0 +1,29 @@
+.container {
+	padding: 20px;
+  }
+  
+  .avatar-wrapper {
+	padding: 0px;
+	display: flex;
+	width: 240rpx;
+	height: 240rpx;
+	border-radius: 50%;
+	background-color: #eee;
+	margin-bottom: 50rpx;
+  }
+  
+  .avatar {
+	width: 240rpx;
+	height: 240rpx;
+	border-radius: 50%;
+	object-fit: cover;
+  }
+  
+  .input-field {
+	margin-bottom: 20px;
+  }
+  
+  .submit-button {
+	width: 100%;
+  }
+  
