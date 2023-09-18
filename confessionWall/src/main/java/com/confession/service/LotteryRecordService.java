@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.confession.pojo.Lottery;
 import com.confession.pojo.LotteryRecord;
 
+import java.util.List;
+
 public interface LotteryRecordService extends IService<LotteryRecord> {
 
     /**
@@ -17,5 +19,10 @@ public interface LotteryRecordService extends IService<LotteryRecord> {
      * 获取用户抽到的纸条  最长三个月 - 20条
      * @param userId
      */
-    void obtainedNote(Integer userId);
+    List<Lottery> obtainedNote(Integer userId);
+
+    /**
+     * 获取用户抽到过的记录集合
+     */
+    List<Integer> getLotteryIdsByUserId(Integer userId);
 }

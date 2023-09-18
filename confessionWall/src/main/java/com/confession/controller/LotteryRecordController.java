@@ -41,8 +41,8 @@ public class LotteryRecordController {
     @GetMapping("obtainedNote")
     public Result obtainedNote(){
         Integer userId = JwtInterceptor.getUser().getId();
-        lotteryRecordService.obtainedNote(userId);
-        return null;
+        List<Lottery> list = lotteryRecordService.obtainedNote(userId);
+        return Result.ok(list);
     }
 
 

@@ -1,9 +1,9 @@
 package com.confession.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.confession.mapper.ConfigurationMapper;
+import com.confession.mapper.MsgConfigurationMapper;
 import com.confession.mapper.SchoolMapper;
-import com.confession.pojo.Configuration;
+import com.confession.pojo.MsgConfiguration;
 import com.confession.pojo.School;
 import com.confession.service.SchoolService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -26,7 +26,7 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
     private SchoolMapper schoolMapper;
 
     @Resource
-    private ConfigurationMapper configurationMapper;
+    private MsgConfigurationMapper msgConfigurationMapper;
 
 
 
@@ -40,9 +40,9 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
 
     @Override
     public String getPromptMessage(Integer schoolId) {
-        Configuration configuration = configurationMapper.selectOne(null);
-        if (configuration.getMainSwitch()) {
-            return configuration.getMessage();
+        MsgConfiguration msgConfiguration = msgConfigurationMapper.selectOne(null);
+        if (msgConfiguration.getMainSwitch()) {
+            return msgConfiguration.getMessage();
         }
         School school = schoolMapper.selectById(schoolId);
         return school.getPrompt();

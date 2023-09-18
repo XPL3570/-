@@ -17,8 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import static com.confession.comm.ResultCodeEnum.WITHDRAWAL_EXCEEDS_LIMIT;
 
@@ -40,9 +42,10 @@ public class LotteryRecordServiceImpl extends ServiceImpl<LotteryRecordMapper, L
         //校验拿到的纸条是否超过限制
         checkStrategy(userId);
 
-        //todo 这里可以先查询一遍还有没有自己没有拿到过的纸条
+        //获取用户抽到过的集合id
+        List<Integer> lotteryIds = getLotteryIdsByUserId(userId);
 
-        Lottery lottery = getRandomLotteryByGenderAndSchoolIdAndDrawCount(gender, schoolId, 0);
+        Lottery lottery = getRandomLotteryByGenderAndSchoolIdAndDrawCount(gender, schoolId, 0,lotteryIds);
         // 创建一个新的 LotteryRecord 对象
         LotteryRecord record = new LotteryRecord();
         record.setLotteryId(lottery.getId());
@@ -53,31 +56,50 @@ public class LotteryRecordServiceImpl extends ServiceImpl<LotteryRecordMapper, L
     }
 
     @Override
-    public void obtainedNote(Integer userId) {
+    public List<Lottery> obtainedNote(Integer userId) {
         LambdaQueryWrapper<LotteryRecord> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(LotteryRecord::getUserId, userId)
                 .ge(LotteryRecord::getDrawAt, LocalDateTime.now().minusMonths(3))
                 .orderByDesc(LotteryRecord::getDrawAt);
         Page<LotteryRecord> page = new Page<>(1, 20);
         List<LotteryRecord> records = lotteryRecordMapper.selectPage(page, queryWrapper).getRecords();
-        //todo  明天写这 遍历去拿到纸条记录表里面的内容
+        List<Lottery> list = new ArrayList<>();
+        for (LotteryRecord record : records) {
+            Lottery lottery = lotteryMapper.selectById(record.getLotteryId());
+            list.add(lottery);
+        }
+        return list;
+    }
+
+    @Override
+    public List<Integer> getLotteryIdsByUserId(Integer userId) {
+        LambdaQueryWrapper<LotteryRecord> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(LotteryRecord::getUserId, userId);
+        return lotteryRecordMapper.selectList(queryWrapper).stream()
+                .map(LotteryRecord::getLotteryId)
+                .collect(Collectors.toList());
     }
 
 
-    //todo 这里要把自己拿到过的记录排除了
-    private synchronized Lottery getRandomLotteryByGenderAndSchoolIdAndDrawCount(int gender, int schoolId, int drawCount) {
-        // 构建LambdaQueryWrapper
+    private synchronized Lottery getRandomLotteryByGenderAndSchoolIdAndDrawCount(int gender, int schoolId, int drawCount,List<Integer> lotteryIds) {
+
+        //todo 要改的地方，这里要添加一个，纸条的发布用户id不能是自己，这里测试完之后加
         LambdaQueryWrapper<Lottery> queryWrapper = new LambdaQueryWrapper<Lottery>()
                 .eq(Lottery::getGender, gender)
                 .eq(Lottery::getSchoolId, schoolId)
-                .eq(Lottery::getDrawCount, drawCount);
+                .eq(Lottery::getDrawCount, drawCount)
+                .notIn(Lottery::getId, lotteryIds);
 
         // 使用行级锁查询符合条件的记录
         List<Lottery> lotteryList = lotteryMapper.selectList(queryWrapper);
 
         if (lotteryList.isEmpty()) {
             // 如果没有满足条件的记录，则递归调用自身，将drawCount加1
-            return getRandomLotteryByGenderAndSchoolIdAndDrawCount(gender, schoolId, drawCount + 1);
+            //  注意点，可以设置最多比如每个纸条匹配5次，也可以还有防止空数据
+            if(drawCount>5){
+                throw new WallException(WITHDRAWAL_EXCEEDS_LIMIT);
+            }
+            return getRandomLotteryByGenderAndSchoolIdAndDrawCount(gender, schoolId, drawCount + 1,lotteryIds);
         } else {
             // 随机选择一条记录
             Random random = new Random();

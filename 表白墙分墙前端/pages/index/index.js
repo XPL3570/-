@@ -250,6 +250,7 @@ Page({
 	},
 	// 输入框发送的回调函数
 	onConfirm(event) {
+		var content=this.data.replyContent;
 		if (content === undefined || content.trim() === "") {
 			Notify({ type: 'primary', message: '请输入评论' });
 			return;
@@ -313,6 +314,9 @@ Page({
 				wx.showToast({
 					title: res.data.message,
 					icon: 'none'
+				});
+				this.setData({
+					replyContent: ''
 				})
 			} else {
 				wx.showToast({
