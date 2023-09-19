@@ -20,7 +20,7 @@ public enum ResultCodeEnum {
     LOGIN_AUTH(208, "未登陆"),
     PERMISSION(209, "没有权限"),
 
-    CODE_ERROR(210, "验证码错误"),
+    SCHOOL_REGISTERED(210, "学校已经被注册"),
 
     LOGIN_DISABLED_ERROR(212, "该用户已被禁用"),
     REGISTER_MOBLE_ERROR(213, "手机号已被使用"),

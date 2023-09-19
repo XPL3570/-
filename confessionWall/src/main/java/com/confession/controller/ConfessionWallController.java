@@ -7,9 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- * <p>
- *  前端控制器
- * </p>
+ * 表白墙
  *
  * @author 作者
  * @since 2023年08月20日
@@ -17,6 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/confession")
 public class ConfessionWallController {
+
+    /**
+     * 注册 审核 展示  注意这里目前学校和墙是一对一的
+     */
 
 
 

@@ -73,6 +73,13 @@ public class School implements Serializable {
     private String prompt;
 
     /**
+     * 审核状态，0表示未通过，1表示通过
+     */
+    @TableField("IsVerified")
+    private Integer isVerified;
+
+
+    /**
      * 逻辑删除标志
      */
     @TableField("IsDeleted")

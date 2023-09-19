@@ -12,12 +12,13 @@
         <result column="CreateTime" property="createTime" />
         <result column="CarouselImages" property="carouselImages" />
         <result column="Prompt" property="prompt" />
+        <result column="IsAdminPost" property="isAdminPost" />
         <result column="IsDeleted" property="deleted" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        Id, SchoolName, AvatarURL, Description, CreatorId, CreateTime,CarouselImages,Prompt,IsDeleted
+        Id, SchoolName, AvatarURL, Description, CreatorId, CreateTime,CarouselImages,Prompt,IsAdminPost,IsDeleted
     </sql>
 
 </mapper>

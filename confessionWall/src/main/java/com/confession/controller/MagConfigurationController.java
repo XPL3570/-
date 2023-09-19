@@ -5,8 +5,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 
+/**
+ * 这里是小程序的头部的提示的控制器
+ */
 @RestController
-public class ConfigurationController {
+public class MagConfigurationController {
 
     @Resource
     private MsgConfigurationService msgConfigurationService;

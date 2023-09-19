@@ -63,7 +63,7 @@ public class AdminController {
 
 
     /**
-     * 发布投稿，直接通过
+     * 发布投稿，直接通过  这里指定了某个学校  普通管理员可用 需要迁移
      *
      * @param confessionRequest
      * @return

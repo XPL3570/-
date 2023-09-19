@@ -2,6 +2,7 @@ package com.confession.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.confession.pojo.School;
+import com.confession.request.RegisterSchoolRequest;
 
 /**
  * <p>
@@ -14,7 +15,7 @@ import com.confession.pojo.School;
 public interface SchoolService extends IService<School> {
 
     /**
-     * 查询学校
+     * 查询学校 需要时审核通过的
      * @param schoolName 学校名字
      * @return
      */
@@ -26,4 +27,9 @@ public interface SchoolService extends IService<School> {
      * @return
      */
     String getPromptMessage(Integer schoolId);
+
+    /**
+     * 注册学校
+     */
+    void register(RegisterSchoolRequest registerSchool);
 }
