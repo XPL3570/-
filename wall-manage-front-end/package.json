@@ -1,5 +1,5 @@
 {
-  "name": "my-project",
+  "name": "wall-manage-front-end",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "core-js": "^3.8.3",
+    "element-ui": "^2.15.14",
     "vue": "^2.6.14"
   },
   "devDependencies": {

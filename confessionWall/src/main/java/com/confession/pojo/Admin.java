@@ -72,6 +72,13 @@ public class Admin implements Serializable {
     @TableField("Permission")
     private Integer permission;
 
+
+    /**
+     * 密码  一般管理员不需要
+     */
+    @TableField("Password")
+    private String password;
+
     /**
      * 逻辑删除标志
      */

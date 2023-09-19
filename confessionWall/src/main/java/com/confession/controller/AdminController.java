@@ -7,6 +7,7 @@ import com.confession.config.WallConfig;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
 import com.confession.pojo.Confessionpost;
+import com.confession.request.AdminLoginRequest;
 import com.confession.request.ConfessionPostRequest;
 import com.confession.service.AdminService;
 import com.confession.service.ConfessionpostService;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.confession.comm.ResultCodeEnum.CONTRIBUTE_OVER_LIMIT;
@@ -49,6 +51,16 @@ public class AdminController {
 
     @Resource
     private RedisTemplate redisTemplate;
+
+    /**
+     * 超级管理员登录
+     */
+    @PostMapping("login")
+    public Result adminLogin(@RequestBody @Validated AdminLoginRequest adminLoginRequest){
+        Map res = adminService.login(adminLoginRequest);
+        return Result.ok(res);
+    }
+
 
     /**
      * 发布投稿，直接通过

@@ -2,6 +2,7 @@ package com.confession.config;
 
 
 import com.confession.globalConfig.exception.WallException;
+import com.confession.pojo.Admin;
 import com.confession.pojo.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -36,6 +37,28 @@ public class JwtConfig {
                 .claim("UserName", user.getUsername())
                 .claim("openId",user.getOpenId())
                 .claim("schoolId",user.getSchoolId())
+                //下面是第三部分
+                .signWith(SignatureAlgorithm.HS256, APP_SECRET)
+                .compact();
+        String prefixedToken = "PREFIX_" + JwtToken; // 添加前缀
+        // 生成的字符串就是jwt信息，这个通常要返回出去
+        return prefixedToken;
+    }
+
+    public static String getAdminJwtToken(Admin admin) {
+
+        String JwtToken = Jwts.builder()
+                .setHeaderParam("typ", "JWT")    //头部信息
+                .setHeaderParam("alg", "HS256")    //头部信息
+                //下面这部分是payload部分
+                // 设置默认标签
+                .setSubject("zhangjie")    //设置jwt所面向的用户
+                .setIssuedAt(new Date())    //设置签证生效的时间
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRE))    //设置签证失效的时间
+                //自定义的信息，这里存储id和姓名信息
+                .claim("id", admin.getId())  //设置token主体部分 ，存储用户信息
+                .claim("phoneNumber", admin.getPhoneNumber())
+                .claim("weChatId",admin.getWeChatId())
                 //下面是第三部分
                 .signWith(SignatureAlgorithm.HS256, APP_SECRET)
                 .compact();

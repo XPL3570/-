@@ -1,4 +1,4 @@
-# my-project
+# wall-manage-front-end
 
 ## Project setup
 ```

@@ -2,13 +2,20 @@ package com.confession.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.confession.comm.EncryptionUtil;
+import com.confession.config.JwtConfig;
+import com.confession.globalConfig.exception.WallException;
 import com.confession.mapper.AdminMapper;
 import com.confession.pojo.Admin;
+import com.confession.request.AdminLoginRequest;
 import com.confession.service.AdminService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -20,6 +27,8 @@ import javax.annotation.Resource;
  */
 @Service
 public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements AdminService {
+    @Resource
+    private AdminMapper adminMapper;
 
 
     @Override
@@ -42,5 +51,32 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Map login(AdminLoginRequest adminLoginRequest) {
+        LambdaQueryWrapper<Admin> wrapper = new LambdaQueryWrapper<>();
+        //这里那字段里面的微信号做账号
+        wrapper.eq(Admin::getWeChatId,adminLoginRequest.getAccount());
+        wrapper.eq(Admin::getPassword, EncryptionUtil.decrypt(adminLoginRequest.getPassword()));
+        wrapper.eq(Admin::getPermission,1);
+        Admin admin = adminMapper.selectOne(wrapper);
+        Map<String, Object> map = new HashMap<>();
+        String token;
+        if (admin!=null){
+            admin.setPassword("");
+            map.put("admin",admin);
+            token = JwtConfig.getAdminJwtToken(admin);
+            if (token!=null&&token!=""){
+                map.put("token",token);
+            }else {
+                throw new WallException("token生产失败",201);
+            }
+        }else {
+            throw new WallException("获取管理员身份失败",201);
+        }
+        return map;
+
+
     }
 }

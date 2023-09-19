@@ -28,17 +28,17 @@ CREATE TABLE `admin`  (
   `ConfessionWallId` int(11) NULL DEFAULT NULL COMMENT '表白墙ID',
   `PhoneNumber` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '手机号',
   `WeChatId` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '微信号',
+  `Password` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '密码',
   `IsDeleted` tinyint(1) NULL DEFAULT 0 COMMENT '逻辑删除标志',
   `CreateTime` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '时间',
   `Permission` tinyint(4) NULL DEFAULT NULL COMMENT '权限标识，0表示普通管理员，1表示超级管理员',
   PRIMARY KEY (`Id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+INSERT INTO `admin` (`Id`, `SchoolId`, `UserId`, `ConfessionWallId`, `PhoneNumber`, `WeChatId`, `Password`, `IsDeleted`, `CreateTime`, `Permission`) 
+VALUES 
+(1, 1, 1, 1, '1234567890', 'adminwx1', NULL, 0, '2023-09-02 09:40:19', 1),
+(2, 2, 2, 2, '9876543210', 'adminwx2', NULL, 0, '2023-09-02 09:40:19', 0);
 
--- ----------------------------
--- Records of admin
--- ----------------------------
-INSERT INTO `admin` VALUES (1, 1, 1, 1, '1234567890', 'adminwx1', 0, '2023-09-02 09:40:19', 1);
-INSERT INTO `admin` VALUES (2, 2, 2, 2, '9876543210', 'adminwx2', 0, '2023-09-02 09:40:19', 0);
 
 -- ----------------------------
 -- Table structure for comment

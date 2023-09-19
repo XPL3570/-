@@ -12,12 +12,13 @@
         <result column="WeChatId" property="weChatId" />
         <result column="CreateTime" property="createTime" />
         <result column="Permission" property="permission" />
+        <result column="Password" property="password" />
         <result column="IsDeleted" property="deleted" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        Id, SchoolId, UserId, ConfessionWallId, PhoneNumber, WeChatId, CreateTime, Permission,IsDeleted
+        Id, SchoolId, UserId, ConfessionWallId, PhoneNumber, WeChatId, CreateTime, Permission,Password,IsDeleted
     </sql>
 
 </mapper>

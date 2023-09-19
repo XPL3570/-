@@ -2,6 +2,9 @@ package com.confession.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.confession.pojo.Admin;
+import com.confession.request.AdminLoginRequest;
+
+import java.util.Map;
 
 /**
  * <p>
@@ -20,4 +23,10 @@ public interface AdminService extends IService<Admin> {
      * @return
      */
     boolean isAdmin(Integer userId, Integer wallId);
+
+
+    /**
+     * 超级管理员登录
+     */
+    Map login(AdminLoginRequest adminLoginRequest);
 }
