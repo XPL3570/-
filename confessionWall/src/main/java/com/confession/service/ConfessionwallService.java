@@ -2,6 +2,7 @@ package com.confession.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.confession.pojo.Confessionwall;
+import com.confession.request.RegistryWhiteWallRequest;
 
 /**
  * <p>
@@ -20,4 +21,8 @@ public interface ConfessionwallService extends IService<Confessionwall> {
      */
     Confessionwall selectSchoolInWallOne(Integer schoolId);
 
+    /**
+     * 注册表白墙，注册学校之后拿着id来注册表白墙
+     */
+    void register(RegistryWhiteWallRequest registryWhiteWallRequest);
 }

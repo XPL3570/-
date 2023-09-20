@@ -2,8 +2,10 @@ package com.confession.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.confession.globalConfig.exception.WallException;
+import com.confession.globalConfig.interceptor.JwtInterceptor;
 import com.confession.mapper.ConfessionwallMapper;
 import com.confession.pojo.Confessionwall;
+import com.confession.request.RegistryWhiteWallRequest;
 import com.confession.service.ConfessionwallService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -35,5 +37,16 @@ public class ConfessionwallServiceImpl extends ServiceImpl<ConfessionwallMapper,
         }else {
             throw new WallException(DATA_ERROR);
         }
+    }
+
+    @Override
+    public void register(RegistryWhiteWallRequest registryWhiteWallRequest) {
+        Confessionwall zj = new Confessionwall();
+        zj.setSchoolId(registryWhiteWallRequest.getSchoolId());
+        zj.setAvatarURL(registryWhiteWallRequest.getAvatarURL());
+        zj.setWallName(registryWhiteWallRequest.getConfessionWallName());
+        zj.setCreatorUserId( JwtInterceptor.getUser().getId());
+        zj.setDescription(registryWhiteWallRequest.getDescription());
+        confessionwallMapper.insert(zj);
     }
 }

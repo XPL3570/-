@@ -2,6 +2,7 @@ package com.confession.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.confession.comm.ResultCodeEnum;
 import com.confession.config.WechatConfig;
@@ -9,6 +10,7 @@ import com.confession.dto.UserDTO;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.mapper.UserMapper;
 import com.confession.pojo.User;
+import com.confession.request.UserStatusModRequest;
 import com.confession.service.UserService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -117,5 +119,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         } else {
             return null; // 如果数据库中也找不到用户信息，返回null或者抛出异常，根据实际情况进行处理。
         }
+    }
+
+    @Override
+    public void statusMod(UserStatusModRequest userStatusModRequest) {
+        if (userStatusModRequest.getUserId()==null){//多加一道校验，
+            throw new WallException("修改用户状态失败",201);
+        }
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(User::getId, userStatusModRequest.getUserId())
+                .set(User::getStatus, userStatusModRequest.getStatus());
+        userMapper.update(null, updateWrapper);
     }
 }

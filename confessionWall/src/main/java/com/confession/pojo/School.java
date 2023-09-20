@@ -73,7 +73,7 @@ public class School implements Serializable {
     private String prompt;
 
     /**
-     * 审核状态，0表示未通过，1表示通过
+     * 审核状态，0表示未审核，1表示通过，2未通过
      */
     @TableField("IsVerified")
     private Integer isVerified;

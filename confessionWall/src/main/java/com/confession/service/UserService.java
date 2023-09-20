@@ -3,6 +3,7 @@ package com.confession.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.confession.dto.UserDTO;
 import com.confession.pojo.User;
+import com.confession.request.UserStatusModRequest;
 
 import java.util.List;
 
@@ -44,4 +45,9 @@ public interface UserService extends IService<User> {
     UserDTO getUserFromRedisOrDatabase(Integer userId);
 
 
+    /**
+     * 修改用户状态
+     * @param userStatusModRequest
+     */
+    void statusMod(UserStatusModRequest userStatusModRequest);
 }

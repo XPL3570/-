@@ -1,8 +1,12 @@
 package com.confession.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.confession.comm.PageTool;
 import com.confession.pojo.School;
 import com.confession.request.RegisterSchoolRequest;
+import com.confession.request.SchoolExamineRequest;
+
+import java.util.List;
 
 /**
  * <p>
@@ -31,5 +35,26 @@ public interface SchoolService extends IService<School> {
     /**
      * 注册学校
      */
-    void register(RegisterSchoolRequest registerSchool);
+    Integer register(RegisterSchoolRequest registerSchool);
+
+    /**
+     * 查看学校
+     * @param pageTool
+     * @return
+     */
+    List<School> viewSchool(PageTool pageTool);
+
+    /**
+     * 查看没有通过审核的接口
+     * @param pageTool
+     * @return
+     */
+    List<School> viewNoReview(PageTool pageTool);
+
+
+    /**
+     * 审核学校
+     * @param schoolExamineRequest
+     */
+    void examinePost(SchoolExamineRequest schoolExamineRequest);
 }

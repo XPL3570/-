@@ -1,16 +1,16 @@
 package com.confession.controller;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.confession.comm.PageTool;
 import com.confession.config.JwtConfig;
 import com.confession.comm.Result;
 import com.confession.globalConfig.exception.WallException;
+import com.confession.globalConfig.interceptor.JwtInterceptor;
 import com.confession.pojo.Confessionwall;
 import com.confession.pojo.School;
 import com.confession.pojo.User;
-import com.confession.request.LoginRequest;
-import com.confession.request.RegisterRequest;
-import com.confession.request.UpdateAvatarRequest;
-import com.confession.request.UpdateNameRequest;
+import com.confession.request.*;
 import com.confession.service.AdminService;
 import com.confession.service.ConfessionwallService;
 import com.confession.service.SchoolService;
@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -133,13 +134,26 @@ public class UserController {
     }
 
     @GetMapping("/canModifyAvatar")
-    public Result canModifyAvatar(HttpServletRequest req){
-        int userId = Integer.valueOf(JwtConfig.getIdByJwtToken(req)); // 从请求头的token中获取用户ID
+    public Result canModifyAvatar(){
+//        int userId = Integer.valueOf(JwtConfig.getIdByJwtToken(req)); // 从请求头的token中获取用户ID
+        Integer userId = JwtInterceptor.getUser().getId();
         User user = userService.getById(userId);
         // 检查时间间隔
         if (!checkTimeInterval(user.getUpdateTime())) {
             return Result.build(400, "修改头像或名字的时间间隔不足三天");
         }
+        return Result.ok();
+    }
+
+    @GetMapping("admin/userList")
+    public Result userList(@ModelAttribute PageTool pageTool){
+        Page<User> page = new Page<>(pageTool.getPage(), pageTool.getLimit());
+        List<User> list = userService.page(page).getRecords();
+        return Result.ok(list);
+    }
+    @PostMapping("admin/userStatusMod")
+    public Result userStatusMod(@RequestBody @Validated UserStatusModRequest userStatusModRequest){
+        userService.statusMod(userStatusModRequest);
         return Result.ok();
     }
 
@@ -183,5 +197,6 @@ public class UserController {
         System.out.println("res="+res);
         return res;
     }
+
 
 }

@@ -12,6 +12,8 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.confession.comm.ResultCodeEnum.LOGIN_AURH;
 
@@ -37,6 +39,7 @@ public class JwtConfig {
                 .claim("UserName", user.getUsername())
                 .claim("openId",user.getOpenId())
                 .claim("schoolId",user.getSchoolId())
+                .claim("role", "user")  // 添加角色信息
                 //下面是第三部分
                 .signWith(SignatureAlgorithm.HS256, APP_SECRET)
                 .compact();
@@ -59,6 +62,7 @@ public class JwtConfig {
                 .claim("id", admin.getId())  //设置token主体部分 ，存储用户信息
                 .claim("phoneNumber", admin.getPhoneNumber())
                 .claim("weChatId",admin.getWeChatId())
+                .claim("role", "admin")  // 添加角色信息
                 //下面是第三部分
                 .signWith(SignatureAlgorithm.HS256, APP_SECRET)
                 .compact();
@@ -88,6 +92,53 @@ public class JwtConfig {
             throw new WallException("Token解析失败",222); // 抛出异常
         }
     }
+
+    public static Map<String, Object> getIdAndRoleByJwtToken(HttpServletRequest request) {
+        String jwtToken = request.getHeader("authentication");
+        System.out.println("jwtToken: "+jwtToken);
+        if (StringUtils.isEmpty(jwtToken)) {
+            throw new WallException(LOGIN_AURH); // 抛出异常
+        }
+        // 移除前缀
+        String cleanToken = jwtToken.replaceFirst("^PREFIX_", "");
+
+        try {
+            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(APP_SECRET).parseClaimsJws(cleanToken);
+            Claims claims = claimsJws.getBody();
+            Integer id = claims.get("id", Integer.class); // 解析为整数类型
+            String role = claims.get("role", String.class); // 解析为字符串类型
+
+            // 创建一个包含ID和角色的Map
+            Map<String, Object> result = new HashMap<>();
+            result.put("id", id);
+            result.put("role", role);
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new WallException("Token解析失败",222); // 抛出异常
+        }
+    }
+
+
+
+    //校验token是不是超级管理员的
+    public static boolean isAdminToken(String token) {
+        // 去掉前缀
+        if (token.startsWith("PREFIX_")) {
+            token = token.substring(7);
+        }
+
+        // 解析JWT
+        Claims claims = Jwts.parser()
+                .setSigningKey(APP_SECRET)
+                .parseClaimsJws(token)
+                .getBody();
+
+        // 检查role字段
+        String role = claims.get("role", String.class);
+        return "admin".equals(role);
+    }
+
 
 
 
