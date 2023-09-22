@@ -1,53 +1,88 @@
-import axios from 'axios';
+import axios from 'axios'
 
-// 创建一个Axios实例
-const zj = axios.create({
-    baseURL: 'https://localhost:2204', // 设置请求的基础URL
-    timeout: 5000, // 设置请求超时时间
-});
-
-// 添加请求拦截器
-zj.interceptors.request.use(
-    function (config) {
-        // 在发送请求之前做些什么
-
-        // 获取Token
-        const token = localStorage.getItem('token');
-
-        // 如果Token存在，则将Token添加到请求头中
-        if (token) {
-            config.headers['authorization'] = `PREFIX_${token}`;
-        }
-
-        return config;
-    },
-    function (error) {
-        // 对请求错误做些什么
-        return Promise.reject(error);
+//用法         const res = await http.get(api.right, params)
+axios.interceptors.request.use(config => {
+    // loading
+    const token = localStorage.getItem('token'); // 从本地变量中获取token
+    if (token) {
+        config.headers['authorization'] = `PREFIX_${token}`; // 添加authorization字段到请求头
     }
-);
+    return config
+}, error => {
+    return Promise.reject(error)
+})
 
+axios.interceptors.response.use(response => {
+    return response
+}, error => {
+    return Promise.resolve(error.response)
+})
 
-// 添加响应拦截器
-zj.interceptors.response.use(
-    function (response) {
-        // 对响应数据做些什么
-
-        // 如果返回的响应值为222，则跳转到登录页面
-        if (response.data.code === 222) {
-            // 跳转到登录页面
-            window.location.href = '/login';
-
-            // 抛出一个错误，以中断Promise链
-            return Promise.reject(new Error('登录状态过期'));
-        }
-
-        return response;
-    },
-    function (error) {
-        // 对响应错误做些什么
-        return Promise.reject(error);
+function checkStatus(response) {
+    // loading
+    // 如果http状态码正常，则直接返回数据
+    if (response && (response.status === 200 || response.status === 304 || response.status === 400)) {
+        return response
+        // 如果不需要除了data之外的数据，可以直接 return response.data
     }
-);
+    // 异常状态下，把错误信息返回去
+    return {
+        status: -404,
+        msg: '网络异常'
+    }
+}
 
-export default zj;
+function checkCode(res) {
+    // 如果code异常(这里已经包括网络错误，服务器错误，后端抛出的错误)，可以弹出一个错误提示，告诉用户
+    if (res.status === -404) {
+        alert(res.msg)
+    }
+    if (res.data && (!res.data.success)) {
+        alert(res.data.error_msg)
+    }
+    return res
+}
+
+export default {
+    post(url, data) {
+        return axios({
+            method: 'post',
+            baseURL: 'https://cnodejs.org/api/v1',
+            url,
+            data: JSON.stringify(data), // 将数据转为JSON格式
+            timeout: 10000,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json' // 设置Content-Type为application/json
+            }
+        }).then(
+            (response) => {
+                return checkStatus(response)
+            }
+        ).then(
+            (res) => {
+                return checkCode(res)
+            }
+        )
+    },
+    get(url, params) {
+        return axios({
+            method: 'get',
+            baseURL: 'https://cnodejs.org/api/v1',
+            url,
+            params, // get 请求时带的参数
+            timeout: 10000,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }).then(
+            (response) => {
+                return checkStatus(response)
+            }
+        ).then(
+            (res) => {
+                return checkCode(res)
+            }
+        )
+    }
+}

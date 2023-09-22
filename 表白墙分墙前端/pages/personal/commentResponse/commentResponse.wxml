@@ -1,13 +1,18 @@
-<view wx:for="{{list}}" wx:key="id" class="zj">
-	<view class="comment-item">
-		<image class="avatar" src="{{item.avatarURL}}"></image>
-		<view class="comment-info">
-			<view class="user-info">
-				<text class="user-name">@{{item.userName}}</text>
-				<text class="reply-text">回复您</text>
-			</view>
-			<text class="comment-time">{{item.commentTime}}</text>
-		</view>
-	</view>
-	<van-cell title="{{item.commentContent}}" size="large"></van-cell>
+<view wx:if="{{list.length > 0}}">
+  <view wx:for="{{list}}" wx:key="id" class="zj">
+    <view class="comment-item">
+      <image class="avatar" src="{{item.avatarURL}}"></image>
+      <view class="comment-info">
+        <view class="user-info">
+          <text class="user-name">@{{item.userName}}</text>
+          <text class="reply-text">回复您</text>
+        </view>
+        <text class="comment-time">{{item.commentTime}}</text>
+      </view>
+    </view>
+    <van-cell title="{{item.commentContent}}" size="large"></van-cell>
+  </view>
+</view>
+<view wx:else>
+  <van-divider contentPosition="center">暂无评论回复</van-divider>
 </view>

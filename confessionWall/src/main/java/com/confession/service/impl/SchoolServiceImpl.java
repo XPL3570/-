@@ -9,9 +9,11 @@ import com.confession.globalConfig.exception.WallException;
 import com.confession.mapper.MsgConfigurationMapper;
 import com.confession.mapper.SchoolApplicationMapper;
 import com.confession.mapper.SchoolMapper;
+import com.confession.mapper.UserMapper;
 import com.confession.pojo.MsgConfiguration;
 import com.confession.pojo.School;
 import com.confession.pojo.SchoolApplication;
+import com.confession.pojo.User;
 import com.confession.request.RegisterSchoolRequest;
 import com.confession.request.SchoolExamineRequest;
 import com.confession.service.SchoolService;
@@ -38,6 +40,10 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
 
     @Resource
     private SchoolMapper schoolMapper;
+
+    @Resource
+    private UserMapper userMapper;
+
 
     @Resource
     private MsgConfigurationMapper msgConfigurationMapper;
@@ -134,6 +140,9 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
             dto.setSchoolName(school.getSchoolName());
             dto.setAvatarURL(school.getAvatarURL());
             dto.setDescription(school.getDescription());
+            User user = userMapper.selectById(school.getCreatorId());
+            dto.setCreatorUsername(user.getUsername());
+            dto.setCreatorUserAvatarURL(user.getAvatarURL());
             // 查询对应的申请信息
             SchoolApplication application = schoolApplicationMapper.selectOne(
                     new LambdaQueryWrapper<SchoolApplication>().eq(SchoolApplication::getSchoolId, school.getId()));

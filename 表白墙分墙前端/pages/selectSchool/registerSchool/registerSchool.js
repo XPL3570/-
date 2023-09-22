@@ -122,7 +122,6 @@ Page({
 			});
 			return;
 		}
-
 		var data = {
 			userId: wx.getStorageSync('userId'),
 			avatarURL: this.data.fileList[0].url,
@@ -131,7 +130,6 @@ Page({
 			wechatNumber: this.data.wechatNumber,
 			phoneNumber: this.data.phoneNumber,
 		};
-		console.log(data)
 		// 获取全局变量
 		const app = getApp();
 		const baseUrl = app.globalData.apiUrl;
@@ -154,7 +152,7 @@ Page({
 					}
 					Dialog.alert({
 						title: '请注册表白墙',
-						message: '提交注入申请成功，等待管理员审核，请注册学校的表白墙',
+						message: '提交入驻申请成功，等待管理员审核，请注册学校的表白墙',
 						theme: 'round-button',
 					}).then(() => {
 						wx.navigateTo({
@@ -163,7 +161,7 @@ Page({
 					});
 				}else if(res.data.code===210){
 					Dialog.alert({
-						message: '学校已经入驻或者正在等待审核! 您可以入驻学校或者选择其他学校登录',
+						message: '学校已经入驻或者正在等待审核! 您可以入驻其他学校或者选择其他学校登录',
 					}).then(() => {
 						// on close
 					});
@@ -175,9 +173,6 @@ Page({
 				console.log(res.data);
 			}
 		});
-
-
-
 
 	},
 });

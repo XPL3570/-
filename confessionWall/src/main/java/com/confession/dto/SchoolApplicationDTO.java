@@ -1,8 +1,6 @@
 package com.confession.dto;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
-
 import java.time.LocalDateTime;
 
 /**
@@ -10,6 +8,14 @@ import java.time.LocalDateTime;
  */
 @Data
 public class SchoolApplicationDTO {
+
+    //创建者用户名
+    private String creatorUsername;
+
+
+    //创建者头像地址url
+    private String creatorUserAvatarURL;
+
     // 学校ID
     private Integer schoolId;
 
@@ -19,7 +25,7 @@ public class SchoolApplicationDTO {
     //创建时间
     private LocalDateTime createTime;
 
-    // 头像地址
+    // 学校头像
     private String avatarURL;
 
     // 描述内容
@@ -30,8 +36,6 @@ public class SchoolApplicationDTO {
 
     // 手机号
     private String phoneNumber;
-
-
 
 
 }

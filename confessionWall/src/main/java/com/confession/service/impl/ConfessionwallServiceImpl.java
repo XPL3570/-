@@ -41,11 +41,12 @@ public class ConfessionwallServiceImpl extends ServiceImpl<ConfessionwallMapper,
 
     @Override
     public void register(RegistryWhiteWallRequest registryWhiteWallRequest) {
+        System.out.println("aaaaa"+registryWhiteWallRequest.getUserId());
         Confessionwall zj = new Confessionwall();
         zj.setSchoolId(registryWhiteWallRequest.getSchoolId());
         zj.setAvatarURL(registryWhiteWallRequest.getAvatarURL());
         zj.setWallName(registryWhiteWallRequest.getConfessionWallName());
-        zj.setCreatorUserId( JwtInterceptor.getUser().getId());
+        zj.setCreatorUserId( registryWhiteWallRequest.getUserId());
         zj.setDescription(registryWhiteWallRequest.getDescription());
         confessionwallMapper.insert(zj);
     }

@@ -30,6 +30,8 @@ public class ConfessionWallController {
 
     /**
      * 注册 不同审核，反正用户是通过学校名字来绑定的   展示  注意这里目前学校和墙是一对一的
+     *
+     * 注意这里也是不要登录的 看着优化
      */
     @PostMapping("register")
     public Result register(@RequestBody @Validated RegistryWhiteWallRequest registryWhiteWallRequest){

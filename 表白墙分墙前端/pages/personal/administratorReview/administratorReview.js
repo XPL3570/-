@@ -100,7 +100,7 @@ Page({
 					postStatus:2,
 				}
 				console.log(data)
-				request.requestWithToken("/api/confessionPost/admin/submissionReview","POST",data,(res)=>{
+				request.requestWithToken("/api/confessionPost/userAdmin/submissionReview","POST",data,(res)=>{
 					console.log(res.data);
 						if(res.data.code===200){
 							var zj=this.data.list;

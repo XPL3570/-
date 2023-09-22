@@ -204,7 +204,7 @@ public class ConfessionPostController {
      * @param request
      * @return
      */
-    @PostMapping("admin/submissionReview")
+    @PostMapping("userAdmin/submissionReview")
     public Result submissionReview(@RequestBody @Validated AuditRequest request){
         Integer id = JwtInterceptor.getUser().getId();
         confessionPostService.submissionReview(id,request);

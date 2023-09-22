@@ -57,7 +57,7 @@ function requestWithToken(url, method, data, successCallback, failCallback) {
 					url: '/pages/selectSchool/selectSchool'
 				  });
 				  wx.showToast({
-					title: '选择好您的学校之后会自动绑定贵校表白墙',
+					title: '请绑定您的学校',
 					icon: 'none', 
 					duration: 3000
 				  });
