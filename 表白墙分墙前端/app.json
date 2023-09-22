@@ -4,6 +4,7 @@
 		"pages/test/test",
 		"pages/selectSchool/selectSchool",
 		"pages/selectSchool/registerSchool/registerSchool",
+		"pages/selectSchool/registerWall/registerWall",
 		"pages/release/release",
 		"pages/personal/personal",
 		"pages/personal/avatarMod/avatarMod",

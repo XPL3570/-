@@ -12,8 +12,6 @@ import store from './vuex/store';
 Vue.use(ElementUI);
 Vue.config.productionTip = false
 
-import axios from 'axios';
-Vue.prototype.$axios = axios;
 
 // 路由拦截器
 router.beforeEach((to, from, next) => {

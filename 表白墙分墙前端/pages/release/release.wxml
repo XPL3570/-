@@ -5,7 +5,7 @@
 	<view class="content">
 		<van-field label="投稿标题" placeholder="请输入20字以内的标题" autosize type="textarea" value="{{title}}" bindinput="handleTitleInput" error-message="{{TitleErrorMsg}}" size="large" required="ture"></van-field>
 
-		<van-field class="content" label="投稿内容" placeholder="请输入投稿内容" autosize type="textarea" value="{{content}}" bindinput="handleContentInput" size="large" required="ture"></van-field>
+		<van-field class="content" label="投稿内容" placeholder="请输入投稿内容" autosize type="textarea" value="{{content}}" bindinput="handleContentInput"  size="large" required="ture"></van-field>
 	</view>
 
 	<van-checkbox class="checkbox" value="{{ checked }}" bind:change="onChange">是否匿名发布</van-checkbox>

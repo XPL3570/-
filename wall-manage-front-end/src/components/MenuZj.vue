@@ -91,19 +91,7 @@ export default {
     }
     this.allmenu = res.data
 
-    // menu(localStorage.getItem('logintoken'))
-    //   .then(res => {
-    //     console.log(JSON.stringify(res))
-    //     if (res.success) {
-    //       this.allmenu = res.data
-    //     } else {
-    //       this.$message.error(res.msg)
-    //       return false
-    //     }
-    //   })
-    //   .catch(err => {
-    //     this.$message.error('菜单加载失败，请稍后再试！')
-    //   })
+
     // 监听
     this.$root.Bus.$on('toggle', value => {
       this.collapsed = !value

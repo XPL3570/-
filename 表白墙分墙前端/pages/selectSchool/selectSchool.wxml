@@ -25,3 +25,5 @@
   <van-button type="primary" bind:tap="onSubmit" custom-class="submit-button">提交</van-button>
 
 </view>
+
+<van-dialog id="van-dialog" />

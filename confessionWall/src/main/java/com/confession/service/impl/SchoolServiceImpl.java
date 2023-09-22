@@ -4,11 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.confession.comm.PageTool;
+import com.confession.dto.SchoolApplicationDTO;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.mapper.MsgConfigurationMapper;
+import com.confession.mapper.SchoolApplicationMapper;
 import com.confession.mapper.SchoolMapper;
 import com.confession.pojo.MsgConfiguration;
 import com.confession.pojo.School;
+import com.confession.pojo.SchoolApplication;
 import com.confession.request.RegisterSchoolRequest;
 import com.confession.request.SchoolExamineRequest;
 import com.confession.service.SchoolService;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.confession.comm.ResultCodeEnum.SCHOOL_REGISTERED;
 
@@ -37,6 +41,9 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
 
     @Resource
     private MsgConfigurationMapper msgConfigurationMapper;
+
+    @Resource
+    private SchoolApplicationMapper schoolApplicationMapper;
 
 
     /**
@@ -67,7 +74,7 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
     }
 
     @Override
-    public Integer register(RegisterSchoolRequest registerSchool) {
+    public Integer registerSchool(RegisterSchoolRequest registerSchool) {
         LambdaQueryWrapper<School> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(School::getSchoolName,registerSchool.getSchoolName());
         School school;
@@ -79,11 +86,27 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
         }
         if (school==null){ //没有注册
             school = new School();
+            school.setCreatorId(registerSchool.getUserId());
             school.setSchoolName(registerSchool.getSchoolName());
             school.setAvatarURL(registerSchool.getAvatarURL());
             school.setDescription(registerSchool.getDescription());
+            school.setIsVerified(0);//初始状态
             schoolMapper.insert(school);
-            return school.getId(); // 返回新插入的记录的ID
+
+            // 获取新插入的学校的ID
+            Integer schoolId = school.getId();
+            // 创建一个新的SchoolApplication对象
+            SchoolApplication schoolApplication = new SchoolApplication();
+            schoolApplication.setSchoolId(schoolId);
+            schoolApplication.setWechatNumber(registerSchool.getWechatNumber());
+            schoolApplication.setPhoneNumber(registerSchool.getPhoneNumber());
+
+            schoolApplication.setIsApproved(0);
+
+        // 插入新的SchoolApplication记录
+            schoolApplicationMapper.insert(schoolApplication);
+
+            return schoolId; // 返回新插入的记录的ID
         }else {
             throw new WallException(SCHOOL_REGISTERED);
         }
@@ -98,13 +121,32 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
     }
 
     @Override
-    public List<School> viewNoReview(PageTool pageTool) {
+    public List<SchoolApplicationDTO> viewNoReview(PageTool pageTool) {
         LambdaQueryWrapper<School> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(School::getIsVerified,0);
         Page<School> page = new Page<>(pageTool.getPage(), pageTool.getLimit());
         List<School> schools = schoolMapper.selectPage(page, null).getRecords();
-        return schools;
+
+        // 转换为DTO
+        List<SchoolApplicationDTO> dtoList = schools.stream().map(school -> {
+            SchoolApplicationDTO dto = new SchoolApplicationDTO();
+            dto.setSchoolId(school.getId());
+            dto.setSchoolName(school.getSchoolName());
+            dto.setAvatarURL(school.getAvatarURL());
+            dto.setDescription(school.getDescription());
+            // 查询对应的申请信息
+            SchoolApplication application = schoolApplicationMapper.selectOne(
+                    new LambdaQueryWrapper<SchoolApplication>().eq(SchoolApplication::getSchoolId, school.getId()));
+            if (application != null) {
+                dto.setWechatNumber(application.getWechatNumber());
+                dto.setPhoneNumber(application.getPhoneNumber());
+            }
+            return dto;
+        }).collect(Collectors.toList());
+
+        return dtoList;
     }
+
 
     @Override
     public void examinePost(SchoolExamineRequest schoolExamineRequest) {

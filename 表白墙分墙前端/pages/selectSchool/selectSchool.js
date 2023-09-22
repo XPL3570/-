@@ -1,5 +1,6 @@
 var util = require('../../utils/util');
 const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0';
+import Dialog from '@vant/weapp/dialog/dialog';
 Page({
 	data: {
 		userName: '',
@@ -62,16 +63,21 @@ Page({
 								icon: 'success',
 								duration: 2000
 							});
-						} else if (res.data.code === 206) {
-							// 学校未入驻，跳转到注册学校页面
-							wx.navigateTo({
-								url: '/pages/selectSchool/registerSchool/registerSchool?schoolName=' + schoolName
-							});
-							wx.showToast({
-								title: '学校未入驻，可以入驻绑定学校',
-								icon: 'error',
-								duration: 2000
-							});
+						} else if (res.data.code === 211) {
+							wx.setStorageSync('userId', res.data.data);
+							// 学校未入驻，提示用户重新输入还是跳转到 注册学校的页面
+							Dialog.confirm({
+								title: '是否注册该学校',
+								message: '您想绑定的学校未入驻或者还未通过审核，是否注册该学校？',
+							})
+								.then(() => {
+									wx.navigateTo({
+										url: '/pages/selectSchool/registerSchool/registerSchool?schoolName=' + schoolName
+									});
+								})
+								.catch(() => {
+									// on cancel
+								});
 						} else {
 							wx.showToast({
 								title: res.data.messag,

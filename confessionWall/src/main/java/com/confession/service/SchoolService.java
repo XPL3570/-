@@ -2,6 +2,7 @@ package com.confession.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.confession.comm.PageTool;
+import com.confession.dto.SchoolApplicationDTO;
 import com.confession.pojo.School;
 import com.confession.request.RegisterSchoolRequest;
 import com.confession.request.SchoolExamineRequest;
@@ -35,7 +36,7 @@ public interface SchoolService extends IService<School> {
     /**
      * 注册学校
      */
-    Integer register(RegisterSchoolRequest registerSchool);
+    Integer registerSchool(RegisterSchoolRequest registerSchool);
 
     /**
      * 查看学校
@@ -49,7 +50,7 @@ public interface SchoolService extends IService<School> {
      * @param pageTool
      * @return
      */
-    List<School> viewNoReview(PageTool pageTool);
+    List<SchoolApplicationDTO> viewNoReview(PageTool pageTool);
 
 
     /**

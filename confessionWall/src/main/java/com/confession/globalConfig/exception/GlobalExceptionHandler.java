@@ -3,6 +3,7 @@ package com.confession.globalConfig.exception;
 
 import com.confession.comm.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,6 +21,14 @@ public class GlobalExceptionHandler {
         e.printStackTrace();
         return Result.fail(e.getMessage());
     }
+
+    @ExceptionHandler(BadSqlGrammarException.class)
+    @ResponseBody
+    public Result handleBadSqlGrammarException(BadSqlGrammarException e) {
+        log.error("BadSqlGrammarException异常，SQL语法错误：{}", e.getMessage());
+        return Result.fail(e.getMessage());
+    }
+
 
     @ExceptionHandler(BindException.class)
     @ResponseBody

@@ -4,10 +4,7 @@ package com.confession.config;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.pojo.Admin;
 import com.confession.pojo.User;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.confession.comm.ResultCodeEnum.LOGIN_AURH;
+import static com.confession.comm.ResultCodeEnum.TOKEN_EXPIRE;
 
 public class JwtConfig {
 
@@ -113,9 +111,12 @@ public class JwtConfig {
             result.put("id", id);
             result.put("role", role);
             return result;
+        }catch (ExpiredJwtException expiredJwtException) {
+            // Token已过期
+            throw new WallException(TOKEN_EXPIRE);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new WallException("Token解析失败",222); // 抛出异常
+            throw new WallException(TOKEN_EXPIRE); // 抛出异常
         }
     }
 

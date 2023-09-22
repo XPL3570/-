@@ -3,6 +3,7 @@ package com.confession.controller;
 
 import com.confession.comm.PageTool;
 import com.confession.comm.Result;
+import com.confession.dto.SchoolApplicationDTO;
 import com.confession.pojo.School;
 import com.confession.request.RegisterSchoolRequest;
 import com.confession.request.SchoolExamineRequest;
@@ -42,11 +43,11 @@ public class SchoolController {
     }
 
     /**
-     * 注册学校的接口
+     * 注册学校的接口  也包括注册者的信息  这里没有使用token
      */
     @PostMapping("register")
     public Result registerSchool(@RequestBody @Validated RegisterSchoolRequest registerSchool){
-        Integer schoolId = schoolService.register(registerSchool);
+        Integer schoolId = schoolService.registerSchool(registerSchool);
         return Result.ok(schoolId);
     }
 
@@ -66,7 +67,7 @@ public class SchoolController {
      */
     @GetMapping("admin/viewNoReview")
     public Result viewNoReview(@ModelAttribute PageTool pageTool){
-        List<School> list=schoolService.viewNoReview(pageTool);
+        List<SchoolApplicationDTO> list=schoolService.viewNoReview(pageTool);
         return Result.ok(list);
     }
 
