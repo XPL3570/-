@@ -1,5 +1,6 @@
 package com.confession.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import java.time.LocalDateTime;
 
@@ -23,6 +24,7 @@ public class SchoolApplicationDTO {
     private String schoolName;
 
     //创建时间
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     // 学校头像

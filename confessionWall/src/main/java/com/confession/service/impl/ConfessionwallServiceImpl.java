@@ -31,6 +31,7 @@ public class ConfessionwallServiceImpl extends ServiceImpl<ConfessionwallMapper,
     public Confessionwall selectSchoolInWallOne(Integer schoolId) {
         LambdaQueryWrapper<Confessionwall> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Confessionwall::getSchoolId,schoolId);
+        wrapper.eq(Confessionwall::getStatus,0); //状态
         List<Confessionwall> wallList = confessionwallMapper.selectList(wrapper);
         if (wallList!=null){
             return wallList.get(0); //拿到第一个墙id
@@ -41,13 +42,13 @@ public class ConfessionwallServiceImpl extends ServiceImpl<ConfessionwallMapper,
 
     @Override
     public void register(RegistryWhiteWallRequest registryWhiteWallRequest) {
-        System.out.println("aaaaa"+registryWhiteWallRequest.getUserId());
         Confessionwall zj = new Confessionwall();
         zj.setSchoolId(registryWhiteWallRequest.getSchoolId());
         zj.setAvatarURL(registryWhiteWallRequest.getAvatarURL());
         zj.setWallName(registryWhiteWallRequest.getConfessionWallName());
         zj.setCreatorUserId( registryWhiteWallRequest.getUserId());
         zj.setDescription(registryWhiteWallRequest.getDescription());
+        zj.setStatus(1); //默认禁用
         confessionwallMapper.insert(zj);
     }
 }

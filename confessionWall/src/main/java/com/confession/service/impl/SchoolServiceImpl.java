@@ -3,17 +3,13 @@ package com.confession.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
 import com.confession.dto.SchoolApplicationDTO;
 import com.confession.globalConfig.exception.WallException;
-import com.confession.mapper.MsgConfigurationMapper;
-import com.confession.mapper.SchoolApplicationMapper;
-import com.confession.mapper.SchoolMapper;
-import com.confession.mapper.UserMapper;
-import com.confession.pojo.MsgConfiguration;
-import com.confession.pojo.School;
-import com.confession.pojo.SchoolApplication;
-import com.confession.pojo.User;
+import com.confession.globalConfig.interceptor.JwtInterceptor;
+import com.confession.mapper.*;
+import com.confession.pojo.*;
 import com.confession.request.RegisterSchoolRequest;
 import com.confession.request.SchoolExamineRequest;
 import com.confession.service.SchoolService;
@@ -44,12 +40,15 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
     @Resource
     private UserMapper userMapper;
 
+    @Resource
+    private SchoolApplicationMapper schoolApplicationMapper;
 
     @Resource
     private MsgConfigurationMapper msgConfigurationMapper;
 
     @Resource
-    private SchoolApplicationMapper schoolApplicationMapper;
+    private ConfessionwallMapper confessionwallMapper;
+
 
 
     /**
@@ -120,18 +119,19 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
 
 
     @Override
-    public List<School> viewSchool(PageTool pageTool) {
+    public PageResult viewSchool(PageTool pageTool) {
         Page<School> page = new Page<>(pageTool.getPage(), pageTool.getLimit());
         List<School> schools = schoolMapper.selectPage(page, null).getRecords();
-        return schools;
+        long total = page.getSize();
+        return new PageResult(schools, total,schools.size());
     }
 
     @Override
-    public List<SchoolApplicationDTO> viewNoReview(PageTool pageTool) {
+    public PageResult viewNoReview(PageTool pageTool) {
         LambdaQueryWrapper<School> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(School::getIsVerified,0);
         Page<School> page = new Page<>(pageTool.getPage(), pageTool.getLimit());
-        List<School> schools = schoolMapper.selectPage(page, null).getRecords();
+        List<School> schools = schoolMapper.selectPage(page, wrapper).getRecords();
 
         // 转换为DTO
         List<SchoolApplicationDTO> dtoList = schools.stream().map(school -> {
@@ -140,6 +140,7 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
             dto.setSchoolName(school.getSchoolName());
             dto.setAvatarURL(school.getAvatarURL());
             dto.setDescription(school.getDescription());
+            dto.setCreateTime(school.getCreateTime());
             User user = userMapper.selectById(school.getCreatorId());
             dto.setCreatorUsername(user.getUsername());
             dto.setCreatorUserAvatarURL(user.getAvatarURL());
@@ -153,21 +154,31 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
             return dto;
         }).collect(Collectors.toList());
 
-        return dtoList;
+        return new PageResult<>(dtoList,page.getTotal(),schools.size());
     }
 
 
     @Override
     public void examinePost(SchoolExamineRequest schoolExamineRequest) {
-        School school = new School();
-        school.setIsVerified(schoolExamineRequest.getIsVerified());
+        LambdaUpdateWrapper<School> updateWrapper = new LambdaUpdateWrapper<>();  //学校
+        updateWrapper.eq(School::getId, schoolExamineRequest.getSchoolId())
+                .set(School::getIsVerified,schoolExamineRequest.getIsVerified());
 
-        LambdaUpdateWrapper<School> updateWrapper = new LambdaUpdateWrapper<>();
-        updateWrapper.eq(School::getId, schoolExamineRequest.getSchoolId());
+        LambdaUpdateWrapper<SchoolApplication> updateWrapperZj = new LambdaUpdateWrapper<>(); //记录
+        updateWrapperZj.eq(SchoolApplication::getSchoolId,schoolExamineRequest.getSchoolId()).
+                set(SchoolApplication::getIsApproved,JwtInterceptor.getUser().getId())
+                .set(SchoolApplication::getIsApproved,schoolExamineRequest.getIsVerified());
 
-        int update = schoolMapper.update(school, updateWrapper);
+        LambdaUpdateWrapper<Confessionwall> updateWrapperWall = new LambdaUpdateWrapper<>();
+        updateWrapperWall.eq(Confessionwall::getSchoolId,schoolExamineRequest.getSchoolId())
+                        .set(Confessionwall::getStatus,1);
+
+
+        confessionwallMapper.update(null,updateWrapperWall);
+        schoolApplicationMapper.update(null, updateWrapperZj);
+        int update = schoolMapper.update(null, updateWrapper);
         if (update<1){
-            throw new WallException("修改失败，更新数小于一条",201);
+            throw new WallException("学校状态或学校记录表状态修改异常",201);
         }
     }
 

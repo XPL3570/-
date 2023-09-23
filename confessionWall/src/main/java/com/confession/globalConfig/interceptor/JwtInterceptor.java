@@ -27,7 +27,7 @@ public class JwtInterceptor implements HandlerInterceptor {
         Map<String, Object> idAndRole = JwtConfig.getIdAndRoleByJwtToken(request);
         String role = (String) idAndRole.get("role");
 
-        // 根据请求的URL判断角色
+        // 根据请求的URL判断是否要管理员
         String servletPath = request.getServletPath();
         if (servletPath.contains("/admin")) { //
             if (!"admin".equals(role)) {

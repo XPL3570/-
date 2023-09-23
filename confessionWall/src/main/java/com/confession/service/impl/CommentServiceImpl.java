@@ -9,7 +9,9 @@ import com.confession.dto.CommentDTO;
 import com.confession.dto.UserDTO;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.mapper.CommentMapper;
+import com.confession.mapper.UserMapper;
 import com.confession.pojo.Comment;
+import com.confession.pojo.User;
 import com.confession.request.PostCommentRequest;
 import com.confession.service.CommentService;
 import com.confession.service.UserService;
@@ -22,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.confession.comm.ResultCodeEnum.CANNOT_COMMENT;
 import static com.confession.comm.ResultCodeEnum.COMMENT_OVER_LIMIT;
 
 /**
@@ -43,13 +46,22 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Resource
     private WallConfig wallConfig;
 
+    @Resource
+    private UserMapper userMapper;
+
     @Override
     public Integer publishCommentReply(PostCommentRequest request, Integer userId) {
 
         //todo  将来可能会把这个评论的发表直接同步到缓存,用户信息会上缓存
 
+        //判断用户是不是可以评论的
+        User user = userMapper.selectById(userId);  //检查用户状态是否可以评论
+        int userStatus=user.getStatus();
+        if (userStatus==2||userStatus==3){
+            throw new WallException(CANNOT_COMMENT);
+        }
         int count = commentMapper.getCommentCountByUserIdAndDate(userId, LocalDate.now());
-        System.out.println(count);
+
         if (count >= wallConfig.getUserDailyCommentLimit()) {  //判断是否超过每天评论限制
             throw new WallException(COMMENT_OVER_LIMIT);
         }

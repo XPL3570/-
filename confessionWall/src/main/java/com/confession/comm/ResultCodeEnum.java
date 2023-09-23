@@ -29,6 +29,9 @@ public enum ResultCodeEnum {
     TOKEN_EXPIRE(222, "token无效或过期"),
     SUBMISSION_EXCEEDS_LIMIT(238,"放入恋爱箱超过限制，请稍后重试"),
     WITHDRAWAL_EXCEEDS_LIMIT(239,"抽纸条数量超过限制，请稍后重试"),
+    CANNOT_COMMENT(241,"您暂时被限制发言了哦，如有疑问联系表白墙"),
+    CANNOT_POST(242,"您暂时被限制投稿表白了哦，如有疑问联系表白墙"),
+
     ;
 
     private Integer code;

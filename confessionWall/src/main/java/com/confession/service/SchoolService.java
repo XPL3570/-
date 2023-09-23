@@ -1,6 +1,7 @@
 package com.confession.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
 import com.confession.dto.SchoolApplicationDTO;
 import com.confession.pojo.School;
@@ -43,18 +44,18 @@ public interface SchoolService extends IService<School> {
      * @param pageTool
      * @return
      */
-    List<School> viewSchool(PageTool pageTool);
+    PageResult viewSchool(PageTool pageTool);
 
     /**
      * 查看没有通过审核的接口
      * @param pageTool
      * @return
      */
-    List<SchoolApplicationDTO> viewNoReview(PageTool pageTool);
+    PageResult viewNoReview(PageTool pageTool);
 
 
     /**
-     * 审核学校
+     * 审核学校    把对应的学校表，学校申请记录表，对应的表白墙的状态设置成正常
      * @param schoolExamineRequest
      */
     void examinePost(SchoolExamineRequest schoolExamineRequest);

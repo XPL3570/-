@@ -1,65 +1,68 @@
 <template>
   <div>
-  <el-table
-      :data="tableData"
-      border
-      style="width: 100%">
-    <el-table-column
-        fixed
-        prop="schoolName"
-        label="学校名称"
-        width="120">
-    </el-table-column>
-    <el-table-column
-        prop="schoolId"
-        label="学校ID"
-        width="72">
-    </el-table-column>
-    <el-table-column
-        prop="creatorUsername"
-        label="创建者用户名"
-        width="120">
-    </el-table-column>
-    <el-table-column
-        prop="creatorUserAvatarURL"
-        label="创建者头像"
-        width="120">
-      <template v-slot:default="scope">
-        <div style="display: flex; justify-content: center;">
-          <img :src="scope.row.creatorUserAvatarURL" alt="avatar" width="72"/>
-        </div>
-      </template>
-    </el-table-column>
-    <el-table-column
-        prop="createTime"
-        label="创建时间"
-        width="150">
-    </el-table-column>
-    <el-table-column
-        prop="avatarURL"
-        label="学校头像"
-        width="120">
-      <template v-slot:default="scope">
-        <div style="display: flex; justify-content: center;">
-          <img :src="scope.row.avatarURL" alt="avatar" width="72"/>
-        </div>
-      </template>
-    </el-table-column>
-    <el-table-column
-        prop="description"
-        label="描述内容"
-        width="300">
-    </el-table-column>
-    <el-table-column
-        prop="wechatNumber"
-        label="微信号"
-        width="120">
-    </el-table-column>
-    <el-table-column
-        prop="phoneNumber"
-        label="手机号"
-        width="120">
-    </el-table-column>
+    <el-table
+        :data="tableData"
+        border
+        highlight-current-row
+        v-loading="loading"
+        element-loading-text="拼命加载中"
+        style="width: 100%">
+      <el-table-column
+          fixed
+          prop="schoolName"
+          label="学校名称"
+          width="120">
+      </el-table-column>
+      <el-table-column
+          prop="schoolId"
+          label="学校ID"
+          width="72">
+      </el-table-column>
+      <el-table-column
+          prop="creatorUsername"
+          label="创建者用户名"
+          width="120">
+      </el-table-column>
+      <el-table-column
+          prop="creatorUserAvatarURL"
+          label="创建者头像"
+          width="120">
+        <template v-slot:default="scope">
+          <div style="display: flex; justify-content: center;">
+            <img :src="scope.row['creatorUserAvatarURL']" alt="avatar" width="72"/>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column
+          prop="createTime"
+          label="申请时间"
+          width="157">
+      </el-table-column>
+      <el-table-column
+          prop="avatarURL"
+          label="学校头像"
+          width="115">
+        <template v-slot:default="scope">
+          <div style="display: flex; justify-content: center;">
+            <img :src="scope.row['avatarURL']" alt="avatar" width="72"/>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column
+          prop="description"
+          label="描述内容"
+          width="300">
+      </el-table-column>
+      <el-table-column
+          prop="wechatNumber"
+          label="微信号"
+          width="120">
+      </el-table-column>
+      <el-table-column
+          prop="phoneNumber"
+          label="手机号"
+          width="120">
+      </el-table-column>
       <el-table-column
           fixed="right"
           label="操作"
@@ -70,18 +73,20 @@
           <div style="display: flex; justify-content: center;">
             <!-- type="primary" 使按钮显示为蓝色 -->
             <!-- style="margin-right: 10px;" 在按钮右侧添加 10px 的外边距 -->
-            <el-button @click="showConfirm(scope.row, 'approve')" type="primary" size="small" style="margin-right: 10px;">
+            <el-button @click="showConfirm(scope.row, 'approve')" type="primary" size="small"
+                       style="margin-right: 10px;">
               通过审核
             </el-button>
             <!-- type="danger" 使按钮显示为红色 -->
             <el-button @click="showConfirm(scope.row, 'reject')" type="danger" size="small">不通过审核</el-button>
-
           </div>
         </template>
       </el-table-column>
-
-
     </el-table>
+
+    <!-- 分页组件 -->
+    <PageView v-bind:childMsg="page" @callFather="callFather"></PageView>
+
     <el-dialog :visible.sync="dialogVisible" width="30%" @before-close="handleClose">
       <span v-if="currentAction === 'approve'">你确定要通过审核吗？</span>
       <span v-else-if="currentAction === 'reject'">确定不通过审核吗？</span>
@@ -93,51 +98,70 @@
     <el-button type="primary" @click="confirmAction">确 定</el-button>
   </span>
     </el-dialog>
-
   </div>
-
 
 </template>
 
-
 <script>
+import api from "@/axios";
+import PageView from '@/components/PageView.vue'
+
 export default {
+  components: {PageView},
+
   data() {
     return {
+      loading:false,
+      page: {  //分页参数
+        page: 1,  //第几页
+        limit: 5,
+        total: null
+      },
+      formInline: { //分页参数，每次都是调用他来获取后台然后
+        page: 1,
+        limit: 5
+      },
       // 控制确认提示对话框的显示和隐藏
       dialogVisible: false,
       // 存储当前行的数据
       currentRow: null,
       // 存储当前的操作（'approve' 或 'reject'）
       currentAction: null,
-      tableData: [
-        {
-          creatorUsername: 'John Doe',
-          creatorUserAvatarURL: 'http://127.0.0.1:2204/upload/20230922152608AbvYMQ.jpg',
-          schoolId: 1,
-          schoolName: 'School 1',
-          createTime: '2022-02-01 10:00:00',
-          avatarURL: 'https://example.com/avatar2.jpg',
-          description: 'This is a description',
-          wechatNumber: 'wechat123',
-          phoneNumber: '1234567890'
-        },
-        {
-          creatorUsername: 'Jane Doe',
-          creatorUserAvatarURL: 'https://example.com/avatar3.jpg',
-          schoolId: 2,
-          schoolName: 'School 2',
-          createTime: '2022-02-02 11:00:00',
-          avatarURL: 'https://example.com/avatar4.jpg',
-          description: 'This is another description',
-          wechatNumber: 'wechat456',
-          phoneNumber: '0987654321'
-        },
-        // 更多的假数据...
-      ]
+      tableData: []
     };
   },
+  // 创建完毕状态(里面是操作)
+  created() {
+    this.getData(this.formInline)
+  },
+
   methods: {
+    getData(param){
+      this.loading = true
+      api.get('/api/school/admin/viewNoReview',param)
+          .then(res=>{
+            console.log(res.data.data.total)
+            if (res.data.code===200){
+              this.loading = true
+              this.tableData=res.data.data.data
+              this.page.page = this.formInline.page
+              this.page.limit = this.formInline.limit
+              this.page.total = res.data.data.total
+              this.loading = false
+              // console.log(this.tableData)
+            }else {
+              //直接给错误提示
+              this.$message.error(res.data.message);
+            }
+          })
+    },
+    callFather(param) {
+      this.formInline.page = param.page
+      this.formInline.limit = param.limit
+
+      console.log(this.formInline)
+      this.getData(this.formInline)
+    },
     // 显示确认提示对话框，并存储当前行的数据和当前的操作
     showConfirm(row, action) {
       this.currentRow = row;
@@ -166,14 +190,41 @@ export default {
     // 处理 "通过审核" 的操作
     handleApprove(row) {
       // 在这里添加你的代码来处理 "通过审核" 的操作
+      let zj = {
+        schoolId:row.schoolId,
+        isVerified:1
+      };
+      api.post('api/school/admin/examine',zj).then(
+          res=>{
+            if (res.data.code===200){
+              this.getData(this.formInline);
+              this.$message.success('通过 ' + row.schoolName + ' 的审核成功');
+            }else {
+              console.error(res.data)
+              this.$message.error('提交' + row.schoolName + ' 的审核申请失败了');
+            }
+          }
+      )
 
-      console.log('通过审核', row.schoolId);
     },
 
     // 处理 "不通过审核" 的操作
     handleReject(row) {
-      // 在这里添加你的代码来处理 "不通过审核" 的操作
-      console.log('不通过审核', row);
+      let zj = {
+        schoolId:row.schoolId,
+        isVerified:2
+      };
+      api.post('api/school/admin/examine',zj).then(
+          res=>{
+            if (res.data.code===200){
+              this.getData(this.formInline);
+              this.$message.warning('没有通过 ' + row.schoolName + ' 的审核哦 ! ! !');
+            }else {
+              console.error(res.data)
+              this.$message.error('提交' + row.schoolName + ' 的审核申请失败了');
+            }
+          }
+      )
     }
   }
 }

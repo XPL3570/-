@@ -58,7 +58,16 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
         LambdaQueryWrapper<Admin> wrapper = new LambdaQueryWrapper<>();
         //这里那字段里面的微信号做账号
         wrapper.eq(Admin::getWeChatId,adminLoginRequest.getAccount());
-        wrapper.eq(Admin::getPassword, EncryptionUtil.decrypt(adminLoginRequest.getPassword()));
+        try {
+            wrapper.eq(Admin::getPassword, EncryptionUtil.encrypt(adminLoginRequest.getPassword()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            System.out.println(EncryptionUtil.encrypt(adminLoginRequest.getPassword()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         wrapper.eq(Admin::getPermission,1);
         Admin admin = adminMapper.selectOne(wrapper);
         Map<String, Object> map = new HashMap<>();
@@ -73,7 +82,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
                 throw new WallException("token生产失败",201);
             }
         }else {
-            throw new WallException("获取管理员身份失败",201);
+            throw new WallException("账号或密码错误",201);
         }
         return map;
 

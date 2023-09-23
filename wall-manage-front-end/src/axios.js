@@ -5,7 +5,7 @@ axios.interceptors.request.use(config => {
     // loading
     const token = localStorage.getItem('token'); // 从本地变量中获取token
     if (token) {
-        config.headers['authorization'] = `PREFIX_${token}`; // 添加authorization字段到请求头
+        config.headers['authentication'] = token; // 添加authorization字段到请求头
     }
     return config
 }, error => {
@@ -18,27 +18,11 @@ axios.interceptors.response.use(response => {
     return Promise.resolve(error.response)
 })
 
-function checkStatus(response) {
-    // loading
-    // 如果http状态码正常，则直接返回数据
-    if (response && (response.status === 200 || response.status === 304 || response.status === 400)) {
-        return response
-        // 如果不需要除了data之外的数据，可以直接 return response.data
-    }
-    // 异常状态下，把错误信息返回去
-    return {
-        status: -404,
-        msg: '网络异常'
-    }
-}
 
 function checkCode(res) {
-    // 如果code异常(这里已经包括网络错误，服务器错误，后端抛出的错误)，可以弹出一个错误提示，告诉用户
-    if (res.status === -404) {
-        alert(res.msg)
-    }
-    if (res.data && (!res.data.success)) {
-        alert(res.data.error_msg)
+    if (res.data && (!res.data.ok)) {
+        // alert(res.data.message)
+        console.error(res.data.message);
     }
     return res
 }
@@ -47,19 +31,14 @@ export default {
     post(url, data) {
         return axios({
             method: 'post',
-            baseURL: 'https://cnodejs.org/api/v1',
+            baseURL: 'http://localhost:2204',
             url,
             data: JSON.stringify(data), // 将数据转为JSON格式
             timeout: 10000,
             headers: {
-                'X-Requested-With': 'XMLHttpRequest',
                 'Content-Type': 'application/json' // 设置Content-Type为application/json
             }
         }).then(
-            (response) => {
-                return checkStatus(response)
-            }
-        ).then(
             (res) => {
                 return checkCode(res)
             }
@@ -68,18 +47,12 @@ export default {
     get(url, params) {
         return axios({
             method: 'get',
-            baseURL: 'https://cnodejs.org/api/v1',
+            baseURL: 'http://localhost:2204',
             url,
             params, // get 请求时带的参数
             timeout: 10000,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
+            headers: {}
         }).then(
-            (response) => {
-                return checkStatus(response)
-            }
-        ).then(
             (res) => {
                 return checkCode(res)
             }

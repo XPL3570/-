@@ -9,7 +9,9 @@ import com.confession.dto.ConfessionPostDTO;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
 import com.confession.mapper.ConfessionwallMapper;
+import com.confession.mapper.UserMapper;
 import com.confession.pojo.Confessionpost;
+import com.confession.pojo.User;
 import com.confession.request.AuditRequest;
 import com.confession.request.ConfessionPostRequest;
 import com.confession.request.ReadConfessionRequest;
@@ -50,8 +52,6 @@ public class ConfessionPostController {
     @Resource
     private ConfessionpostService confessionPostService;
 
-    @Resource
-    private ConfessionwallMapper confessionwallMapper;
 
     @Resource
     private AdminService adminService;
@@ -62,8 +62,11 @@ public class ConfessionPostController {
     @Resource
     private RedisTemplate redisTemplate;
 
+    @Resource
+    private UserMapper userMapper;
+
     /**
-     * 查看学校的投稿内容    todo 可以在一开始就把数据加载到缓存
+     * 查看学校的投稿内容    todo 可以在一开始就把数据加载到缓存    这里要不要做一个查询表白墙表状态是否是可用的状态
      */
     @PostMapping("readConfessionWall")
     public Result readConfessionWall(@RequestBody ReadConfessionRequest request){
@@ -116,6 +119,13 @@ public class ConfessionPostController {
     public Result submitConfessionWall(@RequestBody ConfessionPostRequest confessionRequest) {
         Integer userId = JwtInterceptor.getUser().getId();
 
+
+        //判断用户是否可以发布投稿
+        User user = userMapper.selectById(userId);
+        Integer userStatus = user.getStatus();
+        if (userStatus==1||userStatus==3){
+            throw new WallException(CANNOT_POST);
+        }
 
         //判断该用户每天的投稿有没有超过限制
         int count = confessionPostService.getPostCountByUserIdAndDate(userId, LocalDate.now());

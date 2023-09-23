@@ -15,7 +15,7 @@ import com.confession.request.RegistryWhiteWallRequest;
 public interface ConfessionwallService extends IService<Confessionwall> {
 
     /**
-     * 查询学校id下的的一个墙id，这里如果是多个就返回第一个
+     * 查询学校id下的的一个墙id，这里如果是多个就返回第一个  ,状态要正常
      * @param schoolId
      * @return
      */

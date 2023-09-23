@@ -1,6 +1,7 @@
 package com.confession.controller;
 
 
+import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
 import com.confession.comm.Result;
 import com.confession.dto.SchoolApplicationDTO;
@@ -56,7 +57,7 @@ public class SchoolController {
      */
     @GetMapping("admin/viewSchool")
     public Result viewSchool(@ModelAttribute PageTool pageTool){
-        List<School> list=schoolService.viewSchool(pageTool);
+        PageResult list=schoolService.viewSchool(pageTool);
 
         return Result.ok(list);
     }
@@ -67,7 +68,7 @@ public class SchoolController {
      */
     @GetMapping("admin/viewNoReview")
     public Result viewNoReview(@ModelAttribute PageTool pageTool){
-        List<SchoolApplicationDTO> list=schoolService.viewNoReview(pageTool);
+        PageResult list=schoolService.viewNoReview(pageTool);
         return Result.ok(list);
     }
 
@@ -75,7 +76,7 @@ public class SchoolController {
      * 审核学校
      */
     @PostMapping("admin/examine")
-    public Result examinePost(@RequestBody SchoolExamineRequest schoolExamineRequest){
+    public Result examinePost(@RequestBody @Validated SchoolExamineRequest schoolExamineRequest){
         schoolService.examinePost(schoolExamineRequest);
         return Result.ok();
     }
