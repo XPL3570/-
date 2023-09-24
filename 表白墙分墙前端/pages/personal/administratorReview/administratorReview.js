@@ -24,16 +24,19 @@ Page({
 			page: this.data.page,
 			limit: this.data.limit
 		}
-		request.requestWithToken('/api/confessionPost/admin/pending', 'GET', data, (res) => {
-			console.log(res.data);
-			const newData = res.data.data;
-			const newList = this.data.list.concat(newData);
-			this.setData({
-				list: newList,
-				canLoadMore: newData.length >= this.data.limit, // 判断是否可以继续加载更多数据
-				page: this.data.page + 1, // 更新页数
-			});
-		}, () => {
+		request.requestWithToken('/api/confessionPost/userAdmin/pending', 'GET', data, (res) => {
+			if(res.data.code===200){
+				const newData = res.data.data;
+				const newList = this.data.list.concat(newData);
+				this.setData({
+					list: newList,
+					canLoadMore: newData.length >= this.data.limit, // 判断是否可以继续加载更多数据
+					page: this.data.page + 1, // 更新页数
+				});
+			}else{
+				console.error(res)
+			}
+		}, (res) => {
 			console.log(res)
 		})
 	},
@@ -61,7 +64,7 @@ Page({
 			postStatus:1,
 		}
 		console.log(data)
-		request.requestWithToken("/api/confessionPost/admin/submissionReview","POST",data,(res)=>{
+		request.requestWithToken("/api/confessionPost/userAdmin/submissionReview","POST",data,(res)=>{
 			console.log(res.data);
 				if(res.data.code===200){
 					var zj=this.data.list;

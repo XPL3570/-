@@ -59,4 +59,18 @@ public interface SchoolService extends IService<School> {
      * @param schoolExamineRequest
      */
     void examinePost(SchoolExamineRequest schoolExamineRequest);
+
+    /**
+     * 通过关键字来模糊查询学校
+     * @param schoolName
+     * @return  符合条件的id集合
+     */
+    List<Integer> selectIdsByNameLike(String schoolName);
+
+    /**
+     * 根据id查询学校名字
+     * @param schoolId
+     * @return
+     */
+    String getSchoolNameById(Integer schoolId);
 }

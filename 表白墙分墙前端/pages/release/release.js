@@ -3,6 +3,7 @@ var request = require('../../utils/request')
 /*可以优化点，数据可以提交然后保存到本地变量，把图片每次都保存，不然后台可能都有无效的图片 */
 Page({
 	data: {
+		buttonDisabled: false, //按钮是否禁用
 		title: '', // 存储投稿标题
 		TitleErrorMsg: '',
 		content: '', // 存储投稿内容
@@ -94,6 +95,9 @@ Page({
 	},
 	handleSubmit() { //提交
 		if (this.validateForm()) { //校验标题和投稿内容
+			this.setData({ //校验通过直接禁用
+				buttonDisabled: true
+			});
 			var data = {
 				isAnonymous: this.data.isAnonymous,
 				wallId: wx.getStorageSync('wall').id,
@@ -123,7 +127,7 @@ Page({
 					wx.showToast({
 						title: '今日投稿已上限',
 						icon: 'error'
-					})
+					});
 				} else {
 					wx.showToast({
 						title: '投稿异常请稍后重试',

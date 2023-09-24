@@ -15,7 +15,7 @@
 
 	</view>
 	<view class="footer">
-		<van-button round color="linear-gradient(to right, #3C91B0, #2DBFC0)" bind:tap="handleSubmit">
+		<van-button round color="linear-gradient(to right, #3C91B0, #2DBFC0)" bind:click="handleSubmit" disabled="{{buttonDisabled}}">
 			投稿到校园墙
 		</van-button>
 	</view>

@@ -198,7 +198,7 @@ public class ConfessionPostController {
     /**
      * 查询表白墙下要审核的记录
      */
-    @GetMapping("admin/pending")
+    @GetMapping("userAdmin/pending")
     public Result getPosts(@RequestParam Integer wallId,@ModelAttribute PageTool pageTool){
         Integer id = JwtInterceptor.getUser().getId();
 

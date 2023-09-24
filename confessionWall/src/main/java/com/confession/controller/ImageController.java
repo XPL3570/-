@@ -64,7 +64,7 @@ public class ImageController {
             // 将Base64字符串解码为字节数组
             byte[] imageBytes = Base64Utils.decodeFromString(request.getBase64Image());
 
-            // 检查图片大小是否超过4MB
+            // 检查图片大小是否超过2MB
             if (imageBytes.length > 2 * 1024 * 1024) {
                 return Result.build(400, "上传的图片大小超过2MB");
             }

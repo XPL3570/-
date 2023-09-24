@@ -15,6 +15,7 @@ import com.confession.request.SchoolExamineRequest;
 import com.confession.service.SchoolService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
@@ -37,6 +38,7 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
     @Resource
     private SchoolMapper schoolMapper;
 
+
     @Resource
     private UserMapper userMapper;
 
@@ -48,6 +50,9 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
 
     @Resource
     private ConfessionwallMapper confessionwallMapper;
+
+    @Resource
+    private AdminMapper adminMapper;
 
 
 
@@ -159,6 +164,7 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
 
 
     @Override
+    @Transactional
     public void examinePost(SchoolExamineRequest schoolExamineRequest) {
         LambdaUpdateWrapper<School> updateWrapper = new LambdaUpdateWrapper<>();  //学校
         updateWrapper.eq(School::getId, schoolExamineRequest.getSchoolId())
@@ -169,17 +175,59 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
                 set(SchoolApplication::getIsApproved,JwtInterceptor.getUser().getId())
                 .set(SchoolApplication::getIsApproved,schoolExamineRequest.getIsVerified());
 
-        LambdaUpdateWrapper<Confessionwall> updateWrapperWall = new LambdaUpdateWrapper<>();
-        updateWrapperWall.eq(Confessionwall::getSchoolId,schoolExamineRequest.getSchoolId())
-                        .set(Confessionwall::getStatus,1);
 
 
-        confessionwallMapper.update(null,updateWrapperWall);
+        School school = schoolMapper.selectById(schoolExamineRequest.getSchoolId());
+        
+        //如果通过了，把用户的学校id，对应表白墙的状态，还有添加一个管理员账号
+        if (schoolExamineRequest.getIsVerified()==1){
+            LambdaUpdateWrapper<User> userWrapper = new LambdaUpdateWrapper<>();//用户
+            userWrapper.eq(User::getId,school.getCreatorId())
+                    .set(User::getSchoolId,school.getId());
+            userMapper.update(null,userWrapper);
+
+            LambdaUpdateWrapper<Confessionwall> updateWrapperWall = new LambdaUpdateWrapper<>(); //表白墙
+            updateWrapperWall.eq(Confessionwall::getSchoolId,schoolExamineRequest.getSchoolId())
+                    .set(Confessionwall::getStatus,0); //0是设置成正常
+            confessionwallMapper.update(null,updateWrapperWall);
+
+            LambdaQueryWrapper<SchoolApplication> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(SchoolApplication::getSchoolId,schoolExamineRequest.getSchoolId());
+            //这里只需要查询一个，因为一个学校也只能同时申请一个，这里也只存了一个
+            SchoolApplication schoolInfo = schoolApplicationMapper.selectOne(wrapper);
+            Admin admin = new Admin();
+            admin.setSchoolId(schoolExamineRequest.getSchoolId());
+            admin.setPhoneNumber(schoolInfo.getPhoneNumber());
+            admin.setWeChatId(schoolInfo.getWechatNumber());
+            admin.setUserId(school.getCreatorId());
+            Confessionwall confessionwall = confessionwallMapper.selectOne(new LambdaQueryWrapper<Confessionwall>()
+                    .eq(Confessionwall::getSchoolId,schoolExamineRequest.getSchoolId()));
+            admin.setConfessionWallId(confessionwall.getId());
+            admin.setPermission(0); //普通管理
+            adminMapper.insert(admin);
+        }
+
         schoolApplicationMapper.update(null, updateWrapperZj);
         int update = schoolMapper.update(null, updateWrapper);
         if (update<1){
             throw new WallException("学校状态或学校记录表状态修改异常",201);
         }
+    }
+
+    @Override
+    public List<Integer> selectIdsByNameLike(String schoolName) {
+        LambdaQueryWrapper<School> wrapper = new LambdaQueryWrapper<>();
+        wrapper.like(School::getSchoolName,schoolName);
+        return schoolMapper.selectList(wrapper.like(School::getSchoolName,schoolName)).stream().map(School::getId).collect(Collectors.toList());
+
+    }
+
+    @Override
+    public String getSchoolNameById(Integer schoolId) {
+        LambdaQueryWrapper<School> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(School::getId, schoolId);
+        School school = this.getOne(wrapper);
+        return school != null ? school.getSchoolName() : null;
     }
 
 }

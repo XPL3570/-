@@ -1,10 +1,13 @@
 package com.confession.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
 import com.confession.comm.Result;
 import com.confession.config.JwtConfig;
+import com.confession.dto.UserManageDTO;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
 import com.confession.pojo.Confessionwall;
@@ -44,6 +47,7 @@ public class UserController {
 
     @Resource
     private AdminService adminService;
+
 
     @Resource
     private ConfessionwallService confessionwallService;
@@ -175,10 +179,13 @@ public class UserController {
     }
 
     @GetMapping("admin/userList")
-    public Result userList(@ModelAttribute PageTool pageTool) {
-        Page<User> page = new Page<>(pageTool.getPage(), pageTool.getLimit());
-        List<User> list = userService.page(page).getRecords();
-        return Result.ok(list);
+    public Result userList(@ModelAttribute PageTool pageTool,
+                           @RequestParam(required = false) String schoolName,
+                           @RequestParam(required = false) String userName,
+                           @RequestParam(required = false) Integer status) {
+
+        PageResult result=userService.selectUserList(pageTool,schoolName,userName,status);
+        return Result.ok(result);
     }
 
     @PostMapping("admin/userStatusMod")

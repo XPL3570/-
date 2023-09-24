@@ -172,10 +172,6 @@ Page({
 		const { outIndex } = e.currentTarget.dataset;
 		var content = this.data.confession[outIndex].submitMainComment;
 		if (content === undefined || content.trim() === "") { //判断是否都是空字符串和空
-			// wx.showToast({
-			// 	title: '请输入评论',
-			// 	icon: 'none'
-			// });
 			// 警告通知
 			Notify({ type: 'primary', message: '请输入评论' });
 			return;
@@ -219,10 +215,7 @@ Page({
 					icon: 'none'
 				})
 			} else {
-				// wx.showToast({
-				// 	title: '请稍后重试',
-				// });
-				Notify({ type: 'danger', message: '请稍后重试' });
+				Notify({ type: 'danger', message: res.data.message });
 				console.log(res);
 			}
 		}, (res) => {
@@ -319,8 +312,17 @@ Page({
 					replyContent: ''
 				})
 			} else {
-				wx.showToast({
-					title: '请稍后重试',
+				// wx.showToast({
+				// 	title: '请稍后重试',
+				// });
+				Notify({ type: 'danger', message: res.data.message });
+				this.setData({ //重构数据+收缩+初始化数据
+					showPopup: false,
+					replyCommentId: null,
+					replyContent: '',
+					replyName: '',
+					mainIndex: -1,
+					replyIndex: -1,
 				});
 				console.log(res);
 			}
