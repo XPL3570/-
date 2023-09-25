@@ -116,7 +116,7 @@ public class ConfessionPostController {
      * @return
      */
     @PostMapping("submit")
-    public Result submitConfessionWall(@RequestBody ConfessionPostRequest confessionRequest) {
+    public Result submitConfessionWall(@RequestBody @Validated ConfessionPostRequest confessionRequest) {
         Integer userId = JwtInterceptor.getUser().getId();
 
 

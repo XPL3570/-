@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -75,23 +76,22 @@ public class ConfessionpostServiceImpl extends ServiceImpl<ConfessionpostMapper,
 
     @Override
     public List<ConfessionPostDTO> getPostsAfterTimestamp(Integer wallId, Long timestamp, Integer count) {
-        LambdaQueryWrapper<Confessionpost> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Confessionpost::getWallId, wallId)
-//                .gt(Confessionpost::getPublishTime, LocalDateTime.ofEpochSecond(timestamp, 0, ZoneOffset.UTC))
-                .eq(Confessionpost::getPostStatus, 1)
-//                .orderByAsc(Confessionpost::getPublishTime)
-                .orderByAsc(Confessionpost::getId)  //todo 标注，是要按照时间来倒序查询的，为了测试
-                .last("LIMIT " + count);
+//        LambdaQueryWrapper<Confessionpost> queryWrapper = new LambdaQueryWrapper<>();
+//        queryWrapper.eq(Confessionpost::getWallId, wallId)
+////                .gt(Confessionpost::getPublishTime, LocalDateTime.ofEpochSecond(timestamp, 0, ZoneOffset.UTC))
+//                .eq(Confessionpost::getPostStatus, 1)
+////                .orderByAsc(Confessionpost::getPublishTime)
+//                .orderByAsc(Confessionpost::getId)  //todo 标注，是要按照时间来倒序查询的，为了测试
+//                .last("LIMIT " + count);
 
 
         //todo 用下面的代码可以看到超级管理员直接发布的
-//        LambdaQueryWrapper<ConfessionPost> queryWrapper = new LambdaQueryWrapper<>();
-//        queryWrapper.eq(ConfessionPost::getWallId, wallId)
-//                .or()
-//                .eq(ConfessionPost::getIsAdminPost, 1)
-//                .eq(ConfessionPost::getPostStatus, 1)
-//                .orderByDesc(ConfessionPost::getCreateTime);
-//        List<ConfessionPost> posts = confessionPostMapper.selectList(queryWrapper);
+        LambdaQueryWrapper<Confessionpost> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Confessionpost::getWallId, wallId)
+                .or()
+                .eq(Confessionpost::getIsAdminPost, 1)
+                .eq(Confessionpost::getPostStatus, 1)
+                .orderByDesc(Confessionpost::getCreateTime);
 
 
         List<Confessionpost> list = confessionpostMapper.selectList(queryWrapper);
@@ -102,6 +102,7 @@ public class ConfessionpostServiceImpl extends ServiceImpl<ConfessionpostMapper,
     public List<ConfessionPostDTO> getPendingPostsAdmin(Integer wallId,PageTool pageTool) {
         LambdaQueryWrapper<Confessionpost> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Confessionpost::getPostStatus, 0);
+        wrapper.eq(Confessionpost::getWallId,wallId);
         // 设置分页信息
         Page<Confessionpost> page = new Page<>(pageTool.getPage(), pageTool.getLimit());
 
@@ -120,7 +121,8 @@ public class ConfessionpostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         }
         LambdaUpdateWrapper<Confessionpost> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(Confessionpost::getId, request.getId())
-                .set(Confessionpost::getPostStatus, request.getPostStatus());
+                .set(Confessionpost::getPostStatus, request.getPostStatus())
+                .set(Confessionpost::getPublishTime, LocalDateTime.now());
         int update = confessionpostMapper.update(null, updateWrapper);
         System.out.println(update);
 
@@ -135,6 +137,7 @@ public class ConfessionpostServiceImpl extends ServiceImpl<ConfessionpostMapper,
             wrapper.notIn(Confessionpost::getPostStatus, 0);
         }
         wrapper.eq(Confessionpost::getUserId, userId);
+        wrapper.eq(Confessionpost::getIsAdminPost,false);
         wrapper.orderByDesc(Confessionpost::getId); // 添加倒序排序条件
         // 设置分页信息
         Page<Confessionpost> page = new Page<>(pageTool.getPage(), pageTool.getLimit());

@@ -35,7 +35,7 @@ new Vue({
   render: h => h(App),
 }).$mount('#app')
 
-/* eslint-disable no-new */
+
 new Vue({
   router,
   store, //使用store vuex状态管理

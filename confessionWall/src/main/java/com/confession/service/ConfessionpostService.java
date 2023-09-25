@@ -62,7 +62,7 @@ public interface ConfessionpostService extends IService<Confessionpost> {
 
     /**
      * 修改投稿的状态
-     * @param id  用户id
+     * @param userId  用户id
      * @param request 投稿id和要修改的状态
      */
     void submissionReview(Integer userId, AuditRequest request);

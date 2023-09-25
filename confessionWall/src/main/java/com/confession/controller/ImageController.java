@@ -1,13 +1,16 @@
 package com.confession.controller;
 
 import com.confession.comm.Result;
+import com.confession.globalConfig.interceptor.JwtInterceptor;
 import com.confession.request.DeleteImageRequest;
 import com.confession.request.UploadImageRequest;
 import org.springframework.util.Base64Utils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,6 +44,7 @@ public class ImageController {
                     return Result.fail("删除失败");
                 }
             } else {
+                System.out.println("用户id是："+JwtInterceptor.getUser().getId()+"删除图片不存在");
                 return Result.fail("图片不存在");
             }
         } catch (Exception e) {
@@ -54,6 +58,42 @@ public class ImageController {
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid image URL: " + imageUrl);
         }
+    }
+
+
+    @PostMapping("/admin/upload")
+    public Result upload(@RequestParam("file") MultipartFile file) {
+        try {
+            // 检查图片大小是否超过2MB
+            if (file.getSize() > 2 * 1024 * 1024) {
+                return Result.build(400, "上传的图片大小超过2MB");
+            }
+            // 获取图片后缀
+            String fileExtension = getFileExtensionZj(file.getOriginalFilename());
+            if (fileExtension == null || fileExtension.isEmpty()) {
+                fileExtension = "png";
+            }
+
+            // 根据日期和随机数生成文件名，并加上文件扩展名
+            String fileName = generateFileName("." + fileExtension);
+
+            // 将文件保存到本机
+            File destFile = new File(UPLOAD_PATH, fileName);
+            file.transferTo(destFile);
+
+            // 返回图片地址
+            return Result.ok(DOMAIN_NAME_ADDRESS + fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Result.build(500, "图片上传失败");
+        }
+    }
+
+    private String getFileExtensionZj(String fileName) {
+        if (fileName != null && fileName.lastIndexOf(".") != -1) {
+            return fileName.substring(fileName.lastIndexOf(".") + 1);
+        }
+        return null;
     }
 
 

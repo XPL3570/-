@@ -1,6 +1,3 @@
-/**
-* 左边菜单
-*/
 <template>
   <div>
     <el-menu default-active="2" :collapse="collapsed" collapse-transition router :default-active="$route.path"
@@ -10,7 +7,7 @@
         <img class="logoImg" src="../assets/img/logo.png" alt="">
       </div>
       <el-submenu v-for="menu in allMenu" :key="menu.menuId" :index="menu.menuName">
-        <template slot="title">
+        <template slot="title" >
           <img :src="require(`@/assets/icons/${menu.icon}.png`)" alt="icon" style="height: 24px;margin-right: 10px"/>
           <span>{{ menu.menuName }}</span>
         </template>
@@ -23,8 +20,8 @@
       </el-submenu>
     </el-menu>
   </div>
-
 </template>
+
 <script>
 
 export default {
@@ -69,13 +66,13 @@ export default {
                 {
                   menuId: 174,
                   icon: '墙',
-                  menuName: '表白墙',
+                  menuName: '表白墙内容发布',
                   hasThird: 'N',
                   url: 'wall/confessionRelease',
                   menus: null
                 },
                 {
-                  menuId: 72,
+                  menuId: 73,
                   icon: '用户',
                   menuName: '用户管理',
                   hasThird: 'N',
@@ -89,65 +86,6 @@ export default {
   },
   // 创建完毕状态(里面是操作)
   created() {
-    // 获取图形验证码
-    let res = {
-      success: true,
-      data: [
-        {
-          menuId: 1,
-          icon: '设置',
-          menuName: '设置',
-          hasThird: null,
-          url: null,
-          menus: [
-            {
-              menuId: 2,
-              icon: '首页设置',
-              menuName: '首页设置',
-              hasThird: 'N',
-              url: 'school/schoolSettings',
-              menus: null
-            }
-          ]
-        },
-        {
-          menuId: 71,
-          icon: '学校',
-          menuName: '学校管理',
-          hasThird: null,
-          url: null,
-          menus: [
-            {
-              menuId: 72,
-              icon: '审核',
-              menuName: '学校入驻审核',
-              hasThird: 'N',
-              url: 'school/schoolReview',
-              menus: null
-            },
-            {
-              menuId: 174,
-              icon: '墙',
-              menuName: '表白墙',
-              hasThird: 'N',
-              url: 'wall/confessionRelease',
-              menus: null
-            },
-            {
-              menuId: 72,
-              icon: '用户',
-              menuName: '用户管理',
-              hasThird: 'N',
-              url: 'user/userManagement',
-              menus: null
-            },
-          ]
-        },
-      ],
-      msg: 'success'
-    }
-    this.allMenu = res.data
-
     // 监听
     this.$root.Bus.$on('toggle', value => {
       this.collapsed = !value

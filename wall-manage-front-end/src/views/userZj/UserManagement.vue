@@ -147,7 +147,7 @@ export default {
       // 在这里获取你的用户数据，并将其赋值给tableData
       api.get('/api/user/admin/userList',this.formInline)
           .then(res=>{
-                  console.log(res.data)
+                  // console.log(res.data)
                   if (res.data.code===200){
                     this.tableData=res.data.data.data
                     this.page.total=res.data.data.total

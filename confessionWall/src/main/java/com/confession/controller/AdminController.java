@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -63,7 +64,7 @@ public class AdminController {
 
 
     /**
-     * 发布投稿，直接通过  这里指定了某个学校  普通管理员可用 需要迁移
+     * 发布投稿，直接通过  这里指定了某个学校  普通管理员可用
      *
      * @param confessionRequest
      * @return
@@ -83,6 +84,28 @@ public class AdminController {
         if (count >= wallConfig.getAdminDailyPostLimit()) {
             throw new WallException(CONTRIBUTE_OVER_LIMIT);
         }
+
+        Confessionpost confessionPost = createConfessionPost(confessionRequest, userId, false);
+
+        confessionPostService.save(confessionPost);
+
+        saveToRedis(confessionPost);
+
+        return Result.ok();
+    }
+
+    @PostMapping("/admin/allSubmitPost")
+    public Result submitConfessionAll(@RequestBody @Validated ConfessionPostRequest confessionRequest) {
+        Integer adminId = JwtInterceptor.getUser().getId(); //这个id是管理员表的id
+
+        Confessionpost confessionPost = createConfessionPost(confessionRequest, adminId, true);
+
+        saveToRedis(confessionPost);
+
+        return Result.ok();
+    }
+
+    private Confessionpost createConfessionPost(ConfessionPostRequest confessionRequest, Integer userId, boolean isAdminPost) {
         Confessionpost confessionPost = new Confessionpost();
         confessionPost.setUserId(userId);
         confessionPost.setWallId(confessionRequest.getWallId());
@@ -90,17 +113,24 @@ public class AdminController {
         confessionPost.setTitle(confessionRequest.getTitle());
         confessionPost.setTextContent(confessionRequest.getTextContent());
         confessionPost.setPostStatus(1); // 直接设置为审核通过
+        confessionPost.setIsAdminPost(isAdminPost); //设置成管理员发布，所有表白墙都能看到
+        confessionPost.setPublishTime(LocalDateTime.now()); //设置成现在发布
+        return confessionPost;
+    }
 
-        confessionPostService.save(confessionPost);
-
+    private void saveToRedis(Confessionpost confessionPost) {
         //保存到redis
         String key = RedisConstant.CONFESSION_PREFIX + confessionPost.getWallId();
         ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
         zSetOperations.add(key, confessionPost, confessionPost.getPublishTime().toEpochSecond(ZoneOffset.UTC));
         redisTemplate.expire(key, 3, TimeUnit.DAYS);
-
-        return Result.ok();
     }
+
+
+
+
+
+
 
 
 

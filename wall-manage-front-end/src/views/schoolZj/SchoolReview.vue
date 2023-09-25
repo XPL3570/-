@@ -115,7 +115,7 @@ export default {
       page: {  //分页参数
         page: 1,  //第几页
         limit: 5,
-        total: null
+        total:0
       },
       formInline: { //分页参数，每次都是调用他来获取后台然后
         page: 1,
@@ -140,7 +140,7 @@ export default {
       this.loading = true
       api.get('/api/school/admin/viewNoReview',param)
           .then(res=>{
-            console.log(res.data.data.total)
+            // console.log(res.data.data)
             if (res.data.code===200){
               this.loading = true
               this.tableData=res.data.data.data
