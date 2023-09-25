@@ -88,9 +88,9 @@ public class ConfessionpostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         //todo 用下面的代码可以看到超级管理员直接发布的
         LambdaQueryWrapper<Confessionpost> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Confessionpost::getWallId, wallId)
-                .or()
-                .eq(Confessionpost::getIsAdminPost, 1)
                 .eq(Confessionpost::getPostStatus, 1)
+                .or()
+                .eq(Confessionpost::getIsAdminPost, true)
                 .orderByDesc(Confessionpost::getCreateTime);
 
 
