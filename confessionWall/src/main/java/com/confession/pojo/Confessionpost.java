@@ -81,10 +81,10 @@ public class Confessionpost implements Serializable {
     private Integer postStatus;
 
     /**
-     * 发布状态，0表示待审核，1表示审核通过，2表示审核拒绝
+     * 是否匿名
      */
     @TableField("isAnonymous")
-    private Integer isAnonymous;
+    private Boolean isAnonymous;
 
     /**
      * 是否为管理员发布的内容'

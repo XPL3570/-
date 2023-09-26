@@ -26,6 +26,6 @@ public class ConfessionPostRequest {
     private String imageURL;
 
     @NotNull(message = "isAnonymous不能为空")
-    private Integer isAnonymous;
+    private Boolean isAnonymous;
 }
 

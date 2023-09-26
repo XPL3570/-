@@ -168,9 +168,8 @@ public class ConfessionpostServiceImpl extends ServiceImpl<ConfessionpostMapper,
     //处理投稿数据，所有
     private ConfessionPostDTO convertToDTOAll(Confessionpost post) {
         ConfessionPostDTO dto = this.convertToDTO(post);
-        if (post.getIsAnonymous() == 0) {
+        if (!post.getIsAnonymous()) {
             dto.setUserInfo(userService.getUserFromRedisOrDatabase(post.getUserId()));
-
         }
         dto.setMainComments(commentService.viewRecordsOnId(post.getId(), true));
         dto.setSubComments(commentService.viewRecordsOnId(post.getId(), false));

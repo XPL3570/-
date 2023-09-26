@@ -94,11 +94,12 @@ public class AdminController {
         return Result.ok();
     }
 
-    @PostMapping("/admin/allSubmitPost")
+    @PostMapping("/allSubmitPost")
     public Result submitConfessionAll(@RequestBody @Validated ConfessionPostRequest confessionRequest) {
         Integer adminId = JwtInterceptor.getUser().getId(); //这个id是管理员表的id
 
         Confessionpost confessionPost = createConfessionPost(confessionRequest, adminId, true);
+        confessionPostService.save(confessionPost);
 
         saveToRedis(confessionPost);
 
@@ -108,6 +109,7 @@ public class AdminController {
     private Confessionpost createConfessionPost(ConfessionPostRequest confessionRequest, Integer userId, boolean isAdminPost) {
         Confessionpost confessionPost = new Confessionpost();
         confessionPost.setUserId(userId);
+        confessionPost.setIsAnonymous(confessionRequest.getIsAnonymous());
         confessionPost.setWallId(confessionRequest.getWallId());
         confessionPost.setImageURL(confessionRequest.getImageURL());
         confessionPost.setTitle(confessionRequest.getTitle());

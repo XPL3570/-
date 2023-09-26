@@ -26,7 +26,7 @@ public class ConfessionPostDTO {
     private LocalDateTime publishTime;
 
     private Integer postStatus;
-    private Integer isAnonymous;
+    private Boolean isAnonymous;
 
     private List<CommentDTO> mainComments;
     private List<CommentDTO> subComments;
