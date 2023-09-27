@@ -42,7 +42,7 @@ export default new Router({
                 },
                 {
                     path: '/school/schoolSettings',
-                    name: '学校设置',
+                    name: '学校管理',
                     component: () => import('../views/schoolZj/SchoolSettings.vue'),
                     meta: {
                         requireAuth: true

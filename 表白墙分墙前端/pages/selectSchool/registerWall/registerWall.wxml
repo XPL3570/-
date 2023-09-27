@@ -1,0 +1,28 @@
+<view class="container">
+  
+  <view class="school"> <view class="zj"> 表白墙头像</view>
+    <van-uploader file-list="{{ fileList }}" image-fit="aspectFill" accept="media" use-before-read bind:before-read="beforeRead"  bind:after-read="afterRead"  bind:delete="handleDeleteImage" max-count="1" />
+  </view>
+
+  <van-field
+    label="表白墙名字"
+    placeholder="请输入表白墙名字"
+    value="{{ ConfessionWallName }}"
+    bind:input="onInputConfessionWallName"
+    error-message="{{ ConfessionWallNameError }}"
+  ></van-field>
+
+  <van-field
+    label="表白墙描述"
+    placeholder="请输入表白墙描述"
+    value="{{ description }}"
+    bind:input="onInputDescription"
+    error-message="{{ descriptionError }}"
+  ></van-field>
+
+  <view class="button-container">
+    <van-button type="primary" bind:tap="onSubmit">提交</van-button>
+  </view>
+</view>
+
+<van-dialog id="van-dialog" />

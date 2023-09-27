@@ -63,7 +63,7 @@
       </el-table-column>
       <el-table-column
           prop="wXAccount"
-          width="120"
+          width="100"
           label="微信账号">
       </el-table-column>
       <el-table-column
@@ -87,14 +87,28 @@
           label="操作"
           width="157">
         <template v-slot:default="scope">
-          <el-button @click="handleClick(scope.row)" type="text">修改状态</el-button>
-          <el-button type="text" >修改用户名</el-button>
+            <el-button @click="handleClickState(scope.row)" plain size="mini" type="danger" style="margin-bottom: 4px;margin-left: 18px; width: 100px;">修改状态</el-button>
+            <el-button @click="handleClickUser(scope.row)" plain size="mini" type="primary" style="width: 100px; margin-left: 18px">修改用户名</el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <!-- 分页组件 -->
     <PageView v-bind:childMsg="page" @callFather="callFather"></PageView>
+
+    <el-dialog title="修改用户状态"  width="30%" :visible.sync="isDialogStateOpen">
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="isDialogStateOpen = false">取 消</el-button>
+        <el-button type="primary" @click="isDialogStateOpen = false">确 定</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog title="修改用户名字"  width="30%" :visible.sync="isDialogUserOpen">
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="isDialogUserOpen = false">取 消</el-button>
+        <el-button type="primary" @click="isDialogUserOpen = false">确 定</el-button>
+      </div>
+    </el-dialog>
 
   </div>
 
@@ -108,6 +122,8 @@ export default {
   components: {PageView},
   data() {
     return {
+      isDialogStateOpen: false,
+      isDialogUserOpen: false,
       page: {  //分页参数 每次都是传递他给组件得到
         page: 1,  //第几页
         limit: 5,
@@ -128,6 +144,17 @@ export default {
     this.fetchData();
   },
   methods: {
+    handleClickState(row) {
+      console.log(row)
+      this.isDialogStateOpen = true;
+
+
+    },
+    handleClickUser(row) {
+           console.log(row)
+      this.isDialogUserOpen = true;
+
+    },
     tableRowClassName({row}) {
       // 这是一个函数，用于根据行的状态返回一个类名
       if (row.status===0){

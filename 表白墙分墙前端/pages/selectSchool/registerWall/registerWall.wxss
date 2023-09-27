@@ -1,0 +1,25 @@
+
+.container {
+	padding: 20rpx;
+  }
+  
+
+	.button-container {
+		display: flex;
+		justify-content: center;
+		margin-top: 20px;
+	}
+	
+
+.school {
+	margin-left: 44rpx;
+margin-top: 60rpx;
+	font-size: 35rpx;
+	display: flex;
+
+}
+
+.zj{
+	margin-right: 93rpx;
+	opacity: 0.8;
+}
