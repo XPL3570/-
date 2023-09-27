@@ -12,22 +12,41 @@ import store from './vuex/store';
 Vue.use(ElementUI);
 Vue.config.productionTip = false
 
-
 // 路由拦截器
 router.beforeEach((to, from, next) => {
-  // 在这里可以进行路由拦截和控制的逻辑处理
-  // 比如判断用户是否登录，是否有权限访问该路由等
-
-  // 如果用户已登录，可以继续访问该路由
-  // 否则，重定向到登录页面
-  if (to.meta.requireAuth && !store.state.user) {
-    // 用户未登录，重定向到登录页面
-    next('/login');
+  if (to.matched.length != 0) {
+    if (to.meta.requireAuth) { // 判断该路由是否需要登录权限
+      if (localStorage.getItem("userInfo")) { // 通过vuex state获取当前的user是否存在
+        next();
+      } else {
+        next({
+          path: '/login',
+          query: { redirect: to.fullPath } // 将跳转的路由path作为参数，登录成功后跳转到该路由
+        })
+      }
+    } else {
+      if (localStorage.getItem("userInfo")) { // 判断是否登录
+        if (to.path != "/" && to.path != "/login") { //判断是否要跳到登录界面
+          next();
+        } else {
+          /**
+           * 防刷新，如果登录，修改路由跳转到登录页面，修改路由为登录后的首页
+           */
+          next({
+            path: '/school/schoolSettings'
+          })
+        }
+      } else {
+        next();
+      }
+    }
   } else {
-    // 用户已登录，继续导航到下一个路由
-    next();
+    next({
+      path: '/login',
+      query: { redirect: to.fullPath } // 将跳转的路由path作为参数，登录成功后跳转到该路由
+    })
   }
-});
+})
 
 new Vue({
   router,

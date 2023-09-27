@@ -32,14 +32,14 @@ export default {
       allMenu:
           [
             {
-              menuId: 1,
+              menuId: 10,
               icon: '设置',
-              menuName: '设置',
+              menuName: '首页设置',
               hasThird: null,
               url: null,
               menus: [
                 {
-                  menuId: 2,
+                  menuId: 11,
                   icon: '首页设置',
                   menuName: '首页设置',
                   hasThird: 'N',
@@ -49,14 +49,14 @@ export default {
               ]
             },
             {
-              menuId: 71,
+              menuId: 20,
               icon: '学校',
-              menuName: '审核和表白墙管理',
+              menuName: '学校管理',
               hasThird: null,
               url: null,
               menus: [
                 {
-                  menuId: 72,
+                  menuId: 21,
                   icon: '审核',
                   menuName: '学校入驻审核',
                   hasThird: 'N',
@@ -64,16 +64,50 @@ export default {
                   menus: null
                 },
                 {
-                  menuId: 174,
-                  icon: '墙',
+                  menuId: 22,
+                  icon: '列表',
+                  menuName: '学校管理列表',
+                  hasThird: 'N',
+                  url: 'school/schoolSettings',
+                  menus: null
+                },
+              ]
+            },
+            {
+              menuId: 30,
+              icon: '墙',
+              menuName: '表白墙设置',
+              hasThird: null,
+              url: null,
+              menus: [
+                {
+                  menuId: 31,
+                  icon: '全部发布',
                   menuName: '表白墙内容发布',
                   hasThird: 'N',
                   url: 'wall/confessionRelease',
                   menus: null
                 },
                 {
-                  menuId: 73,
-                  icon: '用户',
+                  menuId: 32,
+                  icon: '列表模式',
+                  menuName: '表白墙列表',
+                  hasThird: 'N',
+                  url: 'wall/wallManagement',
+                  menus: null
+                },
+              ]
+            },
+            {
+              menuId: 40,
+              icon: '用户',
+              menuName: '用户管理',
+              hasThird: null,
+              url: null,
+              menus: [
+                {
+                  menuId: 41,
+                  icon: '用户列表',
                   menuName: '用户管理',
                   hasThird: 'N',
                   url: 'user/userManagement',
