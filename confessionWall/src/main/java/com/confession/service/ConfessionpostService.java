@@ -27,7 +27,7 @@ public interface ConfessionpostService extends IService<Confessionpost> {
 
     /**
      * 过滤表白墙发布内容
-     * @param confessionRequest 表白墙发布请求
+     * @param confessionRequest 表白墙发布请求，里面会对敏感字进行替换
      * @return true表示内容合法，false表示内容不合法
      */
     boolean filterContent(ConfessionPostRequest confessionRequest);
@@ -66,4 +66,10 @@ public interface ConfessionpostService extends IService<Confessionpost> {
      * @param request 投稿id和要修改的状态
      */
     void submissionReview(Integer userId, AuditRequest request);
+
+    /**
+     * 获取超级管理员发布所以人都能看到的表白投稿数量
+     * @return
+     */
+    Integer getAdminPostCount();
 }

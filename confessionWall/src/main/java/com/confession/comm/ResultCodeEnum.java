@@ -32,6 +32,7 @@ public enum ResultCodeEnum {
     CANNOT_COMMENT(241,"您暂时被限制发言了哦，如有疑问联系表白墙"),
     CANNOT_POST(242,"您暂时被限制投稿表白了哦，如有疑问联系表白墙"),
 
+
     ;
 
     private Integer code;

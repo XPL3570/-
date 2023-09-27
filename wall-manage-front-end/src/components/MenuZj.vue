@@ -51,7 +51,7 @@ export default {
             {
               menuId: 71,
               icon: '学校',
-              menuName: '学校管理',
+              menuName: '审核和表白墙管理',
               hasThird: null,
               url: null,
               menus: [

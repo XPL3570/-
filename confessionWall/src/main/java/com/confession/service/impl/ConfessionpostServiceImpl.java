@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.confession.comm.PageTool;
+import com.confession.comm.SensitiveTextFilter;
 import com.confession.dto.ConfessionPostDTO;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
@@ -17,6 +18,7 @@ import com.confession.service.AdminService;
 import com.confession.service.CommentService;
 import com.confession.service.ConfessionpostService;
 import com.confession.service.UserService;
+import com.hankcs.algorithm.AhoCorasickDoubleArrayTrie;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,7 @@ import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,16 +55,64 @@ public class ConfessionpostServiceImpl extends ServiceImpl<ConfessionpostMapper,
     @Resource
     private AdminService adminService;
 
+    @Resource
+    private SensitiveTextFilter sensitiveTextFilter;
+
     @Override
     public int getPostCountByUserIdAndDate(Integer userId, LocalDate date) {
         return confessionpostMapper.getPostCountByUserIdAndDate(userId, date);
     }
 
+    /**
+     * 合并敏感词匹配和替换：当前代码中使用两个循环分别对标题和文本内容进行敏感词匹配和替换，可以将它们合并为一个循环来避免重复遍历。
+     *
+     * 使用 StringBuilder 的 setCharAt 方法替换字符：当前代码中使用 replace 方法替换字符，每次替换都会创建一个新的 StringBuilder 对象，存在额外的开销。可以使用 setCharAt 方法直接修改字符。
+     *
+     * 避免不必要的循环：如果没有敏感词匹配，可以直接返回 false，无需进行后续处理。
+     *
+     * @param request 表白墙发布请求，里面会对敏感字进行替换
+     * @return
+     */
     @Override
-    public boolean filterContent(ConfessionPostRequest confessionRequest) {
-        // 过滤内容的逻辑 对内容的长度等做校验 todo
-        return true;
+    public boolean filterContent(ConfessionPostRequest request) {
+        AhoCorasickDoubleArrayTrie<String> trie = sensitiveTextFilter.getTrie(); // 获取敏感词库的 Trie 实例
+        String title = request.getTitle();
+        String textContent = request.getTextContent();
+
+        StringBuilder filteredTitleBuilder = new StringBuilder(title);
+        StringBuilder filteredTextContentBuilder = new StringBuilder(textContent);
+
+        Collection<AhoCorasickDoubleArrayTrie.Hit<String>> hits = trie.parseText(title + " " + textContent); // 合并标题和文本内容进行敏感词匹配
+
+        if (hits.isEmpty()) {
+            return false; // 没有敏感词匹配，直接返回 false
+        }
+
+        Boolean hasSensitiveWords = false; // 是否存在敏感词,默认是不存在
+
+        if (hits.size()>0){
+            hasSensitiveWords = true;
+        }
+
+        for (AhoCorasickDoubleArrayTrie.Hit<String> hit : hits) {
+            int start = hit.begin; // 敏感词在输入文本中的起始位置
+            int end = hit.end; // 敏感词在输入文本中的结束位置
+            StringBuilder targetBuilder = (start < title.length()) ? filteredTitleBuilder : filteredTextContentBuilder;
+            int targetStart = (start < title.length()) ? start : (start - title.length() - 1);
+            int targetEnd = (end <= title.length()) ? end : (end - title.length() - 1);
+
+            for (int i = targetStart; i < targetEnd; i++) {
+                targetBuilder.setCharAt(i, '*');
+            }
+        }
+
+        request.setTitle(filteredTitleBuilder.toString());
+        request.setTextContent(filteredTextContentBuilder.toString());
+
+        return hasSensitiveWords;
     }
+
+
 
     @Override
     public List<ConfessionPostDTO> getPublishedPosts(Integer userId, PageTool pageTool) {
@@ -128,7 +179,14 @@ public class ConfessionpostServiceImpl extends ServiceImpl<ConfessionpostMapper,
 
     }
 
+    @Override
+    public Integer getAdminPostCount() {
+        int adminPostCount = confessionpostMapper.getAdminPostCount(LocalDate.now());
+        return adminPostCount;
+    }
 
+
+    //这里是普通用户使用的接口，加上了必须是用户发布的那个字段,获取用
     private List<ConfessionPostDTO> getPostsByStatus(PageTool pageTool, Integer userId, Integer postStatus) {
         LambdaQueryWrapper<Confessionpost> wrapper = new LambdaQueryWrapper<>();
         if (postStatus == 0) {

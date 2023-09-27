@@ -145,7 +145,7 @@ public class ConfessionPostController {
 
         if (!hasImage) {
             boolean filterResult = confessionPostService.filterContent(confessionRequest);
-            if (filterResult) {
+            if (!filterResult) {
                 status = 1;
             }
         }

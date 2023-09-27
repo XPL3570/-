@@ -14,6 +14,7 @@ public class PostCommentRequest {
         private Integer confessionPostReviewId;
 
         private Integer parentCommentId;
+
         @NotBlank(message = "内容不能是空")
         private String commentContent;
 }

@@ -10,18 +10,25 @@
         <result column="TextContent" property="textContent" />
         <result column="ImageURL" property="imageURL" />
         <result column="CreateTime" property="createTime" />
+        <result column="PublishTime" property="publishTime" />
         <result column="IsDeleted" property="deleted" />
         <result column="PostStatus" property="postStatus" />
         <result column="IsAnonymous" property="isAnonymous" />
+        <result column="IsAdminPost" property="isAdminPost" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        Id, WallId, UserId, TextContent, ImageURL, CreateTime, IsDeleted, PostStatus,IsAnonymous
+        Id, WallId, UserId, TextContent, ImageURL, CreateTime, PublishTime,IsDeleted, PostStatus,IsAnonymous,IsAdminPost
     </sql>
 
     <select id="getPostCountByUserIdAndDate" resultType="int">
-        SELECT COUNT(*) FROM confessionpost WHERE userId = #{userId} AND DATE(CreateTime) = CURDATE()
+        SELECT COUNT(*) FROM confessionpost WHERE userId = #{userId} AND DATE(CreateTime) = CURDATE() AND IsAdminPost = false
+    </select>
+
+
+    <select id="getAdminPostCount" resultType="int">
+        SELECT COUNT(*) FROM confessionpost WHERE DATE(CreateTime) = CURDATE() AND IsAdminPost = true
     </select>
 
 

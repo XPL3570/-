@@ -20,7 +20,7 @@ router.beforeEach((to, from, next) => {
 
   // 如果用户已登录，可以继续访问该路由
   // 否则，重定向到登录页面
-  if (to.meta.requiresAuth && !store.state.user) {
+  if (to.meta.requireAuth && !store.state.user) {
     // 用户未登录，重定向到登录页面
     next('/login');
   } else {

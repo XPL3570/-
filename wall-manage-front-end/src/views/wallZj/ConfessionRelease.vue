@@ -118,7 +118,7 @@ export default {
     },
     submitPost() {
       // 校验所有的值是否为空
-      if (!this.title || !this.textContent  || this.fileList.length === 0) {
+      if (!this.title || !this.textContent ) {
         // 如果有任何一个值为空，进行相应的提示或返回
         this.$message.warning("请填写完整的投稿信息哦")
         return;
@@ -140,7 +140,10 @@ export default {
                   this.isAnonymous=false;   //是否匿名
                   this.fileList= [];
               this.$message.success("投稿到所有表白墙成功！")
-            }else {
+            }else if(response.data.code===224){
+              this.$message.error(response.data.message);
+            }
+            else {
               this.$message.error('投稿失败！')
             }
           })

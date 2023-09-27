@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.confession.comm.PageTool;
+import com.confession.comm.SensitiveTextFilter;
 import com.confession.config.WallConfig;
 import com.confession.dto.CommentDTO;
 import com.confession.dto.UserDTO;
@@ -15,6 +16,7 @@ import com.confession.pojo.User;
 import com.confession.request.PostCommentRequest;
 import com.confession.service.CommentService;
 import com.confession.service.UserService;
+import com.hankcs.algorithm.AhoCorasickDoubleArrayTrie;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -22,10 +24,10 @@ import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import static com.confession.comm.ResultCodeEnum.CANNOT_COMMENT;
-import static com.confession.comm.ResultCodeEnum.COMMENT_OVER_LIMIT;
+import static com.confession.comm.ResultCodeEnum.*;
 
 /**
  * <p>
@@ -44,16 +46,25 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     private UserService userService;
 
     @Resource
+    private SensitiveTextFilter sensitiveTextFilter;
+
+    @Resource
     private WallConfig wallConfig;
 
     @Resource
     private UserMapper userMapper;
+
 
     @Override
     public Integer publishCommentReply(PostCommentRequest request, Integer userId) {
 
         //todo  将来可能会把这个评论的发表直接同步到缓存,用户信息会上缓存
 
+        //调用方法对敏感字进行匹配，如果匹配到了，直接打回
+        Boolean hasSensitiveWords = this.hasSensitiveWords(request.getCommentContent());
+        if (hasSensitiveWords){  //这里这里的前端失败的好像没写
+            throw new WallException(FAIL);
+        }
         //判断用户是不是可以评论的
         User user = userMapper.selectById(userId);  //检查用户状态是否可以评论
         int userStatus=user.getStatus();
@@ -116,6 +127,19 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             comments.add(commentDTO);
         }
         return comments;
+    }
+
+    @Override
+    public Boolean hasSensitiveWords(String text) {
+        AhoCorasickDoubleArrayTrie<String> trie = sensitiveTextFilter.getTrie(); // 获取敏感词库的 Trie 实例
+        Collection<AhoCorasickDoubleArrayTrie.Hit<String>> hits = trie.parseText(text);
+        if (hits.isEmpty()) {
+            return false; // 没有敏感词匹配，直接返回 false
+        }
+        if (hits.size()>0){
+            return true;
+        }
+        return false;
     }
 
 

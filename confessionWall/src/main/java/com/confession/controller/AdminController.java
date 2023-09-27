@@ -64,7 +64,7 @@ public class AdminController {
 
 
     /**
-     * 发布投稿，直接通过  这里指定了某个学校  普通管理员可用
+     * 发布投稿，直接通过  这里指定了某个学校  普通管理员可用  但是不能调用
      *
      * @param confessionRequest
      * @return
@@ -97,7 +97,12 @@ public class AdminController {
     @PostMapping("/allSubmitPost")
     public Result submitConfessionAll(@RequestBody @Validated ConfessionPostRequest confessionRequest) {
         Integer adminId = JwtInterceptor.getUser().getId(); //这个id是管理员表的id
-
+        //加一个限制，限制管理员每天只能发布两条全部类型的投稿,这里写死了
+        int count= confessionPostService.getAdminPostCount();
+        System.out.println("count="+count);
+        if (count>=2){
+            return Result.build(224,"失败，每天只能发布两条所有人都能看到的投稿哦");
+        }
         Confessionpost confessionPost = createConfessionPost(confessionRequest, adminId, true);
         confessionPostService.save(confessionPost);
 

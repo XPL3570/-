@@ -26,4 +26,13 @@ public interface ConfessionpostMapper extends BaseMapper<Confessionpost> {
      */
     int getPostCountByUserIdAndDate(@Param("userId") Integer userId, @Param("date") LocalDate date);
 
+    /**
+     * 查询超级管理员发布的所有人都可以看到的投稿数量
+     * @param date
+     * @return
+     */
+    int getAdminPostCount(@Param("date") LocalDate date);
+
+
+
 }

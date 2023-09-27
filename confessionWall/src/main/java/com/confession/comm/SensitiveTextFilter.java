@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 /**
- * 敏感词过滤器
+ * 敏感词过滤器配置
  */
 @Component
 public class SensitiveTextFilter {

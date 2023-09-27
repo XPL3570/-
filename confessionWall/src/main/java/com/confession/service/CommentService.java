@@ -24,7 +24,7 @@ public interface CommentService extends IService<Comment> {
      * @param userId  评论人id
      * @return
      */
-    Integer  publishCommentReply(PostCommentRequest request,Integer userId);
+    Integer publishCommentReply(PostCommentRequest request,Integer userId);
 
 
 
@@ -44,4 +44,9 @@ public interface CommentService extends IService<Comment> {
      * @return
      */
     List<CommentDTO> getRepliesToUserComments(Integer userId, PageTool pageTool);
+
+    /**
+     * 是否有敏感字
+     */
+    Boolean hasSensitiveWords(String text);
 }
