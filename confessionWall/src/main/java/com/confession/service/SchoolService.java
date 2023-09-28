@@ -3,6 +3,7 @@ package com.confession.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
+import com.confession.dto.IndexInfoDTO;
 import com.confession.dto.SchoolApplicationDTO;
 import com.confession.pojo.School;
 import com.confession.request.RegisterSchoolRequest;
@@ -73,4 +74,11 @@ public interface SchoolService extends IService<School> {
      * @return
      */
     String getSchoolNameById(Integer schoolId);
+
+    /**
+     * 获取首页需要的信息
+     * @param schoolId
+     * @return IndexInfoDTO 目前只有提示语和首页轮播图信息
+     */
+    IndexInfoDTO getIndexInfo(Integer schoolId);
 }

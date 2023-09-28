@@ -4,6 +4,7 @@ package com.confession.controller;
 import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
 import com.confession.comm.Result;
+import com.confession.dto.IndexInfoDTO;
 import com.confession.request.RegisterSchoolRequest;
 import com.confession.request.SchoolExamineRequest;
 import com.confession.service.SchoolService;
@@ -29,14 +30,21 @@ public class SchoolController {
 
 
     /**
-     * 拿到学校的提示语，可以是管理员可以设置是否读取管理员设置的统一提示语
-     *
-     * @return
+     * 拿到学校的提示语，可以是管理员可以设置是否读取管理员设置的统一提示语 暂时弃用
      */
     @GetMapping("getPromptMessage")
-    public Result getPromptMessage(@ModelAttribute Integer schoolId) {
+    public Result getPromptMessage(@RequestParam Integer schoolId) {
         String prompt = schoolService.getPromptMessage(schoolId);
         return Result.ok(prompt);
+    }
+
+    /**
+     * 获取首页的提示语和学习的轮播图地址
+     */
+    @GetMapping("getIndexInfo")
+    public Result getIndexInfo(@RequestParam Integer schoolId) {
+        IndexInfoDTO info=schoolService.getIndexInfo(schoolId);
+        return Result.ok(info);
     }
 
     /**

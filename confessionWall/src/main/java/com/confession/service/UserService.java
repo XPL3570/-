@@ -6,6 +6,7 @@ import com.confession.comm.PageTool;
 import com.confession.dto.UserDTO;
 import com.confession.dto.UserManageDTO;
 import com.confession.pojo.User;
+import com.confession.request.UserNameModRequest;
 import com.confession.request.UserStatusModRequest;
 
 import java.util.List;
@@ -63,4 +64,10 @@ public interface UserService extends IService<User> {
      * @return
      */
     PageResult selectUserList(PageTool pageTool, String schoolName, String userName, Integer status);
+
+    /**
+     * 修改用户名字
+     * @param nameModRequest
+     */
+    void userMod(UserNameModRequest nameModRequest);
 }

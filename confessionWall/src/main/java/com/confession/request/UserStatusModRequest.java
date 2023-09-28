@@ -16,5 +16,5 @@ public class UserStatusModRequest {
     @NotNull(message = "修改状态不能为空")
     @Min(value = 0, message = "修改状态只能是0-3")
     @Max(value = 3, message = "修改状态只能是0-3")
-    private Integer status;
+        private Integer status;
 }

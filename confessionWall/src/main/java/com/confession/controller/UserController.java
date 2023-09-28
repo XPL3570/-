@@ -194,6 +194,12 @@ public class UserController {
         return Result.ok();
     }
 
+    @PostMapping("admin/usernameMod")
+    public Result userNameMod(@RequestBody @Validated UserNameModRequest nameModRequest) {
+        userService.userMod(nameModRequest);
+        return Result.ok();
+    }
+
     /**
      * 判断是否符合修改需求，修改用户头像或名字
      *

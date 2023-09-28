@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
+import com.confession.dto.IndexInfoDTO;
 import com.confession.dto.SchoolApplicationDTO;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,6 +74,7 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
 
     @Override
     public String getPromptMessage(Integer schoolId) {
+        //这里那个消息表只能存放一条记录，就有问题
         MsgConfiguration msgConfiguration = msgConfigurationMapper.selectOne(null);
         if (msgConfiguration.getMainSwitch()) {
             return msgConfiguration.getMessage();
@@ -228,6 +231,20 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
         wrapper.eq(School::getId, schoolId);
         School school = this.getOne(wrapper);
         return school != null ? school.getSchoolName() : null;
+    }
+
+    @Override
+    public IndexInfoDTO getIndexInfo(Integer schoolId) {
+        LambdaQueryWrapper<School> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(School::getId, schoolId);
+        School school = this.getOne(wrapper);
+        //轮播图 todo 可能要加表，来保存设置所有人可以看到的轮播图
+        List<String> imageList = Arrays.asList(school.getCarouselImages().split(";"));
+        IndexInfoDTO dto = new IndexInfoDTO();
+        dto.setCarouselImages(imageList);
+        String promptMessage = this.getPromptMessage(schoolId);
+        dto.setPrompt(promptMessage);
+        return dto;
     }
 
 }

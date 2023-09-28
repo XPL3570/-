@@ -87,8 +87,12 @@
           label="操作"
           width="157">
         <template v-slot:default="scope">
-            <el-button @click="handleClickState(scope.row)" plain size="mini" type="danger" style="margin-bottom: 4px;margin-left: 18px; width: 100px;">修改状态</el-button>
-            <el-button @click="handleClickUser(scope.row)" plain size="mini" type="primary" style="width: 100px; margin-left: 18px">修改用户名</el-button>
+          <el-button @click="handleClickState(scope.$index, scope.row)" plain size="mini" type="danger"
+                     style="margin-bottom: 4px;margin-left: 18px; width: 100px;">修改状态
+          </el-button>
+          <el-button @click="handleClickUser(scope.$index, scope.row)" plain size="mini" type="primary"
+                     style="width: 100px; margin-left: 18px">修改用户名
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -96,17 +100,30 @@
     <!-- 分页组件 -->
     <PageView v-bind:childMsg="page" @callFather="callFather"></PageView>
 
-    <el-dialog title="修改用户状态"  width="30%" :visible.sync="isDialogStateOpen">
+    <el-dialog title="修改用户状态" width="24%" :visible.sync="isDialogStateOpen">
+      <span>请选择用户状态： </span>
+      <el-select v-model="editForm.userStatus" placeholder="请选择">
+        <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+        </el-option>
+      </el-select>
+
       <div slot="footer" class="dialog-footer">
-        <el-button @click="isDialogStateOpen = false">取 消</el-button>
-        <el-button type="primary" @click="isDialogStateOpen = false">确 定</el-button>
+        <el-button @click="cancelDialogState">取 消</el-button>
+        <el-button type="primary" @click="confirmDialogState">确 定</el-button>
       </div>
     </el-dialog>
 
-    <el-dialog title="修改用户名字"  width="30%" :visible.sync="isDialogUserOpen">
+    <el-dialog title="修改用户名字" width="30%" :visible.sync="isDialogUserOpen">
+
+      <el-input v-model="editForm.userName" placeholder="请输入用户名"></el-input>
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="isDialogUserOpen = false">取 消</el-button>
-        <el-button type="primary" @click="isDialogUserOpen = false">确 定</el-button>
+        <el-button type="primary" @click="confirmDialogUsername">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -118,6 +135,7 @@
 <script>
 import api from "@/axios";
 import PageView from "@/components/PageView.vue";
+
 export default {
   components: {PageView},
   data() {
@@ -132,11 +150,31 @@ export default {
       formInline: { //分页参数，每次都是调用他来获取后台然后
         page: 1,
         limit: 5,
-        status:'',
-        schoolName:'',
-        userName:''
+        status: '',
+        schoolName: '',
+        userName: ''
       },
       tableData: [], // 你需要在这里填入你的用户数据
+      editForm: { //暂存的用户信息待提交
+        userIndex: -1,
+        userName: '',
+        userId: -1,
+        userAvatar: '',
+        userStatus: -1
+      },
+      options: [{
+        value: 0,
+        label: '正常'
+      }, {
+        value: 1,
+        label: '禁止投稿'
+      }, {
+        value: 2,
+        label: '禁止评论'
+      }, {
+        value: 3,
+        label: '禁止投稿和评论'
+      }],
     }
   },
   // 假设你有一个获取用户数据的方法
@@ -144,22 +182,110 @@ export default {
     this.fetchData();
   },
   methods: {
-    handleClickState(row) {
-      console.log(row)
+    handleClickState(index, row) {
       this.isDialogStateOpen = true;
-
-
+      this.editForm.userStatus = row.status;
+      this.editForm.userId = row.id;
+      this.editForm.userIndex = index;
     },
-    handleClickUser(row) {
-           console.log(row)
+    handleClickUser(index,row) {
       this.isDialogUserOpen = true;
+      this.editForm.userName = row.username;
+      this.editForm.userId = row.id;
+      this.editForm.userIndex = index;
+    },
+    cancelDialogState() {
+      this.editForm.userId = -1;
+      this.editForm.userStatus = -1;
+      this.editForm.userIndex = -1;
+      // 取消修改状态，清空选中状态
+      this.isDialogStateOpen = false;
+    },
+    confirmDialogState() {
+      //提交的时候判断一下用户的信息是否修改然后给出对应的提示
+      if (this.tableData[this.editForm.userIndex].status === this.editForm.userStatus) {
+        this.$message.warning('您想要修改的改用户状态和之前没有变化哦');
+        return;
+      }
 
+      // console.log(this.editForm.userId)
+      // 发送请求到后台，更新用户状态
+      const postData = {
+        userId: this.editForm.userId, // 根据实际情况获取用户ID
+        status: this.editForm.userStatus // 选中的状态
+      };
+      api.post('/api/user/admin/userStatusMod', postData)
+          .then(res => {
+            // 处理响应结果
+            if (res.data.code === 200) {
+              this.$message.success('修改用户状态成功!');
+              //把对应的数据清空和里列表上面的数据替换
+              this.editForm.userId = -1;
+              this.tableData[this.editForm.userIndex].status = this.editForm.userStatus
+              this.editForm.userStatus = -1;
+              this.editForm.userIndex = -1;
+            } else {
+              this.$message.error('修改用户状态失败！')
+            }
+          })
+          .catch(error => {
+            console.error(error)
+            // 处理错误
+          });
+      // 确定修改状态
+      this.isDialogStateOpen = false;
+    },
+    confirmDialogUsername() {
+      let temp=this.editForm.userName;
+      if (temp.length<3||temp.length>20){
+        this.$message.warning('名字要在3-20个字符哦');
+        return;
+      }
+      if (this.tableData[this.editForm.userIndex].username === this.editForm.userName) {
+        this.$message.warning('您想要修改的改用户名字和之前没有变化哦');
+        return;
+      }
+      const postData = {
+        userId: this.editForm.userId, // 根据实际情况获取用户ID
+        username: this.editForm.userName // 选中的状态
+      };
+      api.post('/api/user/admin/usernameMod', postData)
+          .then(res => {
+            if (res.data.code === 200) {
+              this.$message.success('修改用户名成功!');
+              this.editForm.userId = -1;
+              this.tableData[this.editForm.userIndex].username = this.editForm.userName;
+              this.editForm.userName = '';
+            }else {
+              this.$message.error('修改用户名失败！');
+            }
+          }).catch(error => {
+        console.error(error);
+      });
+      this.isDialogUserOpen = false;
+    },
+    confirmDialogUser() {
+      // 确定修改用户名字
+      this.isDialogUserOpen = false;
+
+      // 发送请求到后台，更新用户名字
+      // const postData = {
+      // userId: row.userId, // 根据实际情况获取用户ID
+      // userName: row.newUserName // 修改后的用户名字
+      // };
+      // api.post('/api/update/user/name', postData)
+      //     .then(res => {
+      //       // 处理响应结果
+      //     })
+      //     .catch(error => {
+      //       // 处理错误
+      //     });
     },
     tableRowClassName({row}) {
       // 这是一个函数，用于根据行的状态返回一个类名
-      if (row.status===0){
+      if (row.status === 0) {
         return null;
-      }else {
+      } else {
         return 'warning-row';
       }
     },
@@ -172,17 +298,17 @@ export default {
     },
     fetchData() {
       // 在这里获取你的用户数据，并将其赋值给tableData
-      api.get('/api/user/admin/userList',this.formInline)
-          .then(res=>{
-                  // console.log(res.data)
-                  if (res.data.code===200){
-                    this.tableData=res.data.data.data
-                    this.page.total=res.data.data.total
-                  }
+      api.get('/api/user/admin/userList', this.formInline)
+          .then(res => {
+                // console.log(res.data)
+                if (res.data.code === 200) {
+                  this.tableData = res.data.data.data
+                  this.page.total = res.data.data.total
+                }
               }
           )
     },
-    search(){
+    search() {
       this.fetchData();
     }
   }

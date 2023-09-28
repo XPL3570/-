@@ -1,67 +1,40 @@
 <template>
-  <el-table
-      :data="tableData"
-      style="width: 100%"
-      :row-class-name="tableRowClassName">
-    <el-table-column
-        prop="date"
-        label="日期"
-        width="180">
-    </el-table-column>
-    <el-table-column
-        prop="name"
-        label="姓名"
-        width="180">
-    </el-table-column>
-    <el-table-column
-        prop="address"
-        label="地址">
-    </el-table-column>
-  </el-table>
+  <div>
+    <el-table :data="schoolList" stripe>
+      <el-table-column prop="id" label="学校ID" width="80"></el-table-column>
+      <el-table-column prop="schoolName" label="学校名称" width="120"></el-table-column>
+      <el-table-column prop="avatarURL" label="头像地址" width="120"></el-table-column>
+      <el-table-column prop="description" label="描述内容" width="120"></el-table-column>
+      <el-table-column prop="createTime" label="创建时间" width="120"></el-table-column>
+      <el-table-column prop="carouselImages" label="轮播图地址" width="120"></el-table-column>
+      <el-table-column prop="prompt" label="提示语" width="120"></el-table-column>
+      <el-table-column prop="isVerified" width="120" label="审核状态">
+        <template v-slot="scope">{{ getStatusText(scope.row.isVerified) }}</template>
+      </el-table-column>
+    </el-table>
+  </div>
 </template>
-
-<style>
-.el-table .warning-row {
-  background: oldlace;
-}
-
-.el-table .success-row {
-  background: #f0f9eb;
-}
-</style>
 
 <script>
 export default {
-  methods: {
-    tableRowClassName({ row}) {
-      if (row) {
-        return 'warning-row';
-      } else  {
-        return 'success-row';
-      }
-
-    }
-  },
   data() {
     return {
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄',
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄',
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }]
+      schoolList: [] // 假设你已经从后端获取到了学校数据并赋值给schoolList
+    };
+  },
+  methods: {
+    getStatusText(status) {
+      switch (status) {
+        case 0:
+          return '未审核';
+        case 1:
+          return '通过';
+        case 2:
+          return '未通过';
+        default:
+          return '';
+      }
     }
   }
-}
+};
 </script>

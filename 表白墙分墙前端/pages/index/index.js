@@ -1,6 +1,5 @@
 var request = require('../../utils/request')
 var uril = require('../../utils/util')
-const app = getApp()
 import Notify from '@vant/weapp/notify/notify';
 
 Page({

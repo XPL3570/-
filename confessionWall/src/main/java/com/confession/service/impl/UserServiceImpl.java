@@ -14,6 +14,7 @@ import com.confession.dto.UserManageDTO;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.mapper.UserMapper;
 import com.confession.pojo.User;
+import com.confession.request.UserNameModRequest;
 import com.confession.request.UserStatusModRequest;
 import com.confession.service.SchoolService;
 import com.confession.service.UserService;
@@ -142,6 +143,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    public void userMod(UserNameModRequest nameModRequest) {
+        if (nameModRequest.getUserId()==null){//多加一道校验，
+            throw new WallException("修改用户状态失败",201);
+        }
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(User::getId, nameModRequest.getUserId())
+                .set(User::getUsername, nameModRequest.getUsername());
+        userMapper.update(null, updateWrapper);
+    }
+
+    @Override
     public PageResult selectUserList(PageTool pageTool, String schoolName, String userName, Integer status) {
         Page<User> page = new Page<>(pageTool.getPage(), pageTool.getLimit());
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
@@ -170,6 +182,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         List<UserManageDTO> zjS = list.stream().map(this::convertToDTO).collect(Collectors.toList());
         return new PageResult(zjS,page.getTotal(),list.size());
     }
+
 
     public UserManageDTO convertToDTO(User user) {
         UserManageDTO userDTO = new UserManageDTO();
