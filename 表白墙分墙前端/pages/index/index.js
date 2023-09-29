@@ -5,6 +5,7 @@ import Notify from '@vant/weapp/notify/notify';
 Page({
 	data: {
 		title: '', //墙名字
+		prompt:'欢迎来到同校表白墙！        您的投稿是我不懈的动力！',
 		swiperOptions: {  //轮播图参数
 			indicatorDots: true,
 			autoplay: true,
@@ -42,6 +43,24 @@ Page({
 		this.setData({
 			title: wx.getStorageSync('wall').wallName
 		});
+
+		//获取轮播图和提示语
+		var sbzj={
+			schoolId:wx.getStorageSync('userInfo').schoolId
+		}
+		request.requestWithToken("/api/school/getIndexInfo", "GET",sbzj,
+		(res)=>{
+				if(res.data.code===200){
+						this.setData({
+							prompt:res.data.data.prompt,
+							swiperData:res.data.data.carouselImages
+						});
+				}else{
+					console.log(res);
+				}	
+		},(res)=>{
+				console.log(res);
+		})
 		const data = {
 			wallId: wx.getStorageSync('wall').id,
 			recordAfterTime: Math.floor(Date.now() / 1000), // 获取当前时间的时间戳

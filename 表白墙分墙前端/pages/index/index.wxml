@@ -3,7 +3,7 @@
 
 <van-notice-bar
   left-icon="volume-o"
-  text="欢迎来到阿巴阿巴表白墙！        您的投稿是我不懈的动力，"
+  text="{{prompt}}"
 />
 <view class="zjcs">
     <swiper class="myswiper" indicator-dots="{{ true }}" autoplay="{{ true }}" interval="{{ 2000 }}" duration="{{ 1000 }}" indicator-color="#843454" indicator-active-color="#f56554">

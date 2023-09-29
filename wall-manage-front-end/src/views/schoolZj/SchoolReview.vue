@@ -112,7 +112,7 @@ export default {
   data() {
     return {
       loading:false,
-      page: {  //分页参数
+      page: {  //页面分页参数
         page: 1,  //第几页
         limit: 5,
         total:0
@@ -159,7 +159,6 @@ export default {
       this.formInline.page = param.page
       this.formInline.limit = param.limit
 
-      console.log(this.formInline)
       this.getData(this.formInline)
     },
     // 显示确认提示对话框，并存储当前行的数据和当前的操作

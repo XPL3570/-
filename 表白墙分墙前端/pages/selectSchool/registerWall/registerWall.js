@@ -11,8 +11,9 @@ Page({
 		fileList: []
 	},
 	onLoad() {
+		//这里登录的时候学校id会在userInfo里面
 		this.setData({
-			schoolId: wx.getStorageSync('schoolId')
+			schoolId: wx.getStorageSync('schoolId') 
 		})
 	},
 	onInputConfessionWallName: function (event) {

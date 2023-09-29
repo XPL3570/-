@@ -115,7 +115,7 @@
         <el-button @click="cancelDialogState">取 消</el-button>
         <el-button type="primary" @click="confirmDialogState">确 定</el-button>
       </div>
-    </el-dialog>
+    </el-dialog>  
 
     <el-dialog title="修改用户名字" width="30%" :visible.sync="isDialogUserOpen">
 
@@ -195,11 +195,11 @@ export default {
       this.editForm.userIndex = index;
     },
     cancelDialogState() {
+      this.isDialogStateOpen = false;
       this.editForm.userId = -1;
       this.editForm.userStatus = -1;
       this.editForm.userIndex = -1;
       // 取消修改状态，清空选中状态
-      this.isDialogStateOpen = false;
     },
     confirmDialogState() {
       //提交的时候判断一下用户的信息是否修改然后给出对应的提示

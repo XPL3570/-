@@ -130,7 +130,7 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
     public PageResult viewSchool(PageTool pageTool) {
         Page<School> page = new Page<>(pageTool.getPage(), pageTool.getLimit());
         List<School> schools = schoolMapper.selectPage(page, null).getRecords();
-        long total = page.getSize();
+        long total = page.getTotal();
         return new PageResult(schools, total,schools.size());
     }
 

@@ -42,7 +42,7 @@ public class SchoolController {
      * 获取首页的提示语和学习的轮播图地址
      */
     @GetMapping("getIndexInfo")
-    public Result getIndexInfo(@RequestParam Integer schoolId) {
+    public Result getIndexInfo(@RequestParam("schoolId") Integer schoolId) {
         IndexInfoDTO info=schoolService.getIndexInfo(schoolId);
         return Result.ok(info);
     }
