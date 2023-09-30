@@ -1,4 +1,5 @@
 var util = require('../../../utils/util')
+var request = require('../../../utils/request')
 import Dialog from '@vant/weapp/dialog/dialog';
 
 Page({
@@ -96,62 +97,48 @@ Page({
 			return;
 		}
 		var data = {
-			userId: wx.getStorageSync('userId'),
 			schoolId: wx.getStorageSync('schoolId'),
 			avatarURL: this.data.fileList[0].url,
 			confessionWallName: this.data.ConfessionWallName,
 			description: this.data.description
 		};
-		console.log(data);
-		// 获取全局变量
-		const app = getApp();
-		const baseUrl = app.globalData.apiUrl;
-
-		wx.request({
-			url: baseUrl + "/api/confession/register",
-			method: 'POST',
-			data: JSON.stringify(data),
-			header: {
-				'content-type': 'application/json',
-			},
-			success: (res) => {
-				if (res.data.code === 200) {
-					const beforeClose = (action) =>
-						new Promise((resolve) => {
-							setTimeout(() => {
-								if (action === 'confirm') {
-									resolve(true);
-								} else {
-									// 拦截取消操作
-									resolve(false);
-								}
-							}, 2404);
-						});
-					Dialog.alert({
-						title: '注册表白墙成功！',
-						message: '注册表白墙成功，请耐心等待管理员审核',
-						theme: 'round-button',
-						beforeClose,
-					}).then(() => {
-						this.setData({
-							schoolId: null,
-							ConfessionWallName: '',
-							ConfessionWallNameError: '',
-							description: '',
-							descriptionError: '',
-							fileList: []
-						});
-						wx.switchTab({
-							url: '/pages/index/index'
-						});
+		// console.log(data);
+		request.requestWithToken('/api/confession/register','POST',data,(res) => {
+			if (res.data.code === 200) {
+				const beforeClose = (action) =>
+					new Promise((resolve) => {
+						setTimeout(() => {
+							if (action === 'confirm') {
+								resolve(true);
+							} else {
+								// 拦截取消操作
+								resolve(false);
+							}
+						}, 2404);
 					});
-				} else {
-					console.log(res.data)
-				}
-			},
-			fail: (res) => {
-				console.log(res.data);
+				Dialog.alert({
+					title: '注册表白墙成功！',
+					message: '注册表白墙成功，请耐心等待管理员审核',
+					theme: 'round-button',
+					beforeClose,
+				}).then(() => {
+					this.setData({
+						schoolId: null,
+						ConfessionWallName: '',
+						ConfessionWallNameError: '',
+						description: '',
+						descriptionError: '',
+						fileList: []
+					});
+					wx.switchTab({
+						url: '/pages/index/index'
+					});
+				});
+			} else {
+				console.log(res.data)
 			}
+		},(res) => {
+			console.log(res.data);
 		});
 	}
 });

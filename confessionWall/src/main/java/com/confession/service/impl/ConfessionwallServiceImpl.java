@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
 import com.confession.mapper.ConfessionwallMapper;
+import com.confession.mapper.SchoolMapper;
 import com.confession.pojo.Confessionwall;
+import com.confession.pojo.School;
 import com.confession.request.RegistryWhiteWallRequest;
 import com.confession.service.ConfessionwallService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -15,6 +17,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 import static com.confession.comm.ResultCodeEnum.DATA_ERROR;
+import static com.confession.comm.ResultCodeEnum.FAIL;
 
 /**
  * <p>
@@ -28,6 +31,10 @@ import static com.confession.comm.ResultCodeEnum.DATA_ERROR;
 public class ConfessionwallServiceImpl extends ServiceImpl<ConfessionwallMapper, Confessionwall> implements ConfessionwallService {
     @Resource
     private ConfessionwallMapper confessionwallMapper;
+
+    @Resource
+    private SchoolMapper schoolMapper;
+
     public Confessionwall selectSchoolInWallOne(Integer schoolId) {
         LambdaQueryWrapper<Confessionwall> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Confessionwall::getSchoolId,schoolId);
@@ -42,11 +49,16 @@ public class ConfessionwallServiceImpl extends ServiceImpl<ConfessionwallMapper,
 
     @Override
     public void register(RegistryWhiteWallRequest registryWhiteWallRequest) {
+        School school = schoolMapper.selectById(registryWhiteWallRequest.getSchoolId());
+        if (school==null){
+            throw new WallException(FAIL);
+        }
+        System.out.println(JwtInterceptor.getUser());
         Confessionwall zj = new Confessionwall();
         zj.setSchoolId(registryWhiteWallRequest.getSchoolId());
         zj.setAvatarURL(registryWhiteWallRequest.getAvatarURL());
         zj.setWallName(registryWhiteWallRequest.getConfessionWallName());
-        zj.setCreatorUserId( registryWhiteWallRequest.getUserId());
+        zj.setCreatorUserId( JwtInterceptor.getUser().getId());
         zj.setDescription(registryWhiteWallRequest.getDescription());
         zj.setStatus(1); //默认禁用
         confessionwallMapper.insert(zj);

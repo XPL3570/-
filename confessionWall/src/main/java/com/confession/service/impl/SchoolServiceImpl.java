@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
+import com.confession.config.JwtConfig;
 import com.confession.dto.IndexInfoDTO;
 import com.confession.dto.SchoolApplicationDTO;
+import com.confession.dto.SchoolDTO;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
 import com.confession.mapper.*;
@@ -15,8 +17,10 @@ import com.confession.request.RegisterSchoolRequest;
 import com.confession.request.SchoolExamineRequest;
 import com.confession.service.SchoolService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 
@@ -88,6 +92,19 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
 
     @Override
     public Integer registerSchool(RegisterSchoolRequest registerSchool) {
+        Integer userId = JwtInterceptor.getUser().getId();
+        LambdaQueryWrapper<School> wrapperZj = new LambdaQueryWrapper<>();
+        wrapperZj.eq(School::getCreatorId, userId);
+        try {
+            School schoolZj = schoolMapper.selectOne(wrapperZj);
+            if (schoolZj!=null){
+                throw new Exception();
+            }
+        }catch (Exception e){
+            throw new WallException("您已经注册过学校了，请等待管理员审核",257);
+        }
+
+
         LambdaQueryWrapper<School> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(School::getSchoolName,registerSchool.getSchoolName());
         School school;
@@ -99,7 +116,7 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
         }
         if (school==null){ //没有注册
             school = new School();
-            school.setCreatorId(registerSchool.getUserId());
+            school.setCreatorId(userId);
             school.setSchoolName(registerSchool.getSchoolName());
             school.setAvatarURL(registerSchool.getAvatarURL());
             school.setDescription(registerSchool.getDescription());
@@ -130,8 +147,39 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
     public PageResult viewSchool(PageTool pageTool) {
         Page<School> page = new Page<>(pageTool.getPage(), pageTool.getLimit());
         List<School> schools = schoolMapper.selectPage(page, null).getRecords();
+        List<SchoolDTO> zjDto=schools.stream().map(
+                this::schoolDtoConvert
+        ).collect(Collectors.toList());
         long total = page.getTotal();
-        return new PageResult(schools, total,schools.size());
+        return new PageResult(zjDto, total,schools.size());
+    }
+
+    private SchoolDTO schoolDtoConvert(School school){
+        SchoolDTO dto = new SchoolDTO();
+        dto.setId(school.getId());
+        dto.setSchoolName(school.getSchoolName());
+        dto.setPrompt(school.getPrompt());
+        dto.setDescription(school.getDescription());
+        dto.setIsVerified(school.getIsVerified());
+        dto.setAvatarURL(school.getAvatarURL());
+        String aaa = school.getCarouselImages();
+        if (!StringUtils.isEmpty(aaa)){
+            dto.setCarouselImages(school.getCarouselImages().split(";"));
+        }
+        User user = userMapper.selectById(school.getCreatorId());
+        if (user!=null){
+            dto.setCreatorName(user.getUsername());
+        }
+        SchoolApplication schoolApplication = getSchoolApplication(school.getId());
+        dto.setCreatorPhone(schoolApplication.getPhoneNumber());
+        dto.setCreatorWeChat(schoolApplication.getWechatNumber());
+        dto.setCreateTime(school.getCreateTime());
+        return dto;
+    }
+    private SchoolApplication getSchoolApplication(Integer schoolId) {
+        LambdaQueryWrapper<SchoolApplication> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SchoolApplication::getSchoolId, schoolId);
+        return schoolApplicationMapper.selectOne(wrapper);
     }
 
     @Override

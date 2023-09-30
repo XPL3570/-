@@ -139,12 +139,11 @@ public class UserController {
             userService.updateById(user);
         }
 
+        // 如果学校不存在，返回token
 
-        // 如果学校不存在，返回特定的结果
         if (school == null) {
-            return Result.build(user.getId(), SCHOOL_NOT_SETTLED);  //告诉用户学校没有注入，看是否要入注册学校
+            return Result.build(JwtConfig.getJwtToken(user), SCHOOL_NOT_SETTLED);  //告诉用户学校没有注入，看是否要入注册学校
         }
-
         String token = JwtConfig.getJwtToken(user);
         Map<String, Object> map = new HashMap<>();
         map.put("token", token);

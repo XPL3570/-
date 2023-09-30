@@ -69,7 +69,7 @@ public class ConfessionPostController {
      * 查看学校的投稿内容    todo 可以在一开始就把数据加载到缓存    这里要不要做一个查询表白墙表状态是否是可用的状态
      */
     @PostMapping("readConfessionWall")
-    public Result readConfessionWall(@RequestBody ReadConfessionRequest request){
+    public Result readConfessionWall(@RequestBody @Validated ReadConfessionRequest request){
         ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
         // 查询Redis中是否存在满足条件的数据
         long startTimestamp = request.getRecordAfterTime(); // 前端传递的时间戳参数

@@ -15,7 +15,7 @@ const instance = axios.create({
 instance.interceptors.request.use(
     config => {
         const token = localStorage.getItem('token');
-        console.log(token);
+        // console.log(token);
         if (token) {
             config.headers['authentication'] = token;
         }
@@ -40,9 +40,12 @@ instance.interceptors.response.use(
 );
 
 function checkCode(res) {
-    if (res.data && !res.data.ok) {
-        console.error(res.data.message);
+    if (res){
+        if (res.data && !res.data.ok) {
+            console.error(res.data.message);
+        }
     }
+
     return res;
 }
 

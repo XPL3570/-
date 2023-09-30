@@ -36,7 +36,7 @@ public interface SchoolService extends IService<School> {
     String getPromptMessage(Integer schoolId);
 
     /**
-     * 注册学校
+     * 注册学校   这里规定一个用户只能注册一个学校
      */
     Integer registerSchool(RegisterSchoolRequest registerSchool);
 

@@ -11,8 +11,8 @@ import javax.validation.constraints.Size;
 @EqualsAndHashCode(callSuper = false)
 public class RegisterSchoolRequest {
 
-    @NotNull(message = "用户id不能为空")
-    private Integer userId;
+//    @NotNull(message = "用户id不能为空")
+//    private Integer userId;
 
     @NotBlank(message = "学校图标不能为空")
     @Size(max = 255, message = "学校头像地址过长")

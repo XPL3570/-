@@ -66,6 +66,7 @@ Page({
 			recordAfterTime: Math.floor(Date.now() / 1000), // 获取当前时间的时间戳
 			pageSize: 6
 		};
+		console.log(wx.getStorageSync('wall').id)
 		request.requestWithToken("/api/confessionPost/readConfessionWall", "POST", data, (res) => {
 			if (res.data.code === 200) {
 				const updatedConfession = res.data.data.map((item) => { //遍历源数据

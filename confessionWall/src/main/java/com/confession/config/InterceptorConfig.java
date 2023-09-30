@@ -22,8 +22,6 @@ public class InterceptorConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/admin/login") // 排除登录请求
                 .excludePathPatterns("/uploadImage") // 排除上传图片限制
                 .excludePathPatterns("/api/user/register")
-                .excludePathPatterns("/api/school/register")
-                .excludePathPatterns("/api/confession/register")
                 .excludePathPatterns("/api/confessionPost/readConfessionWall") // 测试加的 要删
                 .excludePathPatterns("/upload/**"); // 排除获取图片信息
     }

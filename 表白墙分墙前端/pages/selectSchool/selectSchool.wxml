@@ -11,6 +11,7 @@
     value="{{ userName }}"
     bind:input="onInputUserName"
     custom-class="input-field"
+		error-message="{{userNameError}}"
   ></van-field>
 
   <van-field
@@ -20,6 +21,7 @@
     value="{{ schoolName }}"
     bind:input="onInputSchoolName"
     custom-class="input-field"
+		error-message="{{schoolNameError}}"
   ></van-field>
 
   <van-button type="primary" bind:tap="onSubmit" custom-class="submit-button">提交</van-button>

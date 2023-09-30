@@ -11,8 +11,8 @@ import javax.validation.constraints.Size;
 @EqualsAndHashCode(callSuper = false)
 public class RegistryWhiteWallRequest {
 
-    @NotNull(message = "")
-    private Integer userId;
+//    @NotNull(message = "")
+//    private Integer userId;
 
     @NotNull(message = "学校id不能为空")
     private Integer schoolId;

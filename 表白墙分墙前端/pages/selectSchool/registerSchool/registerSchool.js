@@ -1,4 +1,5 @@
 var util = require('../../../utils/util')
+var request = require('../../../utils/request')
 import Dialog from '@vant/weapp/dialog/dialog';
 
 Page({
@@ -123,7 +124,6 @@ Page({
 			return;
 		}
 		var data = {
-			userId: wx.getStorageSync('userId'),
 			avatarURL: this.data.fileList[0].url,
 			schoolName: this.data.schoolName,
 			description: this.data.description,
@@ -131,47 +131,40 @@ Page({
 			phoneNumber: this.data.phoneNumber,
 		};
 		// 获取全局变量
-		const app = getApp();
-		const baseUrl = app.globalData.apiUrl;
-
-		wx.request({
-			url: baseUrl + "/api/school/register",
-			method: 'POST',
-			data: JSON.stringify(data),
-			header: {
-				'content-type': 'application/json', // 默认值
-			},
-			success: (res) => {
-				if (res.data.code === 200) {
-					//保存schoolId并跳转到表白墙
-					try {
-						wx.setStorageSync('schoolId', res.data.data);
-						console.log('学校id存储成功');
-					} catch (e) {
-						console.log('学校id数据存储失败');
-					}
-					Dialog.alert({
-						title: '请注册表白墙',
-						message: '提交入驻申请成功，等待管理员审核，请注册学校的表白墙',
-						theme: 'round-button',
-					}).then(() => {
-						wx.navigateTo({
-							url: '/pages/selectSchool/registerWall/registerWall',
-						});
-					});
-				}else if(res.data.code===210){
-					Dialog.alert({
-						message: '学校已经入驻或者正在等待审核! 您可以入驻其他学校或者选择其他学校登录',
-					}).then(() => {
-						// on close
-					});
-				}else{
-					console.log(res.data)
+		request.requestWithToken('/api/school/register','POST',data,(res) => {
+			if (res.data.code === 200) {
+				//保存schoolId并跳转到表白墙
+				try {
+					wx.setStorageSync('schoolId', res.data.data);
+					console.log('学校id存储成功');
+				} catch (e) {
+					console.log('学校id数据存储失败');
 				}
-			},
-			fail: (res) => {
-				console.log(res.data);
+				Dialog.alert({
+					title: '请注册表白墙',
+					message: '提交入驻申请成功，等待管理员审核，请注册学校的表白墙',
+					theme: 'round-button',
+				}).then(() => {
+					wx.navigateTo({
+						url: '/pages/selectSchool/registerWall/registerWall',
+					});
+				});
+			}else if(res.data.code===210){
+				Dialog.alert({
+					message: '学校已经入驻或者正在等待审核! 您可以入驻其他学校或者选择其他学校登录',
+				}).then(() => {
+					// on close
+				});
+			}else if(res.data.code===257){
+				Dialog.alert({
+					message: res.data.message,
+				}).then(() => {
+				});
+			}else{
+				console.log(res.data)
 			}
+		},(res) => {
+			console.log(res.data);
 		});
 
 	},

@@ -5,24 +5,42 @@ Page({
 	data: {
 		userName: '',
 		avatarUrl: defaultAvatarUrl,
-		schoolName: ''
+		schoolName: '',
+		userNameError:'',
+		schoolNameError:'' 
 	},
 	onInputSchoolName(event) {
+		var schoolName = event.detail;
+		var schoolNameError = '';
+		if (!schoolName) {
+			schoolNameError = '学校名字不能为空';
+		} else if (schoolName.length < 4 || schoolName.length > 50) {
+			schoolNameError = '请注意学校名字的长度哦';
+		}
 		this.setData({
-			schoolName: event.detail
+			schoolName: event.detail,
+			schoolNameError:schoolNameError
 		});
 	},
 	onInputUserName(event) {
+		var userName = event.detail;
+		var userNameError = '';
+		if (!userName) {
+			userNameError = '您的名字不能为空';
+		} else if (userName.length < 2 || userName.length > 8) {
+			userNameError = '长度必须在2到8个字符之间';
+		}
 		this.setData({
-			userName: event.detail
+			userName: event.detail,
+			userNameError:userNameError
 		});
 	},
 	onChooseAvatar(event) {
 		const tempAvatarUrl = event.detail.avatarUrl;
-		console.log(tempAvatarUrl)
+		// console.log(tempAvatarUrl)
 		try {
 			util.uploadAndRetrieveImageUrl(tempAvatarUrl).then(url => {
-				console.log('上传成功，服务器返回的图片地址为:', url);
+				// console.log('上传成功，服务器返回的图片地址为:', url);
 				this.setData({
 					avatarUrl: url,
 				});
@@ -64,7 +82,7 @@ Page({
 								duration: 2000
 							});
 						} else if (res.data.code === 211) {
-							wx.setStorageSync('userId', res.data.data);
+							wx.setStorageSync('token', res.data.data);
 							// 学校未入驻，提示用户重新输入还是跳转到 注册学校的页面
 							Dialog.confirm({
 								title: '是否注册该学校',

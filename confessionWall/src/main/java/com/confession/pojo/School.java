@@ -59,8 +59,13 @@ public class School implements Serializable {
      * 创建时间
      */
     @TableField("CreateTime")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createTime;
+
+    /**
+     * 创建时间
+     */
+    @TableField(value = "UpdateTime", fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updateTime;
 
     /**
      * 轮播图地址

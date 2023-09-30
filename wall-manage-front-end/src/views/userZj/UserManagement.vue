@@ -41,7 +41,7 @@
           width="120">
         <template v-slot:default="scope">
           <div style="display: flex; justify-content: center;">
-            <img :src="scope.row['avatarURL']" alt="avatar" width="72"/>
+            <img :src="scope.row['avatarURL']" alt="avatar" width="72" @click="showDetail(scope.row['avatarURL'])"/>
           </div>
         </template>
       </el-table-column>
@@ -115,7 +115,7 @@
         <el-button @click="cancelDialogState">取 消</el-button>
         <el-button type="primary" @click="confirmDialogState">确 定</el-button>
       </div>
-    </el-dialog>  
+    </el-dialog>
 
     <el-dialog title="修改用户名字" width="30%" :visible.sync="isDialogUserOpen">
 
@@ -124,6 +124,11 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="isDialogUserOpen = false">取 消</el-button>
         <el-button type="primary" @click="confirmDialogUsername">确 定</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog title="头像详情" :visible.sync="showImageDialog" width="44%">
+      <div style="text-align: center;">
+        <img :src="selectedImage" alt="avatar" width="90%" height="90%"/>
       </div>
     </el-dialog>
 
@@ -140,6 +145,8 @@ export default {
   components: {PageView},
   data() {
     return {
+      showImageDialog: false,
+      selectedImage: '', // 存储选中的图片URL
       isDialogStateOpen: false,
       isDialogUserOpen: false,
       page: {  //分页参数 每次都是传递他给组件得到
@@ -182,6 +189,10 @@ export default {
     this.fetchData();
   },
   methods: {
+    showDetail(image) {
+      this.selectedImage = image; // 将选中的图片URL赋值给selectedImage变量
+      this.showImageDialog = true; // 打开弹窗
+    },
     handleClickState(index, row) {
       this.isDialogStateOpen = true;
       this.editForm.userStatus = row.status;
@@ -263,23 +274,6 @@ export default {
         console.error(error);
       });
       this.isDialogUserOpen = false;
-    },
-    confirmDialogUser() {
-      // 确定修改用户名字
-      this.isDialogUserOpen = false;
-
-      // 发送请求到后台，更新用户名字
-      // const postData = {
-      // userId: row.userId, // 根据实际情况获取用户ID
-      // userName: row.newUserName // 修改后的用户名字
-      // };
-      // api.post('/api/update/user/name', postData)
-      //     .then(res => {
-      //       // 处理响应结果
-      //     })
-      //     .catch(error => {
-      //       // 处理错误
-      //     });
     },
     tableRowClassName({row}) {
       // 这是一个函数，用于根据行的状态返回一个类名

@@ -29,7 +29,7 @@
           width="120">
         <template v-slot:default="scope">
           <div style="display: flex; justify-content: center;">
-            <img :src="scope.row['creatorUserAvatarURL']" alt="avatar" width="72"/>
+            <img :src="scope.row['creatorUserAvatarURL']" alt="avatar" width="72"  @click="showDetail(scope.row['creatorUserAvatarURL'])"/>
           </div>
         </template>
       </el-table-column>
@@ -44,7 +44,7 @@
           width="115">
         <template v-slot:default="scope">
           <div style="display: flex; justify-content: center;">
-            <img :src="scope.row['avatarURL']" alt="avatar" width="72"/>
+            <img :src="scope.row['avatarURL']" alt="avatar" width="72"  @click="showDetail(scope.row['avatarURL'])"/>
           </div>
         </template>
       </el-table-column>
@@ -98,6 +98,12 @@
     <el-button type="primary" @click="confirmAction">确 定</el-button>
   </span>
     </el-dialog>
+
+    <el-dialog title="图片详情" :visible.sync="showImageDialog" width="40%">
+      <div style="text-align: center;">
+        <img :src="selectedImage" alt="avatar" width="90%" height="90%"/>
+      </div>
+    </el-dialog>
   </div>
 
 </template>
@@ -111,6 +117,8 @@ export default {
 
   data() {
     return {
+      showImageDialog: false,
+      selectedImage: '', // 存储选中的图片URL
       loading:false,
       page: {  //页面分页参数
         page: 1,  //第几页
@@ -136,10 +144,18 @@ export default {
   },
 
   methods: {
+    showDetail(image) {
+      this.selectedImage = image; // 将选中的图片URL赋值给selectedImage变量
+      this.showImageDialog = true; // 打开弹窗
+    },
     getData(param){
       this.loading = true
       api.get('/api/school/admin/viewNoReview',param)
           .then(res=>{
+            if (!res){
+              this.$message.error('数据加载失败！');
+              return;
+            }
             // console.log(res.data.data)
             if (res.data.code===200){
               this.loading = true
