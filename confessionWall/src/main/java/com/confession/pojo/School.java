@@ -1,7 +1,6 @@
 package com.confession.pojo;
 
 import com.baomidou.mybatisplus.annotation.*;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -62,7 +61,7 @@ public class School implements Serializable {
     private LocalDateTime createTime;
 
     /**
-     * 创建时间
+     * 修改时间
      */
     @TableField(value = "UpdateTime", fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;

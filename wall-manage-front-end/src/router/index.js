@@ -83,6 +83,14 @@ export default new Router({
                     meta: {
                         requireAuth: true
                     }
+                },
+                {
+                    path: '/user/administrators',
+                    name: '管理员列表管理',
+                    component: () => import('../views/userZj/ListOfRegularAdministrators.vue'),
+                    meta: {
+                        requireAuth: true
+                    }
                 }
             ]
         },

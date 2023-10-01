@@ -113,6 +113,14 @@ export default {
                   url: 'user/userManagement',
                   menus: null
                 },
+                {
+                  menuId: 42,
+                  icon: '管理员列表',
+                  menuName: '管理员列表管理',
+                  hasThird: 'N',
+                  url: 'user/administrators',
+                  menus: null
+                },
               ]
             },
           ],

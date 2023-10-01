@@ -25,7 +25,7 @@ export default {
        * 参数2 数据
        *
        */
-      console.log(`每页 ${val} 条`);
+      // console.log(`每页 ${val} 条`);
 
       this.pageParam.limit = val
       this.$emit('callFather', this.pageParam)
@@ -33,7 +33,7 @@ export default {
     handleCurrentChange(val) {
 
 
-      console.log(`当前页: ${val}`);
+      // console.log(`当前页: ${val}`);
       /**
        * 子传父
        * 参数1 父元素方法

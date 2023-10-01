@@ -1,6 +1,7 @@
 package com.confession.pojo;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author 作者
@@ -64,6 +65,7 @@ public class Admin implements Serializable {
      * 时间
      */
     @TableField("CreateTime")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createTime;
 
     /**

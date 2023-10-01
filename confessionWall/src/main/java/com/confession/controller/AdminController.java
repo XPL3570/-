@@ -1,12 +1,17 @@
 package com.confession.controller;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.confession.comm.PageResult;
+import com.confession.comm.PageTool;
 import com.confession.comm.RedisConstant;
 import com.confession.comm.Result;
 import com.confession.config.WallConfig;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
+import com.confession.pojo.Admin;
 import com.confession.pojo.Confessionpost;
+import com.confession.pojo.School;
 import com.confession.request.AdminLoginRequest;
 import com.confession.request.ConfessionPostRequest;
 import com.confession.service.AdminService;
@@ -14,15 +19,13 @@ import com.confession.service.ConfessionpostService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -61,6 +64,16 @@ public class AdminController {
         Map res = adminService.login(adminLoginRequest);
         return Result.ok(res);
     }
+
+    @GetMapping("list")
+    public Result list(@ModelAttribute PageTool pageTool){
+        Page<Admin> page = new Page<>(pageTool.getPage(), pageTool.getLimit());
+        List<Admin> admins = adminService.page(page).getRecords();
+        admins.stream().forEach(admin -> admin.setPassword(""));
+        PageResult result = new PageResult(admins, page.getTotal(), admins.size());
+        return Result.ok(result);
+    }
+
 
 
     /**

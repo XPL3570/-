@@ -107,11 +107,13 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
 
         LambdaQueryWrapper<School> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(School::getSchoolName,registerSchool.getSchoolName());
+        wrapper.eq(School::getIsVerified,1); //这里是查询已经通过审核的学校
         School school;
         try {
             school=schoolMapper.selectOne(wrapper); //查询到多个会报错
         }catch (Exception e){
             e.printStackTrace();
+            System.out.println("存在多个已经通过审核的学校，学校名是"+registerSchool.getSchoolName());  //一般不会触发
             throw new WallException(SCHOOL_REGISTERED);
         }
         if (school==null){ //没有注册

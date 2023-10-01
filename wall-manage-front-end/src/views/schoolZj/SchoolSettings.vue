@@ -3,6 +3,7 @@
     <el-table :data="schoolList"
               border
               highlight-current-row
+              style="width: 100%"
     >
       <el-table-column prop="id" label="ID" width="45"></el-table-column>
       <el-table-column prop="schoolName" label="学校名称" width="120"></el-table-column>
@@ -36,7 +37,8 @@
       </el-table-column>
       <el-table-column
           label="操作"
-          width="100">
+          width="100"
+          fixed="right">
         <template v-slot:default="scope">
           <el-button @click="showSchoolSetting(scope.row)" plain type="primary" size="small">编辑</el-button>
         </template>
@@ -51,7 +53,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="学校设置" width="60%" :visible.sync="isDialogSchoolOpen">
+    <el-dialog title="学校设置" width="50%" :visible.sync="isDialogSchoolOpen">
 
       <el-form :model="schoolDataToBeModified" label-width="100px">
         <el-form-item label="学校id">
@@ -71,10 +73,10 @@
           <el-upload
               :action="uploadUrl"
               list-type="picture-card"
-              :file-list="schoolDataToBeModified.carouselImages"
+              :file-list="fileList"
               :on-success="handleAvatarSuccess"
               :before-upload="beforeAvatarUpload"
-              :on-preview="showDetail"
+              :on-preview="showDetailFile"
               :limit="3"
               :on-remove="handleRemove"
               :headers="{
@@ -83,13 +85,22 @@
             <i class="el-icon-plus"></i>
           </el-upload>
         </el-form-item>
-
+        <el-form-item>
+          <el-select v-model="schoolDataToBeModified.isVerified" placeholder="请选择">
+            <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+                :disabled="item.disabled">
+            </el-option>
+          </el-select>
+        </el-form-item>
 
       </el-form>
 
-
       <div slot="footer" class="dialog-footer">
-        <el-button @click="isDialogSchoolOpen = false">取 消</el-button>
+        <el-button @click="CancelSchoolMod">取 消</el-button>
         <el-button type="primary" @click="confirmDialogSchoolInfo">确 定</el-button>
       </div>
     </el-dialog>
@@ -100,22 +111,30 @@
 <script>
 import api from "@/axios";
 import PageView from '@/components/PageView.vue'
-import index from "vuex";
-import axios from "@/axios";
+// import axios from "@/axios";
 
 export default {
-  computed: {
-    index() {
-      return index
-    }
-  },
+
   components: {PageView},
   data() {
     return {
+      fileList:[],  //临时数组，对应是要展示的编辑弹出框轮播图对象，格式不一样，所以要单独存
       isDialogSchoolOpen: false,
       showImageDialog: false,
       selectedImage: '', // 存储选中的图片URL
       schoolDataToBeModified:{},//每次查看的学校数据
+      options: [{
+        value: 0,
+        label: '未审核'
+      }, {
+        value: 1,
+        label: '通过审核'
+      }, {
+        value:  2,
+        label: '未通过审核',
+        disabled: true
+      }],
+      stagingReviewStatus: -1, //暂存审核状态
       page: {  //分页参数
         page: 1,  //第几页
         limit: 5,
@@ -134,9 +153,13 @@ export default {
     this.getData(this.formInline);
   },
   methods: {
+    CancelSchoolMod(){
+      this.isDialogSchoolOpen = false;
+      this.fileList=[];
+    },
     handleAvatarSuccess(res) {
       if (res.code === 200) {
-        this.schoolDataToBeModified.carouselImages.push( res.data)
+        this.fileList.push( {url:res.data})
       } else {
         console.log(res)
         this.$message.error('图片上传失败！' + res)
@@ -153,33 +176,36 @@ export default {
       }
       return isJPG && isLt2M;
     },
-    handleRemove(url) {
-      let zj = {
-        deleteUrl: url
+    handleRemove(file, fileList) { //这里删除就不调用后端的方法了，因为可能删除之后不会提交，增加容错，误操作
+      const index = fileList.findIndex(item => item.url === file.url);
+      if (index !== -1) {
+        fileList.splice(index, 1);
       }
-      axios.post('/deleteImage', zj).then(
-          res => {
-            if (res.data.code === 200) {
-              this.$message.success('移除图片成功！');
-            } else {
-              this.$message.error('移除图片失败！')
-            }
-          }
-      ).catch(res=>{
-        console.log(res)
-      })
+      this.fileList=fileList;
     },
+
     showSchoolSetting(row) {  //打开编辑学校
+      this.fileList=[];//先重置图片数据
       this.isDialogSchoolOpen=true;
       this.schoolDataToBeModified=row;
-      console.log(row);
-      console.log(this.schoolDataToBeModified.carouselImages);
+      // console.log(row);
+      if (this.schoolDataToBeModified.carouselImages){
+        this.fileList=this.schoolDataToBeModified.carouselImages.map(url => {
+          return { url };
+        });
+      }
+      // console.log(this.fileList);
     },
     confirmDialogSchoolInfo() { //提交学校修改
+      console.log(this.schoolDataToBeModified);
 
     },
     showDetail(image) {
       this.selectedImage = image; // 将选中的图片URL赋值给selectedImage变量
+      this.showImageDialog = true; // 打开弹窗
+    },
+    showDetailFile(file) {
+      this.selectedImage = file.url; // 将选中的图片URL赋值给selectedImage变量
       this.showImageDialog = true; // 打开弹窗
     },
     getData(param) {

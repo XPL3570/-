@@ -77,6 +77,16 @@ public class SchoolController {
     }
 
     /**
+     * 超级管理员修改学校信息接口
+     */
+    @PostMapping("admin/modifySchool")
+    public Result modifySchool(){
+        return null;
+    }
+
+
+
+    /**
      * 审核学校
      */
     @PostMapping("admin/examine")
