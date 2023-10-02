@@ -15,6 +15,7 @@ import com.confession.mapper.*;
 import com.confession.pojo.*;
 import com.confession.request.RegisterSchoolRequest;
 import com.confession.request.SchoolExamineRequest;
+import com.confession.request.SchoolModifyRequest;
 import com.confession.service.SchoolService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.data.relational.core.sql.In;
@@ -228,8 +229,6 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
                 set(SchoolApplication::getIsApproved,JwtInterceptor.getUser().getId())
                 .set(SchoolApplication::getIsApproved,schoolExamineRequest.getIsVerified());
 
-
-
         School school = schoolMapper.selectById(schoolExamineRequest.getSchoolId());
         
         //如果通过了，把用户的学校id，对应表白墙的状态，还有添加一个管理员账号
@@ -295,6 +294,25 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
         String promptMessage = this.getPromptMessage(schoolId);
         dto.setPrompt(promptMessage);
         return dto;
+    }
+
+    @Override
+    public void modifySchool(SchoolModifyRequest request) {
+        // 根据学校ID和请求参数进行学校修改的逻辑处理
+        School school = new School();
+        school.setId(request.getId());
+        school.setAvatarURL(request.getAvatarURL());
+        school.setSchoolName(request.getSchoolName());
+        school.setDescription(request.getDescription());
+        school.setCarouselImages(request.getCarouselImages());
+        school.setPrompt(request.getPrompt());
+        school.setIsVerified(request.getIsVerified());
+        LambdaQueryWrapper<School> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(School::getId,request.getId());
+        int update = schoolMapper.update(school, wrapper);
+        if (update<1){
+            throw new WallException("修改失败",201);
+        }
     }
 
 }

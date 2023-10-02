@@ -62,6 +62,22 @@
         <el-form-item label="学校名称">
           <el-input v-model="schoolDataToBeModified.schoolName"></el-input>
         </el-form-item>
+        <el-form-item label="学校头像">
+          <el-upload
+              :action="uploadUrl"
+              list-type="picture-card"
+              :file-list="schoolAvatarCache"
+              :on-success="handleAvatarSuccessAvatar"
+              :before-upload="beforeAvatarUpload"
+              :on-preview="showDetailFile"
+              :limit="1"
+              :on-remove="handleRemoveAvatar"
+              :headers="{
+          authentication:token
+        }">
+            <i class="el-icon-plus"></i>
+          </el-upload>
+        </el-form-item>
         <el-form-item label="描述">
           <el-input v-model="schoolDataToBeModified.description"></el-input>
         </el-form-item>
@@ -111,7 +127,7 @@
 <script>
 import api from "@/axios";
 import PageView from '@/components/PageView.vue'
-// import axios from "@/axios";
+
 
 export default {
 
@@ -123,6 +139,7 @@ export default {
       showImageDialog: false,
       selectedImage: '', // 存储选中的图片URL
       schoolDataToBeModified:{},//每次查看的学校数据
+      schoolAvatarCache:[], //学校头像地址，因为要固定的格式，所有用数组存对象
       options: [{
         value: 0,
         label: '未审核'
@@ -134,7 +151,6 @@ export default {
         label: '未通过审核',
         disabled: true
       }],
-      stagingReviewStatus: -1, //暂存审核状态
       page: {  //分页参数
         page: 1,  //第几页
         limit: 5,
@@ -156,10 +172,20 @@ export default {
     CancelSchoolMod(){
       this.isDialogSchoolOpen = false;
       this.fileList=[];
+      this.schoolAvatarCache=[];
+      this.schoolDataToBeModified={};
     },
     handleAvatarSuccess(res) {
       if (res.code === 200) {
         this.fileList.push( {url:res.data})
+      } else {
+        console.log(res)
+        this.$message.error('图片上传失败！' + res)
+      }
+    },
+    handleAvatarSuccessAvatar(res) {
+      if (res.code === 200) {
+        this.schoolAvatarCache.push( {url:res.data})
       } else {
         console.log(res)
         this.$message.error('图片上传失败！' + res)
@@ -183,21 +209,55 @@ export default {
       }
       this.fileList=fileList;
     },
+    handleRemoveAvatar(file, schoolAvatarCache) { //这里删除就不调用后端的方法了，因为可能删除之后不会提交，增加容错，误操作
+      const index = schoolAvatarCache.findIndex(item => item.url === file.url);
+      if (index !== -1) {
+        schoolAvatarCache.splice(index, 1);
+      }
+      this.schoolAvatarCache=schoolAvatarCache;
+    },
 
     showSchoolSetting(row) {  //打开编辑学校
       this.fileList=[];//先重置图片数据
       this.isDialogSchoolOpen=true;
       this.schoolDataToBeModified=row;
+      console.log(this.schoolDataToBeModified.avatarURL);
       // console.log(row);
       if (this.schoolDataToBeModified.carouselImages){
         this.fileList=this.schoolDataToBeModified.carouselImages.map(url => {
           return { url };
         });
       }
-      // console.log(this.fileList);
+      this.schoolAvatarCache=[];
+      if (this.schoolDataToBeModified.avatarURL){
+        this.schoolAvatarCache.push({
+          url:this.schoolDataToBeModified.avatarURL
+        })
+      }
+      console.log(this.schoolDataToBeModified);
     },
     confirmDialogSchoolInfo() { //提交学校修改
       console.log(this.schoolDataToBeModified);
+      let zj={
+          id:this.schoolDataToBeModified.id,
+        avatarURL:this.schoolAvatarCache[0].url,
+        schoolName:this.schoolDataToBeModified.schoolName,
+        description:this.schoolDataToBeModified.description,
+        carouselImages: this.fileList.map(item => item.url).join(';'),
+        prompt:this.schoolDataToBeModified.prompt,
+        isVerified:this.schoolDataToBeModified.isVerified
+      };
+      api.post('/api/school/admin/modifySchool',zj)
+          .then(res=>{
+            if (res.data.code===200){
+              this.$message.success('修改学校成功！')
+              this.CancelSchoolMod(); //清空数据
+              this.getData(this.formInline);
+            }else {
+              this.$message.error('修改学校失败！')
+            }
+          })
+      console.log(zj)
 
     },
     showDetail(image) {
@@ -218,7 +278,6 @@ export default {
                   this.page.total = res.data.data.total;
                 }
                 console.log(res.data);
-
               }
           ).catch(
           error => {

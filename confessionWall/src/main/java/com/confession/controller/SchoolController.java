@@ -7,6 +7,7 @@ import com.confession.comm.Result;
 import com.confession.dto.IndexInfoDTO;
 import com.confession.request.RegisterSchoolRequest;
 import com.confession.request.SchoolExamineRequest;
+import com.confession.request.SchoolModifyRequest;
 import com.confession.service.SchoolService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -80,8 +81,9 @@ public class SchoolController {
      * 超级管理员修改学校信息接口
      */
     @PostMapping("admin/modifySchool")
-    public Result modifySchool(){
-        return null;
+    public Result modifySchool(@RequestBody @Validated SchoolModifyRequest request){
+        schoolService.modifySchool(request);
+        return Result.ok();
     }
 
 

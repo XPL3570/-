@@ -1,6 +1,8 @@
 package com.confession.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.confession.comm.PageResult;
+import com.confession.comm.PageTool;
 import com.confession.pojo.Confessionwall;
 import com.confession.request.RegistryWhiteWallRequest;
 
@@ -25,4 +27,13 @@ public interface ConfessionwallService extends IService<Confessionwall> {
      * 注册表白墙，注册学校之后拿着id来注册表白墙
      */
     void register(RegistryWhiteWallRequest registryWhiteWallRequest);
+
+
+    /**
+     * 管理员查看表白墙列表
+     * @param pageTool
+     * @return
+     */
+    PageResult wallList(PageTool pageTool);
+
 }

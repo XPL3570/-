@@ -8,6 +8,7 @@ import com.confession.dto.SchoolApplicationDTO;
 import com.confession.pojo.School;
 import com.confession.request.RegisterSchoolRequest;
 import com.confession.request.SchoolExamineRequest;
+import com.confession.request.SchoolModifyRequest;
 
 import java.util.List;
 
@@ -81,4 +82,10 @@ public interface SchoolService extends IService<School> {
      * @return IndexInfoDTO 目前只有提示语和首页轮播图信息
      */
     IndexInfoDTO getIndexInfo(Integer schoolId);
+
+    /**
+     * 修改学校
+     * @param request
+     */
+    void modifySchool(SchoolModifyRequest request);
 }
