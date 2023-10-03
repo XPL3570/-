@@ -43,7 +43,7 @@ export default {
                   icon: '首页设置',
                   menuName: '首页设置',
                   hasThird: 'N',
-                  url: 'school/schoolSettings',
+                  url: 'home/homeSettings',
                   menus: null
                 }
               ]

@@ -225,6 +225,9 @@ public class UserController {
         } else if ("name".equals(attributeName)) {
             user.setUsername(attributeValue);
         }
+
+        //这里切换头像就把之前的头像删除了
+
         user.setUpdateTime(LocalDateTime.now()); // 使用java.time.LocalDateTime类获取当前时间
         userService.updateById(user);
         return Result.ok();

@@ -31,6 +31,9 @@ public class MsgConfiguration implements Serializable {
     @TableField("Message")
     private String message;
 
+    /**
+     * 0 表示关闭 1表示开启
+     */
     @TableField("MainSwitch")
     private Boolean mainSwitch;
 

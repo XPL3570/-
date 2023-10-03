@@ -96,13 +96,20 @@ export default {
       }
       return isJPG && isLt2M;
     },
-    handleRemove(file) {
+    handleRemove(file,fileList) {
+
+
       let zj = {
         deleteUrl: file.url
       }
       axios.post('/deleteImage', zj).then(
           res => {
             if (res.data.code === 200) {
+              const index = fileList.findIndex(item => item.url === file.url);
+              if (index !== -1) {
+                fileList.splice(index, 1);
+              }
+              this.fileList=fileList;
               this.$message.success('移除图片成功！');
             } else {
               this.$message.error('移除图片失败！')

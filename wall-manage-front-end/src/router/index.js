@@ -35,7 +35,7 @@ export default new Router({
                 {
                     path: '/school/schoolReview',
                     name: '学校审核',
-                    component: () => import('../views/schoolZj/SchoolReview.vue'),
+                    component: () => import('../views/school/SchoolReview.vue'),
                     meta: {
                         requireAuth: true
                     }
@@ -43,35 +43,35 @@ export default new Router({
                 {
                     path: '/school/schoolSettings',
                     name: '学校管理',
-                    component: () => import('../views/schoolZj/SchoolSettings.vue'),
+                    component: () => import('../views/school/SchoolSettings.vue'),
                     meta: {
                         requireAuth: true
                     }
                 },    {
                     path: '/user/userManagement',
                     name: '用户管理',
-                    component: () => import('../views/userZj/UserManagement.vue'),
+                    component: () => import('../views/user/UserManagement.vue'),
                     meta: {
                         requireAuth: true
                     }
                 },    {
                     path: '/wall/wallManagement',
                     name: '表白墙管理',
-                    component: () => import('../views/wallZj/WallManagement.vue'),
+                    component: () => import('../views/wall/WallManagement.vue'),
                     meta: {
                         requireAuth: true
                     }
                 },    {
                     path: '/wall/confessionRelease',
                     name: '表白墙投稿',
-                    component: () => import('../views/wallZj/ConfessionRelease.vue'),
+                    component: () => import('../views/wall/ConfessionRelease.vue'),
                     meta: {
                         requireAuth: true
                     }
                 },    {
                     path: '/wall/wallPublishingManagement',
                     name: '表白墙发布内容管理',
-                    component: () => import('../views/wallZj/WallPublishingManagement.vue'),
+                    component: () => import('../views/wall/WallPublishingManagement.vue'),
                     meta: {
                         requireAuth: true
                     }
@@ -79,7 +79,7 @@ export default new Router({
                 {
                     path: '/user/userManagement',
                     name: '用户管理',
-                    component: () => import('../views/userZj/UserManagement.vue'),
+                    component: () => import('../views/user/UserManagement.vue'),
                     meta: {
                         requireAuth: true
                     }
@@ -87,7 +87,15 @@ export default new Router({
                 {
                     path: '/user/administrators',
                     name: '管理员列表管理',
-                    component: () => import('../views/userZj/ListOfRegularAdministrators.vue'),
+                    component: () => import('../views/user/ListOfRegularAdministrators.vue'),
+                    meta: {
+                        requireAuth: true
+                    }
+                },
+                {
+                    path: '/home/homeSettings',
+                    name: '管理员列表管理',
+                    component: () => import('../views/home/HomeSettings.vue'),
                     meta: {
                         requireAuth: true
                     }
