@@ -2,6 +2,7 @@ package com.confession.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
@@ -16,6 +17,7 @@ import com.confession.pojo.*;
 import com.confession.request.RegisterSchoolRequest;
 import com.confession.request.SchoolExamineRequest;
 import com.confession.request.SchoolModifyRequest;
+import com.confession.service.GlobalCarouselImageService;
 import com.confession.service.SchoolService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.data.relational.core.sql.In;
@@ -25,6 +27,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -60,6 +63,9 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
 
     @Resource
     private AdminMapper adminMapper;
+
+    @Resource
+    private GlobalCarouselImageService globalCarouselImageService;
 
 
 
@@ -284,11 +290,23 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
 
     @Override
     public IndexInfoDTO getIndexInfo(Integer schoolId) {
-        LambdaQueryWrapper<School> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(School::getId, schoolId);
-        School school = this.getOne(wrapper);
-        //轮播图 todo 可能要加表，来保存设置所有人可以看到的轮播图
-        List<String> imageList = Arrays.asList(school.getCarouselImages().split(";"));
+//        LambdaQueryWrapper<School> wrapper = new LambdaQueryWrapper<>();
+//        wrapper.eq(School::getId, schoolId);
+//        School school = this.getOne(wrapper);
+//        List<String> imageList = new ArrayList<>();
+//        for (GlobalCarouselImage globalCarouselImage : globalCarouselImageService.getGlobalCarouselImages()) {
+//            imageList.add(globalCarouselImage.getCarouselImage());
+//        }
+//        for (String image : Arrays.asList(school.getCarouselImages().split(";"))) {
+//            imageList.add(image);
+//        }
+
+        School school = this.getOne(Wrappers.lambdaQuery(School.class).eq(School::getId, schoolId));
+        List<String> imageList = globalCarouselImageService.getGlobalCarouselImages().stream()
+                .map(GlobalCarouselImage::getCarouselImage)
+                .collect(Collectors.toList());
+        imageList.addAll(Arrays.asList(school.getCarouselImages().split(";")));
+
         IndexInfoDTO dto = new IndexInfoDTO();
         dto.setCarouselImages(imageList);
         String promptMessage = this.getPromptMessage(schoolId);

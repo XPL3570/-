@@ -29,7 +29,8 @@ public class JwtInterceptor implements HandlerInterceptor {
 
         // 根据请求的URL判断是否要管理员
         String servletPath = request.getServletPath();
-        System.out.println(role);
+        System.out.println(servletPath);
+//        System.out.println(role);
         if (servletPath.contains("/admin")) { //
             if (!"admin".equals(role)) {
                 throw new WallException(PERMISSION);

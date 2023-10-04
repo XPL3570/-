@@ -1,9 +1,7 @@
 package com.confession.pojo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import lombok.Getter;
@@ -84,6 +82,7 @@ public class Lottery implements Serializable {
      * 逻辑删除标志
      */
     @TableField("IsDeleted")
+    @TableLogic
     private Boolean deleted;
 
 
