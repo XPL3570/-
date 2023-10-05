@@ -23,6 +23,8 @@
         :data="tableData"
         style="width: 100%"
         border
+        v-loading="loading"
+        element-loading-text="拼命加载中"
         :row-class-name="tableRowClassName">
       <el-table-column
           prop="id"
@@ -145,6 +147,7 @@ export default {
   components: {PageView},
   data() {
     return {
+      loading:false,
       showImageDialog: false,
       selectedImage: '', // 存储选中的图片URL
       isDialogStateOpen: false,
@@ -262,6 +265,10 @@ export default {
       };
       api.post('/api/user/admin/usernameMod', postData)
           .then(res => {
+            if (!res){
+              this.$message.error('数据加载失败！');
+              return;
+            }
             if (res.data.code === 200) {
               this.$message.success('修改用户名成功!');
               this.editForm.userId = -1;
@@ -291,13 +298,19 @@ export default {
       this.fetchData(this.formInline)
     },
     fetchData() {
+      this.loading = true;
       // 在这里获取你的用户数据，并将其赋值给tableData
       api.get('/api/user/admin/userList', this.formInline)
           .then(res => {
+            if (!res){
+              this.$message.error('用户数据加载失败！');
+              return;
+            }
                 // console.log(res.data)
                 if (res.data.code === 200) {
                   this.tableData = res.data.data.data
                   this.page.total = res.data.data.total
+                  this.loading = false
                 }
               }
           )

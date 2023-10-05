@@ -1,20 +1,22 @@
 <template>
   <div>
     <el-table :data="schoolList"
+              v-loading="loading"
+              element-loading-text="拼命加载中"
               border
               highlight-current-row
-              style="width: 100%"
+              style="width:100%"
     >
-      <el-table-column prop="id" label="ID" width="45"></el-table-column>
-      <el-table-column prop="schoolName" label="学校名称" width="120"></el-table-column>
-      <el-table-column prop="avatarURL" label="学校头像" width="120">
+      <el-table-column prop="id" fixed label="ID" width="45"></el-table-column>
+      <el-table-column prop="schoolName" fixed label="学校名称" width="120"></el-table-column>
+      <el-table-column prop="avatarURL" label="学校头像" width="120" >
         <template v-slot:default="scope">
           <div style="display: flex; justify-content: center;">
-            <img :src="scope.row['avatarURL']" alt="avatar" width="72" @click="showDetail(scope.row['avatarURL'])"/>
+            <img :src="scope.row['avatarURL']" alt="avatar"  height="90" @click="showDetail(scope.row['avatarURL'])"/>
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="description" label="描述内容" width="120"></el-table-column>
+      <el-table-column prop="description" label="描述内容" width="140"></el-table-column>
 
 
       <el-table-column prop="createTime" label="创建时间" width="132"></el-table-column>
@@ -31,7 +33,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column prop="prompt" label="首页提示语" width="120"></el-table-column>
+      <el-table-column prop="prompt" label="首页提示语" width="144"></el-table-column>
       <el-table-column prop="isVerified" width="50" label="审核状态">
         <template v-slot="scope">{{ getStatusText(scope.row.isVerified) }}</template>
       </el-table-column>
@@ -57,7 +59,7 @@
 
       <el-form :model="schoolDataToBeModified" label-width="100px">
         <el-form-item label="学校id">
-          <span>{{schoolDataToBeModified.id}}</span>
+          <span>{{ schoolDataToBeModified.id }}</span>
         </el-form-item>
         <el-form-item label="学校名称">
           <el-input v-model="schoolDataToBeModified.schoolName"></el-input>
@@ -96,7 +98,7 @@
               :limit="3"
               :on-remove="handleRemove"
               :headers="{
-          authentication:token
+              authentication:token
         }">
             <i class="el-icon-plus"></i>
           </el-upload>
@@ -125,6 +127,9 @@
 </template>
 
 <script>
+
+
+
 import api from "@/axios";
 import PageView from '@/components/PageView.vue'
 
@@ -134,12 +139,13 @@ export default {
   components: {PageView},
   data() {
     return {
-      fileList:[],  //临时数组，对应是要展示的编辑弹出框轮播图对象，格式不一样，所以要单独存
+      loading: false,
+      fileList: [],  //临时数组，对应是要展示的编辑弹出框轮播图对象，格式不一样，所以要单独存
       isDialogSchoolOpen: false,
       showImageDialog: false,
       selectedImage: '', // 存储选中的图片URL
-      schoolDataToBeModified:{},//每次查看的学校数据
-      schoolAvatarCache:[], //学校头像地址，因为要固定的格式，所有用数组存对象
+      schoolDataToBeModified: {},//每次查看的学校数据
+      schoolAvatarCache: [], //学校头像地址，因为要固定的格式，所有用数组存对象
       options: [{
         value: 0,
         label: '未审核'
@@ -147,7 +153,7 @@ export default {
         value: 1,
         label: '通过审核'
       }, {
-        value:  2,
+        value: 2,
         label: '未通过审核',
         disabled: true
       }],
@@ -169,15 +175,15 @@ export default {
     this.getData(this.formInline);
   },
   methods: {
-    CancelSchoolMod(){
+    CancelSchoolMod() {
       this.isDialogSchoolOpen = false;
-      this.fileList=[];
-      this.schoolAvatarCache=[];
-      this.schoolDataToBeModified={};
+      this.fileList = [];
+      this.schoolAvatarCache = [];
+      this.schoolDataToBeModified = {};
     },
     handleAvatarSuccess(res) {
       if (res.code === 200) {
-        this.fileList.push( {url:res.data})
+        this.fileList.push({url: res.data})
       } else {
         console.log(res)
         this.$message.error('图片上传失败！' + res)
@@ -185,7 +191,7 @@ export default {
     },
     handleAvatarSuccessAvatar(res) {
       if (res.code === 200) {
-        this.schoolAvatarCache.push( {url:res.data})
+        this.schoolAvatarCache.push({url: res.data})
       } else {
         console.log(res)
         this.$message.error('图片上传失败！' + res)
@@ -207,53 +213,53 @@ export default {
       if (index !== -1) {
         fileList.splice(index, 1);
       }
-      this.fileList=fileList;
+      this.fileList = fileList;
     },
     handleRemoveAvatar(file, schoolAvatarCache) { //这里删除就不调用后端的方法了，因为可能删除之后不会提交，增加容错，误操作
       const index = schoolAvatarCache.findIndex(item => item.url === file.url);
       if (index !== -1) {
         schoolAvatarCache.splice(index, 1);
       }
-      this.schoolAvatarCache=schoolAvatarCache;
+      this.schoolAvatarCache = schoolAvatarCache;
     },
 
     showSchoolSetting(row) {  //打开编辑学校
-      this.fileList=[];//先重置图片数据
-      this.isDialogSchoolOpen=true;
-      this.schoolDataToBeModified=row;
+      this.fileList = [];//先重置图片数据
+      this.isDialogSchoolOpen = true;
+      this.schoolDataToBeModified = row;
       console.log(this.schoolDataToBeModified.avatarURL);
       // console.log(row);
-      if (this.schoolDataToBeModified.carouselImages){
-        this.fileList=this.schoolDataToBeModified.carouselImages.map(url => {
-          return { url };
+      if (this.schoolDataToBeModified.carouselImages) {
+        this.fileList = this.schoolDataToBeModified.carouselImages.map(url => {
+          return {url};
         });
       }
-      this.schoolAvatarCache=[];
-      if (this.schoolDataToBeModified.avatarURL){
+      this.schoolAvatarCache = [];
+      if (this.schoolDataToBeModified.avatarURL) {
         this.schoolAvatarCache.push({
-          url:this.schoolDataToBeModified.avatarURL
+          url: this.schoolDataToBeModified.avatarURL
         })
       }
       console.log(this.schoolDataToBeModified);
     },
     confirmDialogSchoolInfo() { //提交学校修改
       console.log(this.schoolDataToBeModified);
-      let zj={
-          id:this.schoolDataToBeModified.id,
-        avatarURL:this.schoolAvatarCache[0].url,
-        schoolName:this.schoolDataToBeModified.schoolName,
-        description:this.schoolDataToBeModified.description,
+      let zj = {
+        id: this.schoolDataToBeModified.id,
+        avatarURL: this.schoolAvatarCache[0].url,
+        schoolName: this.schoolDataToBeModified.schoolName,
+        description: this.schoolDataToBeModified.description,
         carouselImages: this.fileList.map(item => item.url).join(';'),
-        prompt:this.schoolDataToBeModified.prompt,
-        isVerified:this.schoolDataToBeModified.isVerified
+        prompt: this.schoolDataToBeModified.prompt,
+        isVerified: this.schoolDataToBeModified.isVerified
       };
-      api.post('/api/school/admin/modifySchool',zj)
-          .then(res=>{
-            if (res.data.code===200){
+      api.post('/api/school/admin/modifySchool', zj)
+          .then(res => {
+            if (res.data.code === 200) {
               this.$message.success('修改学校成功！')
               this.CancelSchoolMod(); //清空数据
               this.getData(this.formInline);
-            }else {
+            } else {
               this.$message.error('修改学校失败！')
             }
           })
@@ -269,13 +275,19 @@ export default {
       this.showImageDialog = true; // 打开弹窗
     },
     getData(param) {
+      this.loading = true
       api.get('/api/school/admin/viewSchool', param)
           .then(res => {
+                if (!res) {
+                  this.$message.error('学校数据加载失败！');
+                  return;
+                }
                 if (res.data.code === 200) {
                   this.schoolList = res.data.data.data;
                   this.page.page = this.formInline.page;
                   this.page.limit = this.formInline.limit;
                   this.page.total = res.data.data.total;
+                  this.loading = false
                 }
                 console.log(res.data);
               }
@@ -305,3 +317,11 @@ export default {
   }
 };
 </script>
+
+<style>
+.custom-row {
+  height: 30px; /* 设置行高为50px */
+}
+</style>
+
+

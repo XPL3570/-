@@ -1,6 +1,7 @@
 <template>
   <div>
-    <el-table :data="admins" style="width: 100%">
+    <el-table :data="admins"    v-loading="loading"
+              element-loading-text="拼命加载中" style="width: 100%">
       <el-table-column prop="id" label="管理员ID"></el-table-column>
       <el-table-column prop="schoolId" label="学校ID"></el-table-column>
       <el-table-column prop="userId" label="用户ID"></el-table-column>
@@ -22,8 +23,9 @@ import PageView from "@/components/PageView.vue";
 export default {
   name: "ListOfRegularAdministrators",
   components: {PageView},
-  data(){
-    return{
+  data() {
+    return {
+      loading:false,
       page: {  //分页参数 每次都是传递他给组件得到
         page: 1,  //第几页
         limit: 5,
@@ -42,25 +44,35 @@ export default {
   created() {
     this.fetchData();
   },
-  methods:{
+  methods: {
     callFather(param) {
       this.formInline.page = param.page
       this.formInline.limit = param.limit
 
-      console.log(this.formInline)
+      // console.log(this.formInline)
       this.fetchData(this.formInline)
     },
     fetchData() {
+      this.loading = true
       // 在这里获取你的用户数据，并将其赋值给tableData
       api.get('/admin/list', this.formInline)
           .then(res => {
-                console.log(res.data)
-                if (res.data.code === 200) {
-                  this.admins = res.data.data.data
-                  this.page.total = res.data.data.total
+                // console.log(res.data)
+                if (res) {
+                  if (res.data.code === 200) {
+                    this.admins = res.data.data.data
+                    this.page.total = res.data.data.total
+                    this.loading = false
+                  }
+                }else {
+                  this.$message.error("获取管理员数据异常！")
                 }
               }
-          )
+          ).catch(
+          res => {
+            console.log(res);
+          }
+      )
     },
   }
 }

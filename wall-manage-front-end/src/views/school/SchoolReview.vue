@@ -44,7 +44,7 @@
           width="115">
         <template v-slot:default="scope">
           <div style="display: flex; justify-content: center;">
-            <img :src="scope.row['avatarURL']" alt="avatar" width="72"  @click="showDetail(scope.row['avatarURL'])"/>
+            <img :src="scope.row['avatarURL']" alt="avatar"  height="72"  @click="showDetail(scope.row['avatarURL'])"/>
           </div>
         </template>
       </el-table-column>
@@ -87,7 +87,7 @@
     <!-- 分页组件 -->
     <PageView v-bind:childMsg="page" @callFather="callFather"></PageView>
 
-    <el-dialog :visible.sync="dialogVisible" width="30%" @before-close="handleClose">
+    <el-dialog :visible.sync="dialogVisible" width="30%">
       <span v-if="currentAction === 'approve'">你确定要通过审核吗？</span>
       <span v-else-if="currentAction === 'reject'">确定不通过审核吗？</span>
       <!-- 对话框的底部按钮 -->
@@ -153,7 +153,7 @@ export default {
       api.get('/api/school/admin/viewNoReview',param)
           .then(res=>{
             if (!res){
-              this.$message.error('数据加载失败！');
+              this.$message.error('审核数据加载失败！');
               return;
             }
             // console.log(res.data.data)
@@ -192,16 +192,6 @@ export default {
         this.handleReject(this.currentRow);
       }
     },
-    // 在对话框关闭前显示一个确认提示
-    handleClose(done) {
-      this.$confirm('你确定要关闭吗？')
-          .then(() => {
-            done(); // 关闭对话框
-          })
-          .catch(() => {
-          });
-    },
-
     // 处理 "通过审核" 的操作
     handleApprove(row) {
       // 在这里添加你的代码来处理 "通过审核" 的操作

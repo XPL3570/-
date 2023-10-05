@@ -31,7 +31,7 @@ public class GlobalCarouselImageController {
     /**
      * 获取全局图片,必须是没被禁用的
      */
-    @GetMapping("getCarouselImage")
+    @GetMapping("getCarouselImage") 
     public Result getCarouselImage(){
         return Result.ok(service.getGlobalCarouselImages());
     }

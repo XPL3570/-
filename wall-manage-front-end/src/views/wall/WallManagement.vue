@@ -2,6 +2,8 @@
   <div>
     <el-table :data="confessionWallData"
               border
+              v-loading="loading"
+              element-loading-text="拼命加载中"
               highlight-current-row
               style="width: 100%">
       <el-table-column prop="id" label="表白墙ID"></el-table-column>
@@ -46,9 +48,6 @@
     </el-dialog>
 
 
-
-
-
   </div>
 </template>
 
@@ -63,6 +62,7 @@ export default {
   name: "WallManagement",
   data() {
     return {
+      loading: false,
       page: {  //分页参数
         page: 1,  //第几页
         limit: 5,
@@ -80,8 +80,8 @@ export default {
   created() {
     this.getData(this.formInline);
   },
-  methods:{
-    aaa(){
+  methods: {
+    aaa() {
 
     },
     showDetail(image) {
@@ -94,13 +94,19 @@ export default {
       this.getData(this.formInline);
     },
     getData(param) {
+      this.loading = true
       api.get('/api/confession/admin/list', param)
           .then(res => {
+                if (!res) {
+                  this.$message.error('表白墙墙数据加载失败！');
+                  return;
+                }
                 if (res.data.code === 200) {
                   this.confessionWallData = res.data.data.data;
                   this.page.page = this.formInline.page;
                   this.page.limit = this.formInline.limit;
                   this.page.total = res.data.data.total;
+                  this.loading = false
                 }
                 console.log(res.data);
               }
