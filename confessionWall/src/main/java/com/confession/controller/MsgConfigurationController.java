@@ -16,7 +16,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("msg/admin")
-public class MagConfigurationController {
+public class MsgConfigurationController {
 
     @Resource
     private MsgConfigurationService msgConfigurationService;
@@ -36,7 +36,9 @@ public class MagConfigurationController {
         return Result.ok(msgConfigurationService.getGlobalPrompt());
     }
 
-    //设置开启或关闭
+    /**
+     * 设置全局提示语
+     */
     @PostMapping("setGlobalPrompts")
     public Result setGlobalPrompts(@RequestBody @Validated MsgGlobalPromptRequest request){
         msgConfigurationService.setGlobalPrompts(request);

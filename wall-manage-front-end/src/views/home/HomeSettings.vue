@@ -1,11 +1,12 @@
 <template>
-<div>
+<div class="container">
 
+  <div style="margin-bottom: 5px">全局提示语信息</div>
+  <div style="width: 60%;">
 
-  <div>设置全局提示语</div>
-
-  <el-input v-model="promptTextSub" placeholder="当前全局提示语为空" disabled></el-input>
-
+  <el-input v-model="promptText" placeholder="当前全局提示语为空" disabled ></el-input>
+  </div>
+  <div style="margin:10px"></div>
   <el-switch
       v-model="promptSwitch"
       active-text="开启全局提示语"
@@ -13,21 +14,29 @@
       disabled>
   </el-switch>
 
-  <div>设置全局轮播图</div>
-  <template>
-    <div>
-      <div v-for="imageUrl in fileList" :key="imageUrl">
-        <img :src="imageUrl" alt="Image" />
+  <div style="margin:10px"></div>
+
+  <el-button type="primary" @click="clickSetPrompt">设置全局提示语</el-button>
+
+  <div style="margin:50px"></div>
+
+  <div style="margin-bottom: 5px">全局轮播图信息</div>
+  <div class="image-row">
+      <div v-for="imageUrl in fileList" :key="imageUrl.url" class="image-container" @click="showDetailFile(imageUrl)">
+        <img :src="imageUrl.url" alt="Image" class="image"/>
       </div>
-    </div>
-  </template>
+  </div>
+  <div style="margin:10px"></div>
   <el-switch
       disabled
       v-model="carouselSwitch"
       active-text="开启全局轮播图"
       inactive-text="关闭全部轮播图">
   </el-switch>
-  <div style="margin: 10px"></div>
+  <div style="margin:10px"></div>
+
+  <el-button type="primary" @click="clickSetCarousel">设置全局轮播图</el-button>
+
 
 
   <el-dialog :visible.sync="dialogCarousel" width="40%">
@@ -35,8 +44,8 @@
     <el-upload
         :action="uploadUrl"
         list-type="picture-card"
-        :file-list="fileList"
-        :on-success="handleAvatarSuccess"
+        :file-list="fileListSub"
+        :on-success="handleImageSuccess"
         :before-upload="beforeAvatarUpload"
         :on-preview="showDetailFile"
         :limit="3"
@@ -83,6 +92,8 @@
 
 <!--设置学校首页轮播图，还有全局提示语，全局提示语的开启和关闭-->
 <script>
+import api from "@/axios";
+
 export default {
   name: "HomeSettings",
   data() {
@@ -93,22 +104,43 @@ export default {
       selectedImage:'',
       uploadUrl: 'http://127.0.0.1:2204/admin/upload', //这是上传图片的地址  超过4张小程序显示有点问题，后面优化
       token: localStorage.getItem('token'), //从本地变量中获取token
-      fileList:['http://127.0.0.1:2204/upload/20231003005702ECxztV.png','http://127.0.0.1:2204/upload/20231003005704Bqrhrb.png'],
-      carouselSwitch:true,
+      fileList:[
+        {url: 'http://127.0.0.1:2204/upload/20231003005702ECxztV.png'},
+        {url:'http://127.0.0.1:2204/upload/20231003005704Bqrhrb.png'}],
+      fileListSub:[],
+      carouselSwitch:null,
       carouselSwitchSub:null,
-      promptSwitch:true,
+      promptSwitch:null,
       promptSwitchSub:null,
-      promptText:'',
+      promptText:'没有加载到数据哦，这里是页面默认初始数据！',
       promptTextSub:'',
 
     }
-  },methods:{
+  },
+  created() {
+    api.get('msg/admin')
+  }
+  ,methods:{
+    getData(){
+
+    },
+    clickSetPrompt(){
+      this.dialogVisiblePrompt=true;
+      this.promptSwitchSub=this.promptSwitch;
+      this.promptTextSub=this.promptText;
+    },
+    clickSetCarousel(){
+      this.fileListSub=[];
+      this.dialogCarousel=true;
+      this.carouselSwitchSub=this.carouselSwitch;
+      this.fileListSub = this.fileList.slice();
+    },
     a(){
       console.log('a方法调用')
     },
-    handleAvatarSuccess(res) {
+    handleImageSuccess(res) {
       if (res.code === 200) {
-        this.fileList.push({url: res.data})
+        this.fileListSub.push({url: res.data})
       } else {
         console.log(res)
         this.$message.error('图片上传失败！' + res)
@@ -133,12 +165,12 @@ export default {
       }
       return isJPG && isLt2M;
     },
-    handleRemove(file, fileList) { //这里删除就不调用后端的方法了，因为可能删除之后不会提交，增加容错，误操作
-      const index = fileList.findIndex(item => item.url === file.url);
+    handleRemove(file, fileListSub) { //这里删除就不调用后端的方法了，因为可能删除之后不会提交，增加容错，误操作
+      const index = fileListSub.findIndex(item => item.url === file.url);
       if (index !== -1) {
-        fileList.splice(index, 1);
+        fileListSub.splice(index, 1);
       }
-      this.fileList = fileList;
+      this.fileListSub = fileListSub;
     },
     showDetailFile(file) {
       this.selectedImage = file.url; // 将选中的图片URL赋值给selectedImage变量
@@ -150,5 +182,27 @@ export default {
 </script>
 
 <style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80vh; /* 将容器高度设置为视口高度来实现垂直居中 */
 
+}
+
+.image-row {
+  display: flex;
+  flex-direction: row;
+  /*justify-content: space-between;*/
+}
+.image-container {
+  margin-right: 10px;
+}
+
+.image {
+  width: 240px;
+  height: 180px;
+  object-fit: cover;
+}
 </style>

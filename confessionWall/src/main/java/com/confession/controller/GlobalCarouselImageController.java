@@ -3,8 +3,10 @@ package com.confession.controller;
 
 import com.confession.comm.Result;
 import com.confession.request.CarouseImageRequest;
+import com.confession.request.GlobalCarouselSetRequest;
 import com.confession.request.UpdateAvatarRequest;
 import com.confession.service.GlobalCarouselImageService;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -29,15 +31,16 @@ public class GlobalCarouselImageController {
     private GlobalCarouselImageService service;
 
     /**
-     * 获取全局图片,必须是没被禁用的
+     * 获取全局图片是否禁用
      */
-    @GetMapping("getCarouselImage") 
-    public Result getCarouselImage(){
-        return Result.ok(service.getGlobalCarouselImages());
+    @GetMapping("getCarouselIsDisabled")
+    public Result getCarouselIsDisabled(){
+        //可以优化成直接查询有没有被禁用的图片
+        return Result.ok(service.getGlobalCarouselImages().size()<service.getAllGlobalCarouselImages().size());
     }
 
     /**
-     *  获取全部全局图片，包括被禁用的
+     *  获取全部全局图片，包括被禁用的,因为在未开启的时候，所有状态就是被禁用的
      */
     @GetMapping("getAllCarouselImage")
     public Result getAllCarouselImage(){
@@ -45,20 +48,12 @@ public class GlobalCarouselImageController {
     }
 
     /**
-     *  删除全局轮播图
+     * 设置全局轮播图假设无论他们的状态，如果再次给到一个数组，会和我数据库里面的数据进行对比，
+     * 假如存在，就不用管，如果没有，就添加上去，如果这个列表里面有些数据库里面没有的东西，而数据库里面有，对应的就把数据库里面的东西删除了
      */
-    @PostMapping("deleteCarouselImage")
-    public Result deleteCarouselImage(@RequestBody CarouseImageRequest request){
-        service.deleteCarouselImage(request.getId());
-        return Result.ok();
-    }
-
-    /**
-     *  添加全局轮播图
-     */
-    @PostMapping("addCarouselImage")
-    public Result addCarouselImage(@RequestBody UpdateAvatarRequest request){
-        service.addCarouselImage(request.getAvatarUrl());
+    @PostMapping("setGlobalCarousel")
+    public Result setGlobalCarousel(@RequestBody @Validated GlobalCarouselSetRequest request){
+        service.setGlobalCarousel(request);
         return Result.ok();
     }
 
@@ -79,6 +74,26 @@ public class GlobalCarouselImageController {
         service.openCarouselImage();
         return Result.ok();
     }
+
+    /**
+     *  删除全局轮播图，暂时不用
+     */
+    @PostMapping("deleteCarouselImage")
+    public Result deleteCarouselImage(@RequestBody CarouseImageRequest request){
+        service.deleteCarouselImage(request.getId());
+        return Result.ok();
+    }
+
+    /**
+     *  添加全局轮播图，暂时不同
+     */
+    @PostMapping("addCarouselImage")
+    public Result addCarouselImage(@RequestBody UpdateAvatarRequest request){
+        service.addCarouselImage(request.getAvatarUrl());
+        return Result.ok();
+    }
+
+
 
 
 

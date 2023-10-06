@@ -2,6 +2,7 @@ package com.confession.service;
 
 import com.confession.pojo.GlobalCarouselImage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.confession.request.GlobalCarouselSetRequest;
 
 import java.util.List;
 
@@ -44,4 +45,12 @@ public interface GlobalCarouselImageService extends IService<GlobalCarouselImage
      * 开启全局轮播图
      */
     void openCarouselImage();
+
+
+
+    /**
+     * 设置全局轮播图
+     */
+    void setGlobalCarousel(GlobalCarouselSetRequest request);
+
 }
