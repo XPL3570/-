@@ -3,15 +3,23 @@ package com.confession.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
 import com.confession.comm.SensitiveTextFilter;
+import com.confession.dto.ConfessionPostAdminDTO;
 import com.confession.dto.ConfessionPostDTO;
+import com.confession.dto.UserDTO;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
 import com.confession.mapper.ConfessionpostMapper;
+import com.confession.mapper.ConfessionwallMapper;
+import com.confession.mapper.UserMapper;
 import com.confession.pojo.Confessionpost;
+import com.confession.pojo.Confessionwall;
+import com.confession.pojo.User;
 import com.confession.request.AuditRequest;
 import com.confession.request.ConfessionPostRequest;
 import com.confession.service.AdminService;
@@ -30,6 +38,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.confession.comm.ResultCodeEnum.FAIL;
 import static com.confession.comm.ResultCodeEnum.LOGIN_ACL;
 
 /**
@@ -57,6 +66,12 @@ public class ConfessionpostServiceImpl extends ServiceImpl<ConfessionpostMapper,
 
     @Resource
     private SensitiveTextFilter sensitiveTextFilter;
+
+    @Resource
+    private UserMapper userMapper;
+
+    @Resource
+    private ConfessionwallMapper confessionwallMapper;
 
     @Override
     public int getPostCountByUserIdAndDate(Integer userId, LocalDate date) {
@@ -172,10 +187,14 @@ public class ConfessionpostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         }
         LambdaUpdateWrapper<Confessionpost> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(Confessionpost::getId, request.getId())
+                .eq(Confessionpost::getWallId,request.getWallId())
                 .set(Confessionpost::getPostStatus, request.getPostStatus())
                 .set(Confessionpost::getPublishTime, LocalDateTime.now());
         int update = confessionpostMapper.update(null, updateWrapper);
-        System.out.println(update);
+        if (update<1){
+            throw new WallException(FAIL);
+        }
+//        System.out.println(update);
 
     }
 
@@ -185,6 +204,100 @@ public class ConfessionpostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         return adminPostCount;
     }
 
+    @Override
+    public PageResult confessionWallContentQuery(PageTool pageTool, String fuzzyQueryContent, String wallName, String userName,Boolean isAnonymous, Boolean isAdminPost, Integer postStatus, Boolean reverseOrder) {
+        LambdaQueryWrapper<Confessionpost> queryWrapper = new LambdaQueryWrapper<>();
+        Page<Confessionpost> page = new Page<>(pageTool.getPage(), pageTool.getLimit());
+        // 模糊查询标题和文字内容
+        if (StringUtils.isNotBlank(fuzzyQueryContent)) {
+            queryWrapper.and(wrapper -> wrapper.like(Confessionpost::getTitle, fuzzyQueryContent)
+                    .or().like(Confessionpost::getTextContent, fuzzyQueryContent));
+        }
+        // 墙名字模糊查询  注意和用户名都要加上非空判断，是空直接返回
+        if (StringUtils.isNotBlank(wallName)) {
+            List<Integer> wallIds = confessionwallMapper.selectList(new LambdaQueryWrapper<Confessionwall>().like(Confessionwall::getWallName, wallName))
+                    .stream()
+                    .map(Confessionwall::getId)
+                    .collect(Collectors.toList());
+            if (wallIds.isEmpty()){
+                return new PageResult(null,page.getTotal(),0);
+            }
+            queryWrapper.in(Confessionpost::getWallId, wallIds);
+        }
+        // 用户名模糊查询
+        if (StringUtils.isNotBlank(userName)) {
+            List<Integer> userIds = userMapper.selectList(new LambdaQueryWrapper<User>().like(User::getUsername, userName))
+                    .stream()
+                    .map(User::getId)
+                    .collect(Collectors.toList());
+            if (userIds.isEmpty()) {
+                // 如果userIds列表为空，直接返回0条记录
+                return new PageResult(null,page.getTotal(),0);
+            }
+            queryWrapper.in(Confessionpost::getUserId, userIds);
+        }
+
+        // 是否匿名查询
+        if (isAnonymous!=null) {
+            queryWrapper.eq(Confessionpost::getIsAnonymous, isAnonymous);
+        }
+        // 是否超级管理员发布
+        if (isAdminPost != null) {
+            queryWrapper.eq(Confessionpost::getIsAdminPost, isAdminPost);
+        }
+        // 发布状态查询
+        if (postStatus != null) {
+            queryWrapper.eq(Confessionpost::getPostStatus, postStatus);
+        }
+        // 排序方式，默认按id倒序
+        if (reverseOrder != null && reverseOrder) {
+            queryWrapper.orderByDesc(Confessionpost::getId);
+        }
+        // 分页查询
+        List<Confessionpost> records = this.page(page, queryWrapper).getRecords();
+        List<ConfessionPostAdminDTO> res = records.stream().map(
+                this::convertToAdminViewDTO
+        ).collect(Collectors.toList());
+        return new PageResult<>(res,page.getTotal(),records.size());
+    }
+
+    @Override
+    public void modifyPublishingStatus(AuditRequest request) {
+        LambdaUpdateWrapper<Confessionpost> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(Confessionpost::getId, request.getId())
+                .eq(Confessionpost::getWallId,request.getWallId())
+                .set(Confessionpost::getPostStatus, request.getPostStatus());
+        if (request.getPostStatus() == 1) {
+            updateWrapper.set(Confessionpost::getPublishTime, LocalDateTime.now());
+        }
+        int update = confessionpostMapper.update(null, updateWrapper);
+        if (update<1){
+            throw new WallException(FAIL);
+        }
+    }
+
+    private ConfessionPostAdminDTO convertToAdminViewDTO(Confessionpost confessionpost) {
+        ConfessionPostAdminDTO dto = new ConfessionPostAdminDTO();
+        dto.setId(confessionpost.getId());
+        UserDTO userDTO = userService.getUserFromRedisOrDatabase(confessionpost.getUserId());
+        //这里有问题，如果是超级管理员发布的所有投稿的话，是没有表白墙名字的,墙id是0,
+        if (confessionpost.getWallId()==0){
+            dto.setWallName("超级管理员发布墙"); //这个墙逻辑存在
+        }else {
+            dto.setWallName( confessionwallMapper.selectById(confessionpost.getWallId()).getWallName());
+        }
+        dto.setUserName(userDTO.getUsername());
+        dto.setUserAvatar(userDTO.getAvatarURL());
+        dto.setTitle(confessionpost.getTitle());
+        dto.setTextContent(confessionpost.getTextContent());
+        dto.setImageURL(confessionpost.getImageURL());
+        dto.setCreateTime(confessionpost.getCreateTime());
+        dto.setPublishTime(confessionpost.getPublishTime());
+        dto.setPostStatus(confessionpost.getPostStatus());
+        dto.setIsAnonymous(confessionpost.getIsAnonymous());
+        dto.setIsAdminPost(confessionpost.getIsAdminPost());
+        return dto;
+    }
 
     //这里是普通用户使用的接口，加上了必须是用户发布的那个字段,获取用
     private List<ConfessionPostDTO> getPostsByStatus(PageTool pageTool, Integer userId, Integer postStatus) {

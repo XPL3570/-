@@ -1,6 +1,7 @@
 package com.confession.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
 import com.confession.dto.ConfessionPostDTO;
 import com.confession.pojo.Confessionpost;
@@ -72,4 +73,14 @@ public interface ConfessionpostService extends IService<Confessionpost> {
      * @return
      */
     Integer getAdminPostCount();
+
+    /**
+     *  超级管理员查询发布内容   很多sql可以优化，这里先不管，反正管理员用的
+     */
+    PageResult confessionWallContentQuery(PageTool pageTool, String fuzzyQueryContent, String wallName, String userName, Boolean isAnonymous,Boolean isAdminPost, Integer postStatus, Boolean reverseOrder);
+
+    /**
+     * 管理员修改发布状态
+     */
+    void modifyPublishingStatus(AuditRequest request);
 }

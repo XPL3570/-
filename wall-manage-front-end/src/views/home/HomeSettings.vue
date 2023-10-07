@@ -38,9 +38,25 @@
   <el-button type="primary" @click="clickSetCarousel">设置全局轮播图</el-button>
 
 
+  <el-dialog :visible.sync="dialogVisiblePrompt" width="50%">
+    <el-input v-model="promptTextSub" :rows="3" placeholder="请输入全局提示语"></el-input>
+    <div style="margin:20px"></div>
+    <el-switch
+        v-model="promptSwitchSub"
+        active-text="开启全局提示语"
+        inactive-text="关闭全部提示语">
+    </el-switch>
+    <div style="margin:30px"></div>
+    <!-- 对话框的底部按钮 -->
+    <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisiblePrompt = false">取 消</el-button>
+    <el-button type="primary" @click="SubmitGlobalPromptModification">确 定</el-button>
+  </span>
+  </el-dialog>
 
   <el-dialog :visible.sync="dialogCarousel" width="40%">
     <div>首页轮播图</div>
+    <div style="margin:10px"></div>
     <el-upload
         :action="uploadUrl"
         list-type="picture-card"
@@ -55,29 +71,17 @@
         }">
       <i class="el-icon-plus"></i>
     </el-upload>
+    <div style="margin:20px"></div>
     <el-switch
         v-model="carouselSwitchSub"
         active-text="开启全局轮播图"
         inactive-text="关闭全部轮播图">
     </el-switch>
+    <div style="margin:30px"></div>
     <!-- 对话框的底部按钮 -->
     <span slot="footer" class="dialog-footer">
     <el-button @click="dialogCarousel = false">取 消</el-button>
-    <el-button type="primary" @click="a">确 定</el-button>
-  </span>
-  </el-dialog>
-
-  <el-dialog :visible.sync="dialogVisiblePrompt" width="30%">
-    <el-input v-model="promptTextSub" :rows="6" placeholder="请输入全局提示语"></el-input>
-    <el-switch
-        v-model="promptSwitchSub"
-        active-text="开启全局提示语"
-        inactive-text="关闭全部提示语">
-    </el-switch>
-    <!-- 对话框的底部按钮 -->
-    <span slot="footer" class="dialog-footer">
-    <el-button @click="dialogVisiblePrompt = false">取 消</el-button>
-    <el-button type="primary" @click="a">确 定</el-button>
+    <el-button type="primary" @click="submitGlobalCarouselModification">确 定</el-button>
   </span>
   </el-dialog>
 
@@ -118,12 +122,82 @@ export default {
     }
   },
   created() {
-    api.get('msg/admin')
+   this.getData();
   }
   ,methods:{
-    getData(){
+    async getData() {
+      try {
+        const [promptResponse, switchResponse, carouselResponse] = await Promise.all([
+          api.get('/msg/admin/getGlobalPrompt', null),
+          api.get('/carouselImage/admin/getCarouselIsDisabled', null),
+          api.get('/carouselImage/admin/getAllCarouselImage', null)
+        ]);
+
+        if (promptResponse.data.code === 200) {
+          this.promptText = promptResponse.data.data.message;
+          this.promptSwitch = promptResponse.data.data.mainSwitch;
+        } else {
+          this.$message.error('获取全局提示语失败！');
+        }
+
+        if (switchResponse.data.code === 200) {
+          this.carouselSwitch = switchResponse.data.data;
+        } else {
+          this.$message.error('获取全局轮播图开关失败');
+        }
+
+        if (carouselResponse.data.code === 200) {
+          this.fileList = carouselResponse.data.data.map(url => {
+            return { url: url.carouselImage };
+          });
+        } else {
+          this.$message.error('获取全局轮播图图片失败');
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    SubmitGlobalPromptModification(){
+        let zj={
+          message:this.promptTextSub,
+          mainSwitch:this.promptSwitchSub
+        }
+        api.post('/msg/admin/setGlobalPrompts',zj)
+            .then(
+                res=>{
+                  if (res.data.code===200){
+                    this.promptText=zj.message;
+                    this.promptSwitch=zj.mainSwitch;
+                    this.dialogVisiblePrompt=false;
+                    this.$message.success('修改全局提示语成功！');
+                  }else {
+                    this.$message.error('修改全局提示语失败！');
+                  }
+                }
+            )
+    },
+    submitGlobalCarouselModification(){
+      let zj={
+        carouselList:this.fileListSub.map(url=>{return url.url}),
+        carouselIsDisabled:this.carouselSwitchSub
+      };
+      api.post('/carouselImage/admin/setGlobalCarousel',zj)
+          .then(
+              res=>{
+                if(res.data.code===200){
+                  this.fileList=this.fileListSub.slice();
+                  this.carouselSwitch=this.carouselSwitchSub;
+                  this.dialogCarousel=false;
+                  this.$message.success('修改全局轮播图成功！')
+                }else {
+                  this.$message.error('修改全局轮播图信息失败！')
+                }
+              }
+          )
+
 
     },
+
     clickSetPrompt(){
       this.dialogVisiblePrompt=true;
       this.promptSwitchSub=this.promptSwitch;

@@ -4,10 +4,7 @@ import com.confession.comm.Result;
 import com.confession.request.MsgGlobalPromptRequest;
 import com.confession.service.MsgConfigurationService;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -31,7 +28,7 @@ public class MsgConfigurationController {
      *  获取全局提示语
      * @return
      */
-    @PostMapping("getGlobalPrompt")
+    @GetMapping("getGlobalPrompt")
     public Result getGlobalPrompt(){
         return Result.ok(msgConfigurationService.getGlobalPrompt());
     }

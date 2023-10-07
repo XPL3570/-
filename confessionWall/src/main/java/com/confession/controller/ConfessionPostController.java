@@ -1,6 +1,7 @@
 package com.confession.controller;
 
 
+import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
 import com.confession.comm.RedisConstant;
 import com.confession.comm.Result;
@@ -8,12 +9,12 @@ import com.confession.config.WallConfig;
 import com.confession.dto.ConfessionPostDTO;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
-import com.confession.mapper.ConfessionwallMapper;
 import com.confession.mapper.UserMapper;
 import com.confession.pojo.Confessionpost;
 import com.confession.pojo.User;
 import com.confession.request.AuditRequest;
 import com.confession.request.ConfessionPostRequest;
+import com.confession.request.ParameterIntTypeRequest;
 import com.confession.request.ReadConfessionRequest;
 import com.confession.service.AdminService;
 import com.confession.service.ConfessionpostService;
@@ -47,7 +48,6 @@ import static com.confession.comm.ResultCodeEnum.*;
 @RestController
 @RequestMapping("/api/confessionPost")
 public class ConfessionPostController {
-
 
     @Resource
     private ConfessionpostService confessionPostService;
@@ -93,7 +93,8 @@ public class ConfessionPostController {
                 // 根据最后一条记录的时间参数，从数据库查询剩余的数据
                 Double lastTimestamp = zSetOperations.score(key, pageData.toArray()[pageData.size() - 1]);
                 List<ConfessionPostDTO> remainingData =
-                        confessionPostService.getPostsAfterTimestamp(request.getWallId(), lastTimestamp.longValue(), remainingCount);
+                        confessionPostService.getPostsAfterTimestamp
+                                (request.getWallId(), lastTimestamp.longValue(), remainingCount);
 
                 // 合并两部分数据，并返回给客户端
                 List<Object> mergedData = new ArrayList<>(pageData);
@@ -103,7 +104,8 @@ public class ConfessionPostController {
             return Result.ok(result);
         } else {
             // 如果Redis中没有满足条件的数据，则直接从数据库查询
-            List<ConfessionPostDTO> postData = confessionPostService.getPostsAfterTimestamp(request.getWallId(), startTimestamp, pageSize);
+            List<ConfessionPostDTO> postData = confessionPostService.
+                    getPostsAfterTimestamp(request.getWallId(), startTimestamp, pageSize);
             return Result.ok(postData);
         }
 
@@ -112,8 +114,6 @@ public class ConfessionPostController {
 
     /**
      *   提交投稿，每个人限制每天投稿次数  todo 这里没有牵扯到缓存
-     * @param confessionRequest
-     * @return
      */
     @PostMapping("submit")
     public Result submitConfessionWall(@RequestBody @Validated ConfessionPostRequest confessionRequest) {
@@ -209,15 +209,59 @@ public class ConfessionPostController {
         return Result.ok(confessionPostService.getPendingPostsAdmin(wallId, pageTool));
     }
 
-    /** 审核请求  这个接口没有超级管理员特权
-     *
-     * @param request
-     * @return
+    /**
+     * 审核请求  这个接口没有超级管理员特权
      */
     @PostMapping("userAdmin/submissionReview")
     public Result submissionReview(@RequestBody @Validated AuditRequest request){
         Integer id = JwtInterceptor.getUser().getId();
         confessionPostService.submissionReview(id,request);
+        return Result.ok();
+    }
+
+    /**
+     *  超级管理员查看发布内容列表
+     *  这里的sql后面应该可以优化，中间牵扯到两个外表，可以用小表驱动大表，还有的查询多余字段
+     *
+     * @param pageTool     分页参数
+     * @param fuzzyQueryContent 模糊查询标题和文字内容
+     * @param wallName     墙名字
+     * @param userName      用户名
+     * @param isAnonymous   是否匿名
+     * @param isAdminPost   是否超级管理员发布的所有人可查看
+     * @param postStatus    发布状态
+     * @param reverseOrder 是否倒序   这里可能直接按照id倒序
+     * @return
+     */
+    @GetMapping("admin/userList")
+    public Result userList(@ModelAttribute PageTool pageTool,
+                           @RequestParam(required = false) String fuzzyQueryContent,
+                           @RequestParam(required = false) String wallName,
+                           @RequestParam(required = false) String userName,
+                           @RequestParam(required = false) Boolean isAnonymous,
+                           @RequestParam(required = false) Boolean isAdminPost,
+                           @RequestParam(required = false) Integer postStatus,
+                           @RequestParam(required = false) Boolean reverseOrder) {
+        PageResult result = confessionPostService.confessionWallContentQuery
+                (pageTool, fuzzyQueryContent, wallName, userName,isAnonymous, isAdminPost, postStatus, reverseOrder);
+        return Result.ok(result);
+    }
+
+    /**
+     * 删除投稿内容
+     */
+    @PostMapping("admin/delete")
+    public Result adminDelete(@RequestBody @Validated ParameterIntTypeRequest request){
+        confessionPostService.removeById(request.getRequestId());
+        return Result.ok();
+    }
+
+    /**
+     * 修改发布状态
+     */
+    @PostMapping("admin/modifyState")
+    public Result modifyState(@RequestBody @Validated AuditRequest request){ //这里的请求参数表白墙id也用不到
+        confessionPostService.modifyPublishingStatus(request);
         return Result.ok();
     }
 

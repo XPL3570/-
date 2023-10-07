@@ -36,7 +36,7 @@ public class GlobalCarouselImageController {
     @GetMapping("getCarouselIsDisabled")
     public Result getCarouselIsDisabled(){
         //可以优化成直接查询有没有被禁用的图片
-        return Result.ok(service.getGlobalCarouselImages().size()<service.getAllGlobalCarouselImages().size());
+        return Result.ok(service.getGlobalCarouselImages().size()==service.getAllGlobalCarouselImages().size());
     }
 
     /**
@@ -58,36 +58,36 @@ public class GlobalCarouselImageController {
     }
 
     /**
-     *  关闭全局轮播图
+     *  关闭全局轮播图 暂时禁用
      */
-    @PostMapping("closeCarouselImage")
+//    @PostMapping("closeCarouselImage")
     public Result closeCarouselImage(){
         service.closeCarouselImage();
         return Result.ok();
     }
 
     /**
-     *  开启全局轮播图
+     *  开启全局轮播图 暂时禁用
      */
-    @PostMapping("openCarouselImage")
+//    @PostMapping("openCarouselImage")
     public Result openCarouselImage(){
         service.openCarouselImage();
         return Result.ok();
     }
 
     /**
-     *  删除全局轮播图，暂时不用
+     *  删除全局轮播图，暂时禁用
      */
-    @PostMapping("deleteCarouselImage")
+//    @PostMapping("deleteCarouselImage")
     public Result deleteCarouselImage(@RequestBody CarouseImageRequest request){
         service.deleteCarouselImage(request.getId());
         return Result.ok();
     }
 
     /**
-     *  添加全局轮播图，暂时不同
+     *  添加全局轮播图，暂时禁用
      */
-    @PostMapping("addCarouselImage")
+//    @PostMapping("addCarouselImage")
     public Result addCarouselImage(@RequestBody UpdateAvatarRequest request){
         service.addCarouselImage(request.getAvatarUrl());
         return Result.ok();

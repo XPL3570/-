@@ -69,9 +69,9 @@ export default new Router({
                         requireAuth: true
                     }
                 },    {
-                    path: '/wall/wallPublishingManagement',
+                    path: '/wall/WallPublishingContentManagement',
                     name: '表白墙发布内容管理',
-                    component: () => import('../views/wall/WallPublishingManagement.vue'),
+                    component: () => import('../views/wall/WallPublishingContentManagement.vue'),
                     meta: {
                         requireAuth: true
                     }

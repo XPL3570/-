@@ -2,7 +2,6 @@ package com.confession.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.confession.mapper.GlobalCarouselImageMapper;
 import com.confession.pojo.GlobalCarouselImage;
@@ -115,7 +114,7 @@ public class GlobalcarouselImageServiceImpl extends ServiceImpl<GlobalCarouselIm
         }
         //设置是否禁用
         LambdaUpdateWrapper<GlobalCarouselImage> wrapper = new LambdaUpdateWrapper<>();
-        wrapper.set(GlobalCarouselImage::getIsDisable,request.getCarouselIsDisabled());
+        wrapper.set(GlobalCarouselImage::getIsDisable,!request.getCarouselIsDisabled()); //前端传递过来的开启是1
         mapper.update(null,wrapper);
     }
 }

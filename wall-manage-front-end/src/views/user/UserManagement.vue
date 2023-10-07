@@ -3,16 +3,18 @@
     <!-- 搜索筛选 -->
     <el-form :inline="true" :model="formInline" class="user-search">
       <el-form-item label="搜索：">
+        <span style="margin: 10px">用户状态</span>
         <el-select size="small" v-model="formInline.status" placeholder="选择要查询用户状态">
           <el-option label="全部" value=""></el-option>
           <el-option label="正常" value="0"></el-option>
           <el-option label="异常" value="1"></el-option>
         </el-select>
+
       </el-form-item>
-      <el-form-item label="">
+      <el-form-item label="学校：">
         <el-input size="small" v-model="formInline.schoolName" placeholder="请输入学校"></el-input>
       </el-form-item>
-      <el-form-item label="">
+      <el-form-item label="用户名:">
         <el-input size="small" v-model="formInline.userName" placeholder="请输入用户名"></el-input>
       </el-form-item>
       <el-form-item>
@@ -293,8 +295,7 @@ export default {
     callFather(param) {
       this.formInline.page = param.page
       this.formInline.limit = param.limit
-
-      console.log(this.formInline)
+      // console.log(this.formInline)
       this.fetchData(this.formInline)
     },
     fetchData() {

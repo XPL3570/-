@@ -3,6 +3,7 @@ package com.confession.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.confession.comm.PageResult;
@@ -157,7 +158,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public PageResult selectUserList(PageTool pageTool, String schoolName, String userName, Integer status) {
         Page<User> page = new Page<>(pageTool.getPage(), pageTool.getLimit());
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-        if (schoolName != null) {
+        if (StringUtils.isNotBlank(schoolName)) {
             // 如果提供了学校名称，那么根据学校名称模糊查询学校ID
             List<Integer> schoolIds = schoolService.selectIdsByNameLike(schoolName);
             if (!schoolIds.isEmpty()) {
@@ -174,7 +175,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             }
 
         }
-        if (userName!=null){
+        if (StringUtils.isNotBlank(userName)){
             queryWrapper.like(User::getUsername,userName);
         }
         List<User> list = this.page(page,queryWrapper).getRecords();

@@ -11,7 +11,6 @@ public class ReadConfessionRequest {
     @NotNull(message = "墙id不能是null")
     private Integer wallId;
 
-
     private Long recordAfterTime;
 
     private Integer pageSize;

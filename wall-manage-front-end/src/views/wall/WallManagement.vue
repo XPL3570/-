@@ -31,8 +31,9 @@
       <el-table-column
           label="操作"
           width="100"
-          fixed="right">
-        <template v-slot:default="scope">
+
+      >
+        <template v-slot:default="scope" >
           <el-button @click="aaa(scope.row)" plain type="primary" size="small">编辑</el-button>
         </template>
       </el-table-column>

@@ -182,7 +182,6 @@ public class UserController {
                            @RequestParam(required = false) String schoolName,
                            @RequestParam(required = false) String userName,
                            @RequestParam(required = false) Integer status) {
-
         PageResult result=userService.selectUserList(pageTool,schoolName,userName,status);
         return Result.ok(result);
     }

@@ -76,14 +76,14 @@ export default {
             {
               menuId: 30,
               icon: '墙',
-              menuName: '表白墙设置',
+              menuName: '表白墙管理',
               hasThird: null,
               url: null,
               menus: [
                 {
                   menuId: 31,
                   icon: '全部发布',
-                  menuName: '表白墙内容发布',
+                  menuName: '内容发布（所有人可见）',
                   hasThird: 'N',
                   url: 'wall/confessionRelease',
                   menus: null
@@ -94,6 +94,14 @@ export default {
                   menuName: '表白墙列表',
                   hasThird: 'N',
                   url: 'wall/wallManagement',
+                  menus: null
+                },
+                {
+                  menuId: 33,
+                  icon: '表白墙发布内容管理',
+                  menuName: '发布内容管理',
+                  hasThird: 'N',
+                  url: 'wall/WallPublishingContentManagement',
                   menus: null
                 },
               ]
