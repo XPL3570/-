@@ -62,8 +62,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
         //调用方法对敏感字进行匹配，如果匹配到了，直接打回
         Boolean hasSensitiveWords = this.hasSensitiveWords(request.getCommentContent());
-        if (hasSensitiveWords){  //这里这里的前端失败的好像没写
-            throw new WallException(FAIL);
+        if (hasSensitiveWords){
+            throw new WallException(COMMENT_SENSITIVE_WORD_ALARM);
         }
         //判断用户是不是可以评论的
         User user = userMapper.selectById(userId);  //检查用户状态是否可以评论

@@ -7,7 +7,9 @@ import java.time.LocalDateTime;
 @Data
 public class ConfessionPostAdminDTO {
 
-    private Integer id; // 帖子ID
+    private Integer id; // ID
+
+    private Integer wallId;
 
     private String wallName; // 墙名称
 

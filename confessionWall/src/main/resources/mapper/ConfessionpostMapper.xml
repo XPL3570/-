@@ -31,6 +31,15 @@
         SELECT COUNT(*) FROM confessionpost WHERE DATE(CreateTime) = CURDATE() AND IsAdminPost = true
     </select>
 
+    <select id="getConfessionPostIDsByWallId" resultType="com.confession.comm.RecordIDCache">
+        SELECT Id as id, UNIX_TIMESTAMP(PublishTime) as timeStamp
+        FROM confessionpost
+        WHERE WallId =( #{wallId} OR IsAdminPost = true) AND PostStatus = 1
+        ORDER BY PublishTime DESC
+        LIMIT #{startIndex}, #{limit}
+    </select>
+
+
 
 
 </mapper>

@@ -67,6 +67,6 @@ wall:
       daily: 2     #天次数
       yearly: 2   #年次数
       monthly: 3   #月次数
-      total: 20   #总次数
+      total: 3   #总次数
 
 

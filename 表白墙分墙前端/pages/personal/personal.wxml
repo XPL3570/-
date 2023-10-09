@@ -27,6 +27,17 @@
 			<image src='/image/right.png' class='icon-25'></image>
 		</view>
 	</view>
+
+	<view class='panel panel-between item-center border-b' bindtap="LoveWallView">
+		<view class='panel-start item-center'>
+			<image class='icon-58r' src='/image/恋爱开销.png'></image>
+			<text class='fo-28'>恋爱墙</text>
+		</view>
+		<view>
+			<image src='/image/right.png' class='icon-25'></image>
+		</view>
+	</view>
+
 	<view class='panel panel-between item-center border-b' bindtap="SubmitRecordView">
 		<view class='panel-start item-center'>
 			<image src='/image/记录.png' class='icon-65r'></image>

@@ -228,12 +228,13 @@ Page({
 					confession,
 					[`confession[${outIndex}].submitMainComment`]: ''
 				});
-			} else if (res.data.code === 217) {
+			} else if (res.data.code === 217||243) {
 				wx.showToast({
 					title: res.data.message,
 					icon: 'none'
 				})
-			} else {
+			}
+			else {
 				Notify({ type: 'danger', message: res.data.message });
 				console.log(res);
 			}
@@ -322,7 +323,7 @@ Page({
 					mainIndex: -1,
 					replyIndex: -1,
 				});
-			} else if (res.data.code === 217) {
+			} else if (res.data.code === 217||243) {
 				wx.showToast({
 					title: res.data.message,
 					icon: 'none'

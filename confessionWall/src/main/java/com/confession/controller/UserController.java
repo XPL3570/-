@@ -81,7 +81,7 @@ public class UserController {
         responseMap.put("userInfo", user);
         responseMap.put("wall", wall);
         responseMap.put("isAdmin", isAdmin);
-        System.out.println("token=" + token);
+//        System.out.println("token=" + token);
         return Result.ok(responseMap);
 
     }
@@ -90,7 +90,6 @@ public class UserController {
      * 用户没有使用过小程序，传递用户参数注册，openId数据库有唯一键，这里不查询数据库是否存在该openId了
      *
      * 注册逻辑，实际上也可能是选择学校的逻辑，
-     *  todo 前端修改注册逻辑  就是选择学校的逻辑
      *
      * @param request
      * @return

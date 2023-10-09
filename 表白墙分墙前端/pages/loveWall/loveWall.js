@@ -27,7 +27,6 @@ Page({
 				}
 	},
 	loadData1() { //我抽到的纸条
-
 		var currentTime = new Date().getTime();
 		if (currentTime - this.data.lastLoadTime02 < 3000) {
 			return;
@@ -43,7 +42,7 @@ Page({
 				this.setData({
 					drawnNote:dataList
 				});
-				console.log(this.data.drawnNote);
+				// console.log(this.data.drawnNote);
 			}else{
 				console.log(res.data);
 			}
@@ -70,8 +69,7 @@ Page({
 				this.setData({
 					insertNote: dataList
 				});
-				
-				console.log(this.data.insertNote)
+				// console.log(this.data.insertNote)
 			}else{
 				console.log(res.data);
 			}

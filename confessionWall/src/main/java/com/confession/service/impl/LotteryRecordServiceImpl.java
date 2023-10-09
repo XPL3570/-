@@ -45,7 +45,7 @@ public class LotteryRecordServiceImpl extends ServiceImpl<LotteryRecordMapper, L
         //获取用户抽到过的集合id
         List<Integer> lotteryIds = getLotteryIdsByUserId(userId);
 
-        Lottery lottery = getRandomLotteryByGenderAndSchoolIdAndDrawCount(gender, schoolId, 0,lotteryIds);
+        Lottery lottery = getRandomLotteryByGenderAndSchoolIdAndDrawCount(gender, schoolId, 0,lotteryIds,userId);
         // 创建一个新的 LotteryRecord 对象
         LotteryRecord record = new LotteryRecord();
         record.setLotteryId(lottery.getId());
@@ -81,16 +81,17 @@ public class LotteryRecordServiceImpl extends ServiceImpl<LotteryRecordMapper, L
     }
 
 
-    private synchronized Lottery getRandomLotteryByGenderAndSchoolIdAndDrawCount(int gender, int schoolId, int drawCount,List<Integer> lotteryIds) {
+    // 可以使用行级锁查询符合条件的记录,或者redis分布式锁
+    private synchronized Lottery getRandomLotteryByGenderAndSchoolIdAndDrawCount(int gender, int schoolId, int drawCount,List<Integer> lotteryIds,Integer userId) {
 
-        //todo 要改的地方，这里要添加一个，纸条的发布用户id不能是自己，这里测试完之后加
         LambdaQueryWrapper<Lottery> queryWrapper = new LambdaQueryWrapper<Lottery>()
                 .eq(Lottery::getGender, gender)
                 .eq(Lottery::getSchoolId, schoolId)
                 .eq(Lottery::getDrawCount, drawCount)
+                .ne(Lottery::getUserId,userId)
                 .notIn(Lottery::getId, lotteryIds);
 
-        // 使用行级锁查询符合条件的记录
+
         List<Lottery> lotteryList = lotteryMapper.selectList(queryWrapper);
 
         if (lotteryList.isEmpty()) {
@@ -99,7 +100,7 @@ public class LotteryRecordServiceImpl extends ServiceImpl<LotteryRecordMapper, L
             if(drawCount>5){
                 throw new WallException(WITHDRAWAL_EXCEEDS_LIMIT);
             }
-            return getRandomLotteryByGenderAndSchoolIdAndDrawCount(gender, schoolId, drawCount + 1,lotteryIds);
+            return getRandomLotteryByGenderAndSchoolIdAndDrawCount(gender, schoolId, drawCount + 1,lotteryIds,userId);
         } else {
             // 随机选择一条记录
             Random random = new Random();

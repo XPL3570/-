@@ -44,6 +44,11 @@ Page({
 			url: './commentResponse/commentResponse',
 		})
 	},
+	LoveWallView() {
+		wx.navigateTo({
+			url: '../loveWall/loveWall',
+		})
+	},
 	AvatarModView() {
 		wx.navigateTo({
 			url: './avatarMod/avatarMod',

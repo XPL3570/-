@@ -22,11 +22,11 @@
         </el-select>
       </el-form-item>
       <el-form-item label="匿名状态：">
-      <el-select size="small" v-model="formInline.isAnonymous" placeholder="请选择要查询是否匿名">
-        <el-option label="全部" value=""></el-option>
-        <el-option label="正常" value=false></el-option>
-        <el-option label="匿名" value=true></el-option>
-      </el-select>
+        <el-select size="small" v-model="formInline.isAnonymous" placeholder="请选择要查询是否匿名">
+          <el-option label="全部" value=""></el-option>
+          <el-option label="正常" value=false></el-option>
+          <el-option label="匿名" value=true></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="是否超级管理员发布：">
         <el-select size="small" v-model="formInline.isAdminPost" placeholder="请选择要查询是否超级管理员发布">
@@ -59,14 +59,15 @@
       <el-table-column prop="userAvatar" label="用户头像" width="100">
         <template v-slot:default="scope">
           <div style="display: flex; justify-content: center;">
-            <img :src="scope.row['userAvatar']" alt="avatar" width="80" height="80" @click="showDetail(scope.row['userAvatar'])"/>
+            <img :src="scope.row['userAvatar']" alt="avatar" width="80" height="80"
+                 @click="showDetail(scope.row['userAvatar'])"/>
           </div>
         </template>
       </el-table-column>
       <el-table-column prop="title" label="投稿标题" width="157"></el-table-column>
       <el-table-column prop="textContent" label="投稿内容" width="244">
         <template v-slot:default="scope">
-          <el-input type="textarea"  :value="scope.row.textContent" :autosize="{ minRows: 2, maxRows: 3 }"></el-input>
+          <el-input type="textarea" :value="scope.row.textContent" :autosize="{ minRows: 2, maxRows: 3 }"></el-input>
         </template>
       </el-table-column>
       <el-table-column prop="imageURL" label="投稿图片" width="240">
@@ -83,28 +84,47 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" label="创建时间" ></el-table-column>
-      <el-table-column prop="publishTime" label="发布时间" ></el-table-column>
+      <el-table-column prop="createTime" label="创建时间"></el-table-column>
+      <el-table-column prop="publishTime" label="发布时间"></el-table-column>
       <el-table-column prop="postStatus" label="帖子状态" :formatter="formatPostStatus" width="100"></el-table-column>
       <el-table-column prop="isAnonymous" label="是否匿名" :formatter="formatBoolean" width="80"></el-table-column>
-      <el-table-column prop="isAdminPost" label="是否超级管理员发布" :formatter="formatBoolean" width="80"></el-table-column>
-      <el-table-column
-          fixed="right"
-          label="操作"
-          width="157">
-        <template >
-          <el-button plain size="mini" type="danger"
-                     style="margin-bottom: 4px;margin-left: 18px; width: 100px;">修改状态
-          </el-button>
-          <el-button plain size="mini" type="primary"
-                     style="width: 100px; margin-left: 18px">删除
-          </el-button>
+      <el-table-column prop="isAdminPost" label="是否超级管理员发布" :formatter="formatBoolean"
+                       width="80"></el-table-column>
+      <el-table-column label="操作" width="157">
+        <template v-slot:default="scope">
+
+          <el-button plain size="mini" type="primary" @click="handleClickPostStatus(scope.row)" style="margin-left: 18px; width: 100px;margin-bottom: 8px">修改状态</el-button>
+          <el-popover placement="left" trigger="click"   width="244">
+            <el-button plain size="mini" type="danger" slot="reference" style="width: 100px; margin-left: 18px">删除</el-button>
+            <p>确定要删除该投稿吗？</p>
+            <div style="text-align: right; margin: 0">
+              <el-button size="mini" type="warning" @click="handleDeletePostStatus(scope.row.id)">确定</el-button>
+              <el-button size="mini" type="text">取消</el-button>
+            </div>
+          </el-popover>
         </template>
       </el-table-column>
     </el-table>
 
     <!-- 分页组件 -->
     <PageView v-bind:childMsg="page" @callFather="callFather"></PageView>
+
+    <el-dialog title="修改投稿状态" width="24%" :visible.sync="isDialogPostStatesOpen">
+      <span>请选择要修改的投稿状态： </span>
+      <el-select v-model="editForm.postStatus" placeholder="请选择">
+        <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+        </el-option>
+      </el-select>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancelDialogPostState">取 消</el-button>
+        <el-button type="primary" @click="confirmDialogPostState">确 定</el-button>
+      </div>
+    </el-dialog>
 
     <el-dialog title="图片详情" :visible.sync="showImageDialog" width="44%">
       <div style="text-align: center;">
@@ -117,13 +137,16 @@
 <script>
 import api from "@/axios";
 import PageView from "@/components/PageView.vue";
+
 export default {
-  components:{PageView},
+  components: {PageView},
   data() {
     return {
+      visible: false,//Popover 弹出框 数据
+      isDialogPostStatesOpen: false,
       showImageDialog: false,
       selectedImage: '', // 存储选中的图片URL
-      loading:false,
+      loading: false,
       page: {  //分页参数 每次都是传递他给组件得到
         page: 1,  //第几页
         limit: 5,
@@ -132,36 +155,93 @@ export default {
       formInline: { //分页参数，每次都是调用他来获取后台然后
         page: 1,
         limit: 5,
-        fuzzyQueryContent:'',
-        wallName:'',
-        userName:'',
-        isAdminPost:null,
-        isAnonymous:null,
-        postStatus:null,
-        reverseOrder:null,
+        fuzzyQueryContent: '',
+        wallName: '',
+        userName: '',
+        isAdminPost: null,
+        isAnonymous: null,
+        postStatus: null,
+        reverseOrder: null,
+      },
+      editForm: { //暂存修改状态的数据
+        id: -1,
+        wallId: -1,
+        postStatus: -1
       },
       tableData: [], // 表格数据
+      options: [{
+        value: 0,
+        label: '未审核'
+      }, {
+        value: 1,
+        label: '发布状态'
+      }, {
+        value: 2,
+        label: '未通过审核'
+      }],
     };
   },
   created() {
     this.getData();
   },
   methods: {
-    getData(){
-      console.log(this.formInline)
-      this.loading=true;
-      api.get('/api/confessionPost/admin/userList',this.formInline)
+    handleClickPostStatus(row) { //点击修改状态按钮
+      this.isDialogPostStatesOpen = true;
+      this.editForm.id = row.id;
+      this.editForm.wallId = row.wallId;
+      this.editForm.postStatus = row.postStatus;
+    },
+    cancelDialogPostState(){
+      //关闭弹窗，数据重置
+      this.isDialogPostStatesOpen=false;
+      this.editForm.id=-1;
+      this.editForm.wallId=-1;
+      this.editForm.postStatus=-1
+    },
+    confirmDialogPostState(){
+      api.post('/api/confessionPost/admin/modifyState',this.editForm)
           .then(
               res=>{
                 if (res.data.code===200){
-                  this.tableData=res.data.data.data.map(item=>{
-                    item.imageURL=item.imageURL.split(';');
+                  this.cancelDialogPostState();
+                  this.getData();
+                  this.$message.success('修改投稿状态成功！');
+                }else {
+                  this.$message.error('修改投稿状态失败！')
+                }
+              }
+          )
+    },
+    handleDeletePostStatus(id){
+      // console.log(id)
+      api.post('/api/confessionPost/admin/delete',{requestId:id})
+          .then(
+              res=>{
+                if (res.data.code===200){
+                  this.getData();
+                  this.$message.success('删除投稿成功！')
+                }else {
+                  console.error(res);
+                  this.$message.error('删除投稿失败！')
+                }
+              }
+          )
+    },
+    getData() {
+      console.log(this.formInline)
+      this.loading = true;
+      api.get('/api/confessionPost/admin/userList', this.formInline)
+          .then(
+              res => {
+                if (res.data.code === 200) {
+                  this.tableData = res.data.data.data.map(item => {
+                    item.imageURL = item.imageURL.split(';');
                     return item;
                   });
                   console.log(this.tableData)
-                  this.page.total=res.data.data.total;
-                  this.loading=false;
-                }else {
+                  this.page.total = res.data.data.total;
+                  this.loading = false;
+                } else {
                   this.$message.error('加载数据投稿失败!');
                 }
               }

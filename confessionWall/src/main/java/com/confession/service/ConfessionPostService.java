@@ -7,6 +7,7 @@ import com.confession.dto.ConfessionPostDTO;
 import com.confession.pojo.Confessionpost;
 import com.confession.request.AuditRequest;
 import com.confession.request.ConfessionPostRequest;
+import org.springframework.data.relational.core.sql.In;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.List;
  * @author 作者
  * @since 2023年08月20日
  */
-public interface ConfessionpostService extends IService<Confessionpost> {
+public interface ConfessionPostService extends IService<Confessionpost> {
 
     /**
      * 查询用户当天的发布数量
@@ -45,15 +46,14 @@ public interface ConfessionpostService extends IService<Confessionpost> {
      */
     List<ConfessionPostDTO> getPendingPosts(Integer userId, PageTool pageTool);
 
+
+
     /**
      * 查询内容以及评论
      * @param wallId  墙id
-     * @param timestamp  查询这个时间戳之后的数据
-     * @param count  要查询几条
      * @return
      */
-    List<ConfessionPostDTO> getPostsAfterTimestamp(Integer wallId, Long timestamp, Integer count);
-
+    List<ConfessionPostDTO> getPostsPage(Integer wallId, Integer page, Integer limit);
 
     /**
      * 获取墙内要审核的投稿
@@ -83,4 +83,16 @@ public interface ConfessionpostService extends IService<Confessionpost> {
      * 管理员修改发布状态
      */
     void modifyPublishingStatus(AuditRequest request);
+
+    /**
+     * 根据墙id和分页参数获取dto ,如果redis里面没有数据也做的更新缓存的处理
+     */
+    List<ConfessionPostDTO> confessionPostService(Integer wallId, int page, int limit);
+
+    /**
+     * 用户提交投稿
+     * @param confessionRequest
+     * @return 投稿的状态，是否直接发布
+     */
+    int userSubmitConfessionWall(ConfessionPostRequest confessionRequest);
 }

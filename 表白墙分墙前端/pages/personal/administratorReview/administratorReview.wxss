@@ -9,7 +9,7 @@
 	 }
 
 	 .item-zj{
-		margin-bottom: 157rpx;
+		margin-bottom: 98rpx;
 	 }
 	 .button-zj {
 		display: flex;
@@ -20,7 +20,8 @@
 	}
 
 	.button-x{
-		width: 150rpx;
+		margin-left: 10rpx;
+		width: 170rpx;
 	}
 	
 	 

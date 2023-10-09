@@ -11,11 +11,10 @@ import com.confession.globalConfig.exception.WallException;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
 import com.confession.pojo.Admin;
 import com.confession.pojo.Confessionpost;
-import com.confession.pojo.School;
 import com.confession.request.AdminLoginRequest;
 import com.confession.request.ConfessionPostRequest;
 import com.confession.service.AdminService;
-import com.confession.service.ConfessionpostService;
+import com.confession.service.ConfessionPostService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.validation.annotation.Validated;
@@ -47,7 +46,7 @@ public class AdminController {
     private AdminService adminService;
 
     @Resource
-    private ConfessionpostService confessionPostService;
+    private ConfessionPostService confessionPostService;
 
 
     @Resource

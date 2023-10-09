@@ -90,7 +90,7 @@ public class Confessionpost implements Serializable {
      * 是否为管理员发布的内容'
      */
     @TableField("IsAdminPost")
-    private Boolean isAdminPost ;
+    private Boolean isAdminPost;
 
     /**
      * 逻辑删除标志

@@ -1,11 +1,13 @@
 package com.confession.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.confession.comm.RecordIDCache;
 import com.confession.pojo.Confessionpost;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * <p>
@@ -32,6 +34,19 @@ public interface ConfessionpostMapper extends BaseMapper<Confessionpost> {
      * @return
      */
     int getAdminPostCount(@Param("date") LocalDate date);
+
+    /**
+     * 获取redis里面没有的数据库里面的id和时间戳的集合
+     * @param wallId
+     * @param startIndex
+     * @param limit
+     * @return
+     */
+    List<RecordIDCache> getConfessionPostIDsByWallId(
+            @Param("wallId") Integer wallId,
+            @Param("startIndex") Integer startIndex,
+            @Param("pageSize") Integer limit
+    );
 
 
 

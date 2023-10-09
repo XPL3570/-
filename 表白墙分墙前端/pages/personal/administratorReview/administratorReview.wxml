@@ -22,12 +22,15 @@
 		<van-cell title="投稿时间" value="{{item.createTime}}"></van-cell>
 		<!-- <van-cell title="匿名发布" value="{{item.isAnonymous === 1?'是':'否'}}"></van-cell> -->
 		<view class="button-zj">
-		<van-button type="primary" style="width: 170rpx;" class="button-x" bindtap="handlePass"
-		data-id="{{item.id}}" data-index="{{outIndex}}"
-		><span>通 过</span></van-button>
-		<van-button type="danger" class="button-x"  bindtap="handleReject" 	data-id="{{item.id}}" data-index="{{outIndex}}">不通过</van-button>
+		<van-button type="primary" style="width: 200rpx;"  bindtap="handlePass" data-id="{{item.id}}" data-index="{{outIndex}}"><span>通过审核</span></van-button>
+
+			<van-button type="danger" class="button-x" bindtap="handleReject" data-id="{{item.id}}" data-index="{{outIndex}}">不通过</van-button>
+		</view>
 	</view>
-	</view>
+	
+	<van-divider />
+
+
 </view>
 
 <van-dialog id="van-dialog" />

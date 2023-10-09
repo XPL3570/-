@@ -9,9 +9,15 @@ Page({
 		content: '', // 存储投稿内容
 		fileList: [],
 		checked: false, //匿名发布
-		isAnonymous: 0
+		isAnonymous: 0, //是否匿名
+		maxNumberImageUploads:2, //最大图片上传数量,默认2，管理员可以3张
 	},
 	onLoad() {
+		if(wx.getStorageSync('isAdmin')){
+				this.setData({
+					maxNumberImageUploads:3
+				});
+		}
 		this.setData({
 			title: '', // 初始化投稿标题
 			TitleErrorMsg: '',
