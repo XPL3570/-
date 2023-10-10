@@ -10,6 +10,8 @@ public enum ResultCodeEnum {
 
     SUCCESS(200,"成功"),
     FAIL(201, "失败"),
+
+
     PARAM_ERROR( 202, "参数不正确"),
     GET_OPENID_FAIL(203,"获取open异常"),
     DATA_ERROR(204, "数据异常"),
@@ -33,6 +35,7 @@ public enum ResultCodeEnum {
     CANNOT_POST(242,"您暂时被限制投稿表白了哦，如有疑问联系表白墙"),
     COMMENT_SENSITIVE_WORD_ALARM(243,"该条评论可能存在敏感词，请您调整后再次发布评论"),
     NO_SUBMISSION_DATA(244,"没有数据了哦！"), //没有投稿数据了
+    USER_NOT_EXIST(404,"用户不存在"),
 
 
     ;

@@ -2,9 +2,7 @@
 	display: flex;
 	justify-content: center;
 	margin-top: 404rpx;
-	height: 100vh;
-	
-	 /* background-color: #e0e9f1 !important;  */
+	height: 60vh;
   }  
   .container {
 	width: 90%;

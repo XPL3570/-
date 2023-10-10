@@ -14,7 +14,7 @@
 				</block>
 				<block wx:else>
 					<block wx:for="{{item.imageURL}}" wx:key="index" wx:for-index="imageIndex">
-						<van-image width="160rpx" height="160rpx" fit="cover" src="{{item}}" bindtap="handleImageTap" data-index="{{index}}" data-image="{{item}}" />
+						<van-image width="160rpx" height="160rpx" fit="cover" src="{{item}}" bindtap="handleImageTap" data-index="{{imageIndex}}" data-image="{{item}}" />
 					</block>
 				</block>
 			</view>

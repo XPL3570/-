@@ -47,6 +47,7 @@ Page({
 		const index = event.currentTarget.dataset.index;
 		const image = event.currentTarget.dataset.image;
 		const images = this.data.list[index].imageURL;
+
 		wx.previewImage({
 			current: image, // 当前显示图片的链接
 			urls: images // 需要预览的图片链接列表

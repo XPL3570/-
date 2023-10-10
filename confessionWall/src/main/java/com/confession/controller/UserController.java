@@ -153,15 +153,16 @@ public class UserController {
 
 
     @PostMapping("/avatar")
-    public Result updateAvatar(HttpServletRequest req,
-                               @RequestBody @Validated UpdateAvatarRequest request) {
-        return updateUserAttribute(req, "avatar", request.getAvatarUrl());
+    public Result updateAvatar(@RequestBody @Validated UpdateAvatarRequest request) {
+        userService.updateUserAttribute( "avatar", request.getAvatarUrl());
+        return Result.ok();
     }
 
     @PostMapping("/name")
     public Result updateName(HttpServletRequest req,
                              @RequestBody @Validated UpdateNameRequest request) {
-        return updateUserAttribute(req, "name", request.getUsername());
+        userService.updateUserAttribute("name", request.getUsername());
+        return Result.ok();
     }
 
     @GetMapping("/canModifyAvatar")
@@ -170,7 +171,7 @@ public class UserController {
         Integer userId = JwtInterceptor.getUser().getId();
         User user = userService.getById(userId);
         // 检查时间间隔
-        if (!checkTimeInterval(user.getUpdateTime())) {
+        if (!userService.checkTimeInterval(user.getUpdateTime())) {
             return Result.build(400, "修改头像或名字的时间间隔不足三天");
         }
         return Result.ok();
@@ -197,50 +198,7 @@ public class UserController {
         return Result.ok();
     }
 
-    /**
-     * 判断是否符合修改需求，修改用户头像或名字
-     *
-     * @param req
-     * @param attributeName
-     * @param attributeValue
-     * @return
-     */
-    private Result updateUserAttribute(HttpServletRequest req, String attributeName, String attributeValue) {
-        int userId = Integer.valueOf(JwtConfig.getIdByJwtToken(req)); // 从请求头的token中获取用户ID
-        User user = userService.getById(userId);
-        if (user == null) {
-            return Result.build(404, "用户不存在");
-        }
 
-        // 检查时间间隔
-        if (!checkTimeInterval(user.getUpdateTime())) {
-            return Result.build(400, "修改头像或名字的时间间隔不足三天");
-        }
-
-        // 更新属性和更新时间
-        if ("avatar".equals(attributeName)) {
-            user.setAvatarURL(attributeValue);
-        } else if ("name".equals(attributeName)) {
-            user.setUsername(attributeValue);
-        }
-
-        //这里切换头像就把之前的头像删除了
-
-        user.setUpdateTime(LocalDateTime.now()); // 使用java.time.LocalDateTime类获取当前时间
-        userService.updateById(user);
-        return Result.ok();
-    }
-
-
-    private boolean checkTimeInterval(LocalDateTime lastUpdateTime) {
-        // 计算当前时间与上次更新时间的间隔
-        LocalDateTime currentTime = LocalDateTime.now(); // 使用java.time.LocalDateTime类获取当前时间
-        Duration interval = Duration.between(lastUpdateTime, currentTime);
-        Duration threeDays = Duration.ofDays(3);
-        boolean res = interval.compareTo(threeDays) >= 0;
-        System.out.println("res=" + res);
-        return res;
-    }
 
 
 }

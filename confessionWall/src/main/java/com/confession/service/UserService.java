@@ -3,12 +3,15 @@ package com.confession.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
+import com.confession.comm.Result;
 import com.confession.dto.UserDTO;
 import com.confession.dto.UserManageDTO;
 import com.confession.pojo.User;
 import com.confession.request.UserNameModRequest;
 import com.confession.request.UserStatusModRequest;
 
+import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -66,8 +69,18 @@ public interface UserService extends IService<User> {
     PageResult selectUserList(PageTool pageTool, String schoolName, String userName, Integer status);
 
     /**
-     * 修改用户名字
+     * 修改用户名字    这是超级管理员的接口
      * @param nameModRequest
      */
     void userMod(UserNameModRequest nameModRequest);
+
+    /**
+     * 普通用户修改用户名或者头像
+     */
+    void updateUserAttribute(String attributeName, String attributeValue);
+
+    /**
+     * 用户三天内是否修改头像或者名字
+     */
+    boolean checkTimeInterval(LocalDateTime lastUpdateTime);
 }

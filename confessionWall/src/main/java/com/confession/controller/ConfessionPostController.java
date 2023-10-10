@@ -53,11 +53,8 @@ public class ConfessionPostController {
     @Resource
     private AdminService adminService;
 
-    @Resource
-    private UserMapper userMapper;
-
     /**
-     * 查看学校的投稿内容    todo 可以在一开始就把数据加载到缓存    这里要不要做一个查询表白墙表状态是否是可用的状态
+     * 查看学校的投稿内容   这里要不要做一个查询表白墙表状态是否是可用的状态，不查询了，后面再说
      */
     @GetMapping("readConfessionWall")
     public Result readConfessionWall(@RequestParam Integer wallId,@ModelAttribute PageTool pageTool){
@@ -71,7 +68,7 @@ public class ConfessionPostController {
 
 
     /**
-     *   提交投稿，每个人限制每天投稿次数  todo 这里没有牵扯到缓存
+     *   提交投稿，每个人限制每天投稿次数
      */
     @PostMapping("submit")
     public Result submitConfessionWall(@RequestBody @Validated ConfessionPostRequest confessionRequest) {

@@ -8,15 +8,20 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
+import com.confession.comm.Result;
 import com.confession.comm.ResultCodeEnum;
+import com.confession.config.JwtConfig;
 import com.confession.config.WechatConfig;
 import com.confession.dto.UserDTO;
 import com.confession.dto.UserManageDTO;
 import com.confession.globalConfig.exception.WallException;
+import com.confession.globalConfig.interceptor.JwtInterceptor;
 import com.confession.mapper.UserMapper;
 import com.confession.pojo.User;
+import com.confession.request.DeleteImageRequest;
 import com.confession.request.UserNameModRequest;
 import com.confession.request.UserStatusModRequest;
+import com.confession.service.ImageService;
 import com.confession.service.SchoolService;
 import com.confession.service.UserService;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -26,12 +31,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.confession.comm.RedisConstant.USER_DTO_PREFIX;
+import static com.confession.comm.ResultCodeEnum.USER_NOT_EXIST;
 
 
 /**
@@ -53,6 +61,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Resource
     private RedisTemplate redisTemplate;
+
+    @Resource
+    private ImageService imageService;
 
     @Resource
     private SchoolService schoolService;
@@ -152,6 +163,56 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         updateWrapper.eq(User::getId, nameModRequest.getUserId())
                 .set(User::getUsername, nameModRequest.getUsername());
         userMapper.update(null, updateWrapper);
+    }
+
+    @Override
+    public void updateUserAttribute(String attributeName, String attributeValue) {
+        Integer userId = JwtInterceptor.getUser().getId();
+        User user = this.getById(userId);
+        if (user == null) {
+            throw new WallException(USER_NOT_EXIST);
+        }
+
+        // 检查时间间隔
+        if (!checkTimeInterval(user.getUpdateTime())) {
+            throw new WallException("修改头像或名字的时间间隔不足三天",400);
+        }
+
+        // 更新属性和更新时间
+        if ("avatar".equals(attributeName)) {
+            //这里切换头像就把之前的头像删除了
+            DeleteImageRequest zj = new DeleteImageRequest();
+            zj.setDeleteUrl(attributeValue);
+            imageService.deleteImage(zj);
+            user.setAvatarURL(attributeValue);
+        } else if ("name".equals(attributeName)) {
+            user.setUsername(attributeValue);
+        }
+        user.setUpdateTime(LocalDateTime.now()); // 使用java.time.LocalDateTime类获取当前时间
+        this.updateById(user);
+
+
+        //这里判断redis里面是否有key，有就更新一下缓存
+        boolean exists = redisTemplate.hasKey(USER_DTO_PREFIX + userId);
+
+        if (exists) {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setUsername(user.getUsername());
+            userDTO.setAvatarURL(user.getAvatarURL());
+            // 更新缓存逻辑
+            redisTemplate.opsForValue().set(USER_DTO_PREFIX + userId, userDTO, 15, TimeUnit.MINUTES);
+        }
+    }
+
+    @Override
+    public boolean checkTimeInterval(LocalDateTime lastUpdateTime) {
+        // 计算当前时间与上次更新时间的间隔
+        LocalDateTime currentTime = LocalDateTime.now(); // 使用java.time.LocalDateTime类获取当前时间
+        Duration interval = Duration.between(lastUpdateTime, currentTime);
+        Duration threeDays = Duration.ofDays(3);
+        boolean res = interval.compareTo(threeDays) >= 0;
+        System.out.println("res=" + res);
+        return res;
     }
 
     @Override

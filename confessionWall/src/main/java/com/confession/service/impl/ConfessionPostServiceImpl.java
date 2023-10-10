@@ -1,5 +1,6 @@
 package com.confession.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -192,6 +193,10 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         if (update<1){
             throw new WallException(FAIL);
         }
+        //这里通过判断发布状态字段同步缓存
+        if (request.getPostStatus()==1){
+            this.saveRecordsCache(request.getWallId(),request.getId());
+        }
 
     }
 
@@ -271,22 +276,33 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         if (update<1){
             throw new WallException(FAIL);
         }
+        if (request.getPostStatus() == 1) {
+            //放入缓存
+            String key = RedisConstant.CONFESSION_PREFIX + request.getWallId();
+            Confessionpost confessionPost = confessionpostMapper.selectById(request.getId());
+            ConfessionPostDTO dto = convertToDTOAll(confessionPost);
+            // 存入Redis
+            redisTemplate.opsForValue().set(key, dto);
+
+            redisTemplate.opsForZSet().add(WALL_SUBMISSION_RECORD + request.getWallId(), request.getId(), confessionPost.getPublishTime().toEpochSecond(ZoneOffset.UTC));
+        }
     }
 
     @Override
     public List<ConfessionPostDTO> confessionPostService(Integer wallId, int page, int limit) {
         int startIndex = (page - 1) * page;
-        int endIndex = startIndex + limit - 1;
-        Set<String> zSetMembers = redisTemplate.opsForZSet().range(WALL_SUBMISSION_RECORD + wallId, startIndex, endIndex);
+        if (startIndex>220404){
+            //不太可能有这么多的数据，直接报错
+            throw new WallException(NO_SUBMISSION_DATA);
+        }
+        int endIndex = startIndex + limit - 1;  //注意这里是倒序啊
+        Set<Integer> zSetMembers = redisTemplate.opsForZSet().reverseRange(WALL_SUBMISSION_RECORD + wallId, startIndex, endIndex);
 
         List<ConfessionPostDTO> posts;
         if (zSetMembers.isEmpty()) {
             // 查询这个key的里面集合的数量   这里要加分布式锁，在添加的时候也要获取这个锁 todo
             long missingCount = redisTemplate.opsForZSet().zCard(WALL_SUBMISSION_RECORD + wallId);
-            if (missingCount>220404){
-                //不太可能有这么多的数据，直接报错
-                throw new WallException(NO_SUBMISSION_DATA);
-            }
+
             // 从数据库中查询缺失的记录的id和时间戳添加
             List<RecordIDCache> iDsByWallId =
                     confessionpostMapper.getConfessionPostIDsByWallId(wallId, startIndex, endIndex + 1 - (int) missingCount);
@@ -300,10 +316,11 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
             posts=getPostsFromDatabase(iDsByWallId.stream().map(item-> item.getId()).collect(Collectors.toList()),wallId);
 
         } else {
+            System.out.println(zSetMembers);
             // 从数据库或其他缓存中获取完整的投稿
             List<Integer> postIds = new ArrayList<>();
-            for (String zSetMember : zSetMembers) {
-                postIds.add(Integer.parseInt(zSetMember));
+            for (Integer zSetMember : zSetMembers) {
+                postIds.add(zSetMember);
             }
             posts = getPostsFromDatabase(postIds,wallId);
         }
@@ -350,12 +367,18 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         confessionPost.setPostStatus(status);
         this.save(confessionPost);
 
-        //todo 标注一下，后面测试完就可以删了
         if (status == 1) {
-            String key = RedisConstant.CONFESSION_PREFIX+confessionPost.getId();
-            redisTemplate.opsForValue().set(key,this.convertToDTOAll(confessionPost));
+            this.saveRecordsCache(confessionRequest.getWallId(),confessionPost.getId());
         }
         return status;
+    }
+
+    private void saveRecordsCache(Integer wallId,Integer recordId){
+        Confessionpost byId = confessionpostMapper.selectById(recordId);
+        redisTemplate.opsForZSet().add(WALL_SUBMISSION_RECORD + wallId,
+                recordId, byId.getPublishTime().toInstant(ZoneOffset.UTC).getEpochSecond());
+        String key = RedisConstant.CONFESSION_PREFIX+recordId;
+        redisTemplate.opsForValue().set(key,this.convertToDTOAll(byId));
     }
 
 
@@ -368,25 +391,36 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         List<ConfessionPostDTO> posts = new ArrayList<>();
         for (Integer id:postIds){
             //拿到id集合也是先从缓存里面拿
-            ConfessionPostDTO redisDto =(ConfessionPostDTO) redisTemplate.opsForValue().get(CONFESSION_PREFIX + wallId);
-            if (redisDto == null) {
+//            ConfessionPostDTO redisDto =(ConfessionPostDTO) redisTemplate.opsForValue().get(CONFESSION_PREFIX + id);
+            JSONObject redisDtoTemp = (JSONObject) redisTemplate.opsForValue().get(CONFESSION_PREFIX + id);
+            ConfessionPostDTO redisDto;
+            if (redisDtoTemp!=null){
+                redisDto=  redisDtoTemp.toJavaObject(ConfessionPostDTO.class);
+            }else {
                 // 如果没有拿到就要查询数据库并放到缓存里面去
                 Confessionpost confessionpost = confessionpostMapper.selectById(id);
-                ConfessionPostDTO dbDto = this.convertToDTOAll(confessionpost);
+                System.out.println("记录："+id+"记录是"+confessionpost);
+                ConfessionPostDTO dbDto=null;
+                if (confessionpost!=null){
+                    dbDto = this.convertToDTOAll(confessionpost);
+                }
 
                 // 根据发布时间设置不同的过期时间
                 LocalDateTime publishTime = confessionpost.getPublishTime();
                 LocalDateTime now = LocalDateTime.now();
                 long expirationSeconds;
-                if (publishTime.plusDays(3).isAfter(now)) {
-                    // 发布时间在三天内，设置3天过期
-                    expirationSeconds = Duration.between(now, publishTime.plusDays(3)).getSeconds();
+                if (publishTime.plusDays(5).isAfter(now)) {
+                    // 发布时间在5天内，缓存过期时间为1天
+                    expirationSeconds = Duration.ofDays(1).getSeconds();
+                } else if (publishTime.plusDays(3).isAfter(now)) {
+                    // 发布时间在3天内，缓存过期时间为3天
+                    expirationSeconds = Duration.ofDays(3).getSeconds();
                 } else {
-                    // 发布时间在三天外，设置30分钟过期
-                    expirationSeconds = Duration.between(now, publishTime.plusMinutes(30)).getSeconds();
+                    // 发布时间超过5天，缓存过期时间为1小时
+                    expirationSeconds = Duration.ofHours(1).getSeconds();
                 }
                 // 将查询结果放入缓存，并设置过期时间
-                redisTemplate.opsForValue().set(CONFESSION_PREFIX + wallId, dbDto, expirationSeconds, TimeUnit.SECONDS);
+                redisTemplate.opsForValue().set(CONFESSION_PREFIX + id, dbDto, expirationSeconds, TimeUnit.SECONDS);
                 redisDto = dbDto;
             }
             posts.add(redisDto);
@@ -442,6 +476,7 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
     //处理投稿数据，不要评论
     private ConfessionPostDTO convertToDTO(Confessionpost post) {
         ConfessionPostDTO dto = new ConfessionPostDTO();
+        System.out.println("id是："+post.getId());
         dto.setId(post.getId());
         dto.setWallId(post.getWallId());
         dto.setUserId(post.getUserId());

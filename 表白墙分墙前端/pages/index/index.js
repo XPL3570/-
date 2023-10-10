@@ -5,7 +5,7 @@ import Notify from '@vant/weapp/notify/notify';
 Page({
 	data: {
 		title: '', //墙名字
-		prompt:'欢迎来到同校表白墙！        您的投稿是我不懈的动力！',
+		prompt: '欢迎来到同校表白墙！        您的投稿是我不懈的动力！',
 		swiperOptions: {  //轮播图参数
 			indicatorDots: true,
 			autoplay: true,
@@ -17,6 +17,9 @@ Page({
 			'../../image/Carousel/2.jpg',
 			'../../image/Carousel/3.jpg'
 		],
+		canLoadMore: true, // 是否可以继续加载更多数据
+		page: 1, // 当前页数
+		limit: 10, // 每页数据条数
 		activeNames: ['1'],
 		confession: [],
 		//下面的都放到页面变量里面是因为不针对单个的回复内容做保存了，因为弹出框在的位置不太好拿下标
@@ -27,48 +30,51 @@ Page({
 		replyIndex: -1,  //要回复的评论的投稿索引 在大集合下面
 		mainIndex: -1, //如果回复的是主评论，这就是记录主评论的下标
 	},
-	handleImageTap: function (e) {
-		var index = e.currentTarget.dataset.index;
-		var linkUrl = this.data.swiperData[index].linkUrl;
-		if (linkUrl) {
-			// 如果有跳转链接，则进行页面跳转
-			wx.navigateTo({
-				url: linkUrl
-			});
-		} else {
-			// 如果没有跳转链接，则不进行任何操作
-		}
-	},
-	onLoad: function () {
+	onLoad() { //获取首页数据和表白数据，分开哦
 		this.setData({
 			title: wx.getStorageSync('wall').wallName
 		});
-
 		//获取轮播图和提示语
-		var sbzj={
-			schoolId:wx.getStorageSync('userInfo').schoolId
+		var sbzj = {
+			schoolId: wx.getStorageSync('userInfo').schoolId
 		}
-		request.requestWithToken("/api/school/getIndexInfo", "GET",sbzj,
-		(res)=>{
-				if(res.data.code===200){
-						this.setData({
-							prompt:res.data.data.prompt,
-							swiperData:res.data.data.carouselImages
-						});
-				}else{
+		request.requestWithToken("/api/school/getIndexInfo", "GET", sbzj,
+			(res) => {
+				if (res.data.code === 200) {
+					this.setData({
+						prompt: res.data.data.prompt,
+						swiperData: res.data.data.carouselImages
+					});
+				} else {
+					console.error('获取首页信息失败了')
 					console.log(res);
-				}	
-		},(res)=>{
-				console.log(res);
-		})
+				}
+			}, (res) => {
+				console.error(res);
+			});
+		this.loadData();
+	},
+	loadData() {
+		if (!this.data.canLoadMore) {
+			wx.showToast({
+				title: '没有更多投稿数据了哦！',
+				icon: 'none'
+			});
+			return;
+		}
 		const data = {
 			wallId: wx.getStorageSync('wall').id,
-			recordAfterTime: Math.floor(Date.now() / 1000), // 获取当前时间的时间戳
-			pageSize: 6
+			page: this.data.page,
+			limit: this.data.limit
 		};
-		console.log(wx.getStorageSync('wall').id)
-		request.requestWithToken("/api/confessionPost/readConfessionWall", "POST", data, (res) => {
+		request.requestWithToken("/api/confessionPost/readConfessionWall", "GET", data, (res) => {
 			if (res.data.code === 200) {
+				this.setData({
+					//判断是否可以
+					canLoadMore: res.data.data.length >= this.data.limit,
+					page: this.data.page + 1, // 更新页数
+				});
+				// console.log(this.data.canLoadMore);
 				const updatedConfession = res.data.data.map((item) => { //遍历源数据
 					const subCommentsExist = item.mainComments.map((mainComment) => { //拿到主评论去找子评论找有没有匹配的
 						const matchingSubComments = item.subComments.filter(subComment => subComment.parentCommentId === mainComment.id);
@@ -84,13 +90,16 @@ Page({
 						subCommentsExist,
 					};
 				});
+				// 将加载到的数据合并到原始数据
+				const allConfession = this.data.confession.concat(updatedConfession);
 				this.setData({
-					confession: updatedConfession,
+					confession: allConfession,
 				});
 				// console.log(this.data.confession);
 				wx.showToast({
 					title: '获取数据成功'
 				})
+				console.log('获取数据成功了ok')
 			} else {
 				wx.showToast({
 					title: '数据获取异常',
@@ -99,6 +108,9 @@ Page({
 				// console.log(res.data);
 			}
 		})
+	},
+	onReachBottom() {
+		this.loadData();
 	},
 	// 在目标页面的onShow生命周期函数中获取并显示提示信息
 	onShow: function () {
@@ -195,10 +207,6 @@ Page({
 			Notify({ type: 'primary', message: '请输入评论' });
 			return;
 		} else if (content.length > 50) {
-			// wx.showToast({
-			// 	title: '请输入50字以内的评论',
-			// 	icon: 'none'
-			// });
 			Notify({ type: 'primary', message: '请输入50字以内的评论' });
 			return;
 		}
@@ -210,9 +218,6 @@ Page({
 		// console.log(data);
 		request.requestWithToken('/api/comment/publishReply', 'POST', data, (res) => {
 			if (res.data.code === 200) {
-				// wx.showToast({
-				// 	title: '评论成功',
-				// });
 				Notify({ type: 'success', message: '评论成功' });
 				//构建评论对象 
 				var zj = {
@@ -228,7 +233,7 @@ Page({
 					confession,
 					[`confession[${outIndex}].submitMainComment`]: ''
 				});
-			} else if (res.data.code === 217||243) {
+			} else if (res.data.code === 217 || 243) {
 				wx.showToast({
 					title: res.data.message,
 					icon: 'none'
@@ -263,7 +268,7 @@ Page({
 	},
 	// 输入框发送的回调函数
 	onConfirm(event) {
-		var content=this.data.replyContent;
+		var content = this.data.replyContent;
 		if (content === undefined || content.trim() === "") {
 			Notify({ type: 'primary', message: '请输入评论' });
 			return;
@@ -323,7 +328,7 @@ Page({
 					mainIndex: -1,
 					replyIndex: -1,
 				});
-			} else if (res.data.code === 217||243) {
+			} else if (res.data.code === 217 || 243) {
 				wx.showToast({
 					title: res.data.message,
 					icon: 'none'
@@ -332,9 +337,6 @@ Page({
 					replyContent: ''
 				})
 			} else {
-				// wx.showToast({
-				// 	title: '请稍后重试',
-				// });
 				Notify({ type: 'danger', message: res.data.message });
 				this.setData({ //重构数据+收缩+初始化数据
 					showPopup: false,

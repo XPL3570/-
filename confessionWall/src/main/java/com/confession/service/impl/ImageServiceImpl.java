@@ -112,17 +112,25 @@ public class ImageServiceImpl implements ImageService {
                 fileExtension = "png";
             }
 
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMM");
+            //新的目录生产策略 todo，注意访问策略暂时不改，等测试完缓存再改，
+            String folderPath = UPLOAD_PATH + File.separator + dateFormat.format(new Date());
+            File folder = new File(folderPath);
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
+
             // 根据日期和随机数生成文件名，并加上文件扩展名
             String fileName = generateFileName("." + fileExtension);
 
             // 构建文件对象
-            File file = new File(UPLOAD_PATH, fileName);
+            File file = new File(folderPath, fileName);
             // 将字节数组写入文件
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 fos.write(imageBytes);
             }
             // 返回图片地址
-            return Result.ok(DOMAIN_NAME_ADDRESS + fileName);
+            return Result.ok(DOMAIN_NAME_ADDRESS   + folder.getName() + "/"+ fileName);
         } catch (IOException e) {
             e.printStackTrace();
             return Result.build(500, "图片上传失败");
@@ -130,7 +138,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     private String generateFileName(String fileExtension) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("ddHHmmss"); //日，时分秒
         String datePrefix = dateFormat.format(new Date());
         String randomSuffix = generateRandomSuffix(6); // 生成6位随机数或英文字母
         return datePrefix + randomSuffix + fileExtension;
