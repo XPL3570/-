@@ -50,4 +50,6 @@ public interface ConfessionpostMapper extends BaseMapper<Confessionpost> {
 
 
 
+
+
 }

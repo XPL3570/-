@@ -4,10 +4,11 @@ package com.confession.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-public class WallDTO {
+public class WallDTO implements Serializable {
 
     /**
      * 表白墙ID

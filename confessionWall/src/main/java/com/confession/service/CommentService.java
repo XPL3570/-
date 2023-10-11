@@ -6,6 +6,7 @@ import com.confession.dto.CommentDTO;
 import com.confession.pojo.Comment;
 import com.confession.request.PostCommentRequest;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -25,8 +26,6 @@ public interface CommentService extends IService<Comment> {
      * @return
      */
     Integer publishCommentReply(PostCommentRequest request,Integer userId);
-
-
 
 
     /**
@@ -49,4 +48,11 @@ public interface CommentService extends IService<Comment> {
      * 是否有敏感字
      */
     Boolean hasSensitiveWords(String text);
+
+
+    /**
+     * 查询该时间之后的评论回复数量
+     */
+    int numberUnreadCommentsByUsers(Integer userId, LocalDateTime dateTime);
+
 }

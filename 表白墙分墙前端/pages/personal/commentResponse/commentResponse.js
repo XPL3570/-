@@ -16,8 +16,10 @@ Page({
 		  icon:'none'
 		});
       return; // 如果不能继续加载更多数据，则直接返回
-    }
+		}
+		console.log(this.data.page);
     request.requestWithToken('/api/comment/repliesWithComments', 'GET', { page: this.data.page, limit: this.data.limit }, (res) => {
+			console.log(res.data);
      if(res.data.code===200){
 			const newData = res.data.data;
       const newList = this.data.list.concat(newData);

@@ -10,6 +10,13 @@
 		"miniprogram": {
 			"list": [
 				{
+					"name": "测试评论回复",
+					"pathName": "pages/personal/commentResponse/commentResponse",
+					"query": "",
+					"launchMode": "default",
+					"scene": null
+				},
+				{
 					"name": "",
 					"pathName": "pages/loveWall/loveWall",
 					"query": "",

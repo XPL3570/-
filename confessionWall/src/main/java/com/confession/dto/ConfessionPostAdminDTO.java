@@ -2,10 +2,12 @@ package com.confession.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-public class ConfessionPostAdminDTO {
+public class ConfessionPostAdminDTO implements Serializable {
 
     private Integer id; // ID
 

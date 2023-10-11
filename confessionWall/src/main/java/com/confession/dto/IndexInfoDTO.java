@@ -2,10 +2,11 @@ package com.confession.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
-public class IndexInfoDTO {
+public class IndexInfoDTO implements Serializable {
 
     //表白墙头像
 //    private String indexAvatarURL;

@@ -18,15 +18,20 @@ import com.confession.pojo.Comment;
 import com.confession.pojo.User;
 import com.confession.request.PostCommentRequest;
 import com.confession.service.CommentService;
+import com.confession.service.ConfessionPostService;
 import com.confession.service.UserService;
 import com.hankcs.algorithm.AhoCorasickDoubleArrayTrie;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -49,6 +54,10 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
     @Resource
     private UserService userService;
+
+    @Resource
+    @Lazy
+    private ConfessionPostService confessionPostService;
 
     @Resource
     private SensitiveTextFilter sensitiveTextFilter;
@@ -143,13 +152,20 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     }
 
     @Override
+    @Cacheable(value = "userComments",  key = "#userId + '_' + #pageTool.page + '_'")
     public List<CommentDTO> getRepliesToUserComments(Integer userId, PageTool pageTool) {
-        Page<Comment> page = new Page<>(pageTool.getPage(), pageTool.getLimit());
         LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.inSql(Comment::getParentCommentId, "SELECT Id FROM comment WHERE userId = " + userId)
-                .ge(Comment::getCommentTime, LocalDateTime.now().minusMonths(6))
-                .ne(Comment::getUserId, userId)
-                .orderByDesc(Comment::getCommentTime);
+        List<Integer> userPostId = confessionPostService.getUserPostId(userId);
+        Page<Comment> page = new Page<>(pageTool.getPage(), pageTool.getLimit());
+
+        queryWrapper.ne(Comment::getUserId, userId)//todo 这里为了测试注释了，才能看到本人的评论
+                .gt(Comment::getCommentTime, LocalDateTime.now().minusMonths(6))
+                .inSql(Comment::getParentCommentId, "SELECT Id FROM comment WHERE userId = " + userId)
+                        .or()
+                        .orderByDesc(Comment::getCommentTime);
+        if (userPostId.size()>0){
+            queryWrapper.in(Comment::getConfessionPostReviewId,userPostId);
+        }
         List<Comment> list = commentMapper.selectPage(page, queryWrapper).getRecords();
         List<CommentDTO> comments = new ArrayList<>();
         for (Comment comment : list) {
@@ -160,7 +176,22 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             commentDTO.setAvatarURL(userDTO.getAvatarURL());
             comments.add(commentDTO);
         }
+        System.out.println(comments);
         return comments;
+    }
+
+    @Override
+    public int numberUnreadCommentsByUsers(Integer userId, LocalDateTime dateTime) {
+        List<Integer> userPostId = confessionPostService.getUserPostId(userId);
+        LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
+        if (userPostId.size()>0){
+            queryWrapper.in(Comment::getConfessionPostReviewId,userPostId);
+        }
+        queryWrapper.inSql(Comment::getParentCommentId, "SELECT Id FROM comment WHERE userId = " + userId)
+                .gt(Comment::getCommentTime, dateTime)
+                .ne(Comment::getUserId, userId);
+        Integer count = commentMapper.selectCount(queryWrapper);
+        return count;
     }
 
     @Override

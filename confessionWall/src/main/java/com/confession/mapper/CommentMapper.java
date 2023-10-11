@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * <p>
@@ -25,5 +26,7 @@ public interface CommentMapper extends BaseMapper<Comment> {
      * @return
      */
     int getCommentCountByUserIdAndDate(@Param("userId") Integer userId, @Param("date") LocalDate date);
+
+    List<Integer> getUserHalfYearId(@Param("userId") Integer userId);
 
 }

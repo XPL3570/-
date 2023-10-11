@@ -12,6 +12,8 @@ import com.confession.mapper.LotteryRecordMapper;
 import com.confession.pojo.Lottery;
 import com.confession.pojo.LotteryRecord;
 import com.confession.service.LotteryRecordService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +40,7 @@ public class LotteryRecordServiceImpl extends ServiceImpl<LotteryRecordMapper, L
 
     @Override
     @Transactional
+    @CacheEvict(value = "obtainedNote",key="#userId")
     public Lottery extractTape(Integer schoolId, Integer gender, Integer userId) {
         //校验拿到的纸条是否超过限制
         checkStrategy(userId);
@@ -56,6 +59,7 @@ public class LotteryRecordServiceImpl extends ServiceImpl<LotteryRecordMapper, L
     }
 
     @Override
+    @Cacheable(value = "obtainedNote", key = "#userId")
     public List<Lottery> obtainedNote(Integer userId) {
         LambdaQueryWrapper<LotteryRecord> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(LotteryRecord::getUserId, userId)

@@ -2,13 +2,15 @@ package com.confession.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * 学校审核dto
  */
 @Data
-public class SchoolApplicationDTO {
+public class SchoolApplicationDTO implements Serializable {
 
     //创建者用户名
     private String creatorUsername;

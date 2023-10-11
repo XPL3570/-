@@ -10,6 +10,8 @@ import com.confession.mapper.LotteryMapper;
 import com.confession.pojo.Lottery;
 import com.confession.request.LotteryRequest;
 import com.confession.service.LotteryService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -36,8 +38,8 @@ public class LotteryServiceImpl extends ServiceImpl<LotteryMapper, Lottery> impl
     private WallConfig wallConfig;
 
     @Override
+    @CacheEvict(value = "userInsertedNote",key="#userId") //这里可以优化成添加 这么写吧
     public boolean insert(LotteryRequest request, Integer userId) {
-
         // 检查策略
         checkStrategy(userId);
 
@@ -54,6 +56,7 @@ public class LotteryServiceImpl extends ServiceImpl<LotteryMapper, Lottery> impl
     }
 
     @Override
+    @Cacheable(value = "userInsertedNote", key = "#userId")
     public List<Lottery> postedNote(Integer userId) {
         LambdaQueryWrapper<Lottery> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Lottery::getUserId,userId);
@@ -61,7 +64,6 @@ public class LotteryServiceImpl extends ServiceImpl<LotteryMapper, Lottery> impl
         Page<Lottery> page = new Page<>(1, 20);
         List<Lottery> records = lotteryMapper.selectPage(page, wrapper).getRecords();
         return records;
-
 
     }
 

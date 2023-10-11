@@ -8,9 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
-import com.confession.comm.Result;
 import com.confession.comm.ResultCodeEnum;
-import com.confession.config.JwtConfig;
 import com.confession.config.WechatConfig;
 import com.confession.dto.UserDTO;
 import com.confession.dto.UserManageDTO;
@@ -145,8 +143,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public void statusMod(UserStatusModRequest userStatusModRequest) {
-        if (userStatusModRequest.getUserId()==null){//多加一道校验，
-            throw new WallException("修改用户状态失败",201);
+        if (userStatusModRequest.getUserId() == null) {//多加一道校验，
+            throw new WallException("修改用户状态失败", 201);
         }
         LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(User::getId, userStatusModRequest.getUserId())
@@ -156,8 +154,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public void userMod(UserNameModRequest nameModRequest) {
-        if (nameModRequest.getUserId()==null){//多加一道校验，
-            throw new WallException("修改用户状态失败",201);
+        if (nameModRequest.getUserId() == null) {//多加一道校验，
+            throw new WallException("修改用户状态失败", 201);
         }
         LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(User::getId, nameModRequest.getUserId())
@@ -175,10 +173,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         // 检查时间间隔
         if (!checkTimeInterval(user.getUpdateTime())) {
-            throw new WallException("修改头像或名字的时间间隔不足三天",400);
+            throw new WallException("修改头像或名字的时间间隔不足三天", 400);
         }
 
         // 更新属性和更新时间
+        
         if ("avatar".equals(attributeName)) {
             //这里切换头像就把之前的头像删除了
             DeleteImageRequest zj = new DeleteImageRequest();
@@ -186,6 +185,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             imageService.deleteImage(zj);
             user.setAvatarURL(attributeValue);
         } else if ("name".equals(attributeName)) {
+            LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(User::getUsername, attributeName);
+            int count = this.count(queryWrapper);
+            if (count > 1) {
+                throw new WallException("该名字已经存在", 400);
+            }
             user.setUsername(attributeValue);
         }
         user.setUpdateTime(LocalDateTime.now()); // 使用java.time.LocalDateTime类获取当前时间
@@ -228,21 +233,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             }
         }
         if (status != null) {
-            if (status==0){
+            if (status == 0) {
                 // 如果提供了用户状态，那么添加到查询条件中
                 queryWrapper.eq(User::getStatus, 0);
-            }else {
-                queryWrapper.ne(User::getStatus,0);
+            } else {
+                queryWrapper.ne(User::getStatus, 0);
             }
 
         }
-        if (StringUtils.isNotBlank(userName)){
-            queryWrapper.like(User::getUsername,userName);
+        if (StringUtils.isNotBlank(userName)) {
+            queryWrapper.like(User::getUsername, userName);
         }
-        List<User> list = this.page(page,queryWrapper).getRecords();
+        List<User> list = this.page(page, queryWrapper).getRecords();
 
         List<UserManageDTO> zjS = list.stream().map(this::convertToDTO).collect(Collectors.toList());
-        return new PageResult(zjS,page.getTotal(),list.size());
+        return new PageResult(zjS, page.getTotal(), list.size());
     }
 
 

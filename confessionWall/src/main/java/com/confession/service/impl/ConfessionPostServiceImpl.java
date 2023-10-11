@@ -27,6 +27,7 @@ import com.confession.service.CommentService;
 import com.confession.service.ConfessionPostService;
 import com.confession.service.UserService;
 import com.hankcs.algorithm.AhoCorasickDoubleArrayTrie;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
@@ -139,11 +140,13 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
 
 
     @Override
+    @Cacheable(value = "userPublishedPosts", key = "#userId + '_' + #pageTool.page + '_'")
     public List<ConfessionPostDTO> getPublishedPosts(Integer userId, PageTool pageTool) {
         return getPostsByStatus(pageTool, userId, 1);
     }
 
     @Override
+    @Cacheable(value = "userPendingPosts", key = "#userId + '_' + #pageTool.page + '_'")
     public List<ConfessionPostDTO> getPendingPosts(Integer userId, PageTool pageTool) {
         return getPostsByStatus(pageTool, userId, 0);
     }
@@ -373,6 +376,8 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         return status;
     }
 
+
+
     private void saveRecordsCache(Integer wallId,Integer recordId){
         Confessionpost byId = confessionpostMapper.selectById(recordId);
         redisTemplate.opsForZSet().add(WALL_SUBMISSION_RECORD + wallId,
@@ -499,5 +504,19 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         dto.setMainComments(commentService.viewRecordsOnId(post.getId(), true));
         dto.setSubComments(commentService.viewRecordsOnId(post.getId(), false));
         return dto;
+    }
+
+    @Override
+    @Cacheable(value = "userPostsId", key = "#userId")
+    public List<Integer> getUserPostId(Integer userId) {
+        LambdaQueryWrapper<Confessionpost> wrapper = new LambdaQueryWrapper<>();
+        wrapper.select(Confessionpost::getId); // 只查询id字段
+        wrapper.eq(Confessionpost::getUserId, userId);
+        wrapper.eq(Confessionpost::getIsAdminPost,false);
+        wrapper.orderByDesc(Confessionpost::getId); // 添加倒序排序条件
+        wrapper.last("LIMIT 44"); // 限制最多返回44条记录
+        return confessionpostMapper.selectList(wrapper).stream()
+                .map(Confessionpost::getId)
+                .collect(Collectors.toList());
     }
 }

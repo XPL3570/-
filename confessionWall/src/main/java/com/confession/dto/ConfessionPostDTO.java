@@ -4,11 +4,12 @@ package com.confession.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class ConfessionPostDTO {
+public class ConfessionPostDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Integer id;

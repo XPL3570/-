@@ -22,4 +22,12 @@
         SELECT COUNT(*) FROM comment WHERE userId = #{userId} AND DATE(CommentTime) = CURDATE()
     </select>
 
+    <select id="getUserHalfYearId" resultType="java.lang.Integer"  parameterType="java.lang.Integer">
+        SELECT Id
+        FROM comment
+        WHERE UserId = #{userId}
+          AND CommentTime >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+    </select>
+
+
 </mapper>

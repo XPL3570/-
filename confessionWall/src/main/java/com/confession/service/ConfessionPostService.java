@@ -95,4 +95,9 @@ public interface ConfessionPostService extends IService<Confessionpost> {
      * @return 投稿的状态，是否直接发布
      */
     int userSubmitConfessionWall(ConfessionPostRequest confessionRequest);
+
+    /**
+     * 查询用户发布的投稿id集合 时间限定半年内，最多44条
+     */
+    List<Integer> getUserPostId(Integer userId);
 }
