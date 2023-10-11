@@ -62,7 +62,7 @@ public class CommentController {
      * 查询用户评论回复 -半年内,投稿发布的回复也要
      */
     @GetMapping("repliesWithComments")
-    public Result repliesWithComments(@ModelAttribute PageTool pageTool) {
+    public Result repliesWithComments(@Validated  @ModelAttribute PageTool pageTool) {
         Integer userId = JwtInterceptor.getUser().getId();
         List<CommentDTO> comments = commentService.getRepliesToUserComments(userId, pageTool);
         return Result.ok(comments);

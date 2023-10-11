@@ -1,3 +1,7 @@
+.main{
+	margin: 24rpx;
+}
+
 .zj{
 	padding: 15rpx;
 }

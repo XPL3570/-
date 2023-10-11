@@ -29,6 +29,7 @@ public class MsgConfigurationController {
      * @return
      */
     @GetMapping("getGlobalPrompt")
+
     public Result getGlobalPrompt(){
         return Result.ok(msgConfigurationService.getGlobalPrompt());
     }

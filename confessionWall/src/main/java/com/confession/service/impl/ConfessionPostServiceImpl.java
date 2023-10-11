@@ -507,7 +507,7 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
     }
 
     @Override
-    @Cacheable(value = "userPostsId", key = "#userId")
+    @Cacheable(value = "userPostsIds", key = "#userId")
     public List<Integer> getUserPostId(Integer userId) {
         LambdaQueryWrapper<Confessionpost> wrapper = new LambdaQueryWrapper<>();
         wrapper.select(Confessionpost::getId); // 只查询id字段

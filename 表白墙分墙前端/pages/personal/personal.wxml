@@ -60,6 +60,9 @@
 		<view class='panel-start item-center'>
 			<image src='/image/消息.png' class='icon-65r'></image>
 			<text class='fo-28'>评论回复</text>
+			<view  wx:if="{{ numberUnreadComments && numberUnreadComments>0 }}" style="margin-left: 24rpx;">
+			<van-tag type="primary" wx:if="{{ showCommentUnread }}" mark plain size="medium" closeable bind:close="onCloseUnread" data-ignore="true">{{numberUnreadComments}}条新的评论回复</van-tag>
+			</view>
 		</view>
 		<view>
 			<image src='/image/right.png' class='icon-25'></image>

@@ -12,7 +12,7 @@ public class LocalDateTimeSerializer extends JsonSerializer<LocalDateTime> {
     @Override
     public void serialize(LocalDateTime value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
         // 自定义序列化逻辑
-        String formattedDateTime = value.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        String formattedDateTime = value.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         gen.writeString(formattedDateTime);
     }
 }

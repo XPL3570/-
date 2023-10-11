@@ -1,11 +1,12 @@
-
+var request = require('../../utils/request');
 Page({
-
 	data: {
 		isAdmin:false,
+		showCommentUnread:true, //未读评论显示
 		userName: '',
 		avatarUrl: '',
 		showShare: false,
+		numberUnreadComments:0, //未读评论数量
 		options: [
 			{ name: '微信', icon: 'wechat', openType: 'share' },
 			{ name: 'QQ', icon: 'qq' },
@@ -17,7 +18,38 @@ Page({
 	onLoad(){
 		this.setData({
 			isAdmin	:wx.getStorageSync('isAdmin')
-		})
+		});
+		 // 从本地缓存中获取上次更新的时间戳
+		 var lastUpdateTime;
+		 var localLastUpdateTime=wx.getStorageSync('lastUpdateTime');
+		 if (localLastUpdateTime !== '' &&localLastUpdateTime!==null && localLastUpdateTime!=undefined) {
+				lastUpdateTime=localLastUpdateTime;
+				console.log('自定义')
+		 }else{
+			   // 获取当前时间
+				 var currentTime = new Date();
+				 // 计算一个月前的时间
+				 var oneMonthAgo = new Date(currentTime.getTime() - 30 * 24 * 60 * 60 * 1000);
+				 // 获取一个月前的时间戳（单位：秒）
+				 lastUpdateTime = Math.floor(oneMonthAgo.getTime());
+		 }
+		 console.log({timestamp: parseInt(lastUpdateTime, 10)})
+		 request.requestWithToken('/api/comment/numberUnreadComments','GET',{timestamp: parseInt(lastUpdateTime, 10)},
+		 (res)=>{
+			 console.log(res.data);
+				if(res.data.code===200){
+					this.setData({
+						numberUnreadComments:res.data.data
+					});
+					wx.setStorageSync('lastUpdateTime',new Date().getTime());
+				}else{
+					console.error('获取用户未读评论数失败',res);
+				}
+		 },(res)=>{
+			 console.error(res);
+		 });
+		 
+
 	},
 	onShow() {
 		const userInfo = wx.getStorageSync('userInfo');
@@ -39,9 +71,16 @@ Page({
 			url: './administratorReview/administratorReview',
 		})
 	},
-	CommentResponseView() {
+	CommentResponseView(event) {
+		  // 判断是否执行事件逻辑
+			if (event.target.dataset.ignore) {
+				return;
+			}
 		wx.navigateTo({
 			url: './commentResponse/commentResponse',
+		})
+		this.setData({
+			numberUnreadComments:0
 		})
 	},
 	LoveWallView() {
@@ -64,7 +103,12 @@ Page({
 			url: './submitRecord/submitRecord',
 		})
 	},
-
+	onCloseUnread(e){
+		this.setData({
+			showCommentUnread: false,
+			numberUnreadComments:0
+		});
+	},
 	shareFriends() {
 		this.setData({ showShare: true });
 	},

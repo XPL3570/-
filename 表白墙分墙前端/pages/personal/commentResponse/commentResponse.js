@@ -12,14 +12,14 @@ Page({
   loadData() {
     if (!this.data.canLoadMore) {
 		wx.showToast({
-		  title: '没有更多数据了哦！',
+		  title: '没有更多评论回复了哦！',
 		  icon:'none'
 		});
       return; // 如果不能继续加载更多数据，则直接返回
 		}
-		console.log(this.data.page);
+		// console.log(this.data.page);
     request.requestWithToken('/api/comment/repliesWithComments', 'GET', { page: this.data.page, limit: this.data.limit }, (res) => {
-			console.log(res.data);
+			// console.log(res.data);
      if(res.data.code===200){
 			const newData = res.data.data;
       const newList = this.data.list.concat(newData);

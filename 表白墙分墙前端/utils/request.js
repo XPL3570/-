@@ -2,8 +2,6 @@ function requestWithToken(url, method, data, successCallback, failCallback) {
 	const globalData = getApp().globalData;
 	var apiUrl = globalData.apiUrl;
 	const token = wx.getStorageSync('token');
-	// console.log('token'+token);
-	// 发送请求
 	wx.request({
 	  url: apiUrl + url,
 	  method: method,
@@ -21,7 +19,9 @@ function requestWithToken(url, method, data, successCallback, failCallback) {
 	  },
 	  fail: failCallback
 	});
-  }
+	}
+
+
   function LoginorRegister(){
 	wx.login({
 		success: res => {	

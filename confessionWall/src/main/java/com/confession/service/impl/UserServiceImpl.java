@@ -177,7 +177,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
 
         // 更新属性和更新时间
-        
+
         if ("avatar".equals(attributeName)) {
             //这里切换头像就把之前的头像删除了
             DeleteImageRequest zj = new DeleteImageRequest();

@@ -44,7 +44,7 @@ public class ConfessionPostController {
      * 查看学校的投稿内容   这里要不要做一个查询表白墙表状态是否是可用的状态，不查询了，后面再说
      */
     @GetMapping("readConfessionWall")
-    public Result readConfessionWall(@RequestParam Integer wallId, @ModelAttribute PageTool pageTool) {
+    public Result readConfessionWall(@RequestParam Integer wallId, @Validated @ModelAttribute PageTool pageTool) {
         //如果每页记录数太大了，直接返回错误
         if (pageTool.getLimit() > 19) {
             return Result.fail();
@@ -68,7 +68,7 @@ public class ConfessionPostController {
      * 查看用户审核过的投稿记录
      */
     @GetMapping("/published")
-    public Result<List<ConfessionPostDTO>> getPublishedPosts(@ModelAttribute PageTool pageTool) {
+    public Result<List<ConfessionPostDTO>> getPublishedPosts(@Validated @ModelAttribute PageTool pageTool) {
         Integer userId = JwtInterceptor.getUser().getId(); // 从 Thread 中获取用户ID
         List<ConfessionPostDTO> posts = confessionPostService.getPublishedPosts(userId, pageTool);
         return Result.ok(posts);
@@ -78,7 +78,7 @@ public class ConfessionPostController {
      * 查看用户正在审核的投稿记录
      */
     @GetMapping("/pending")
-    public Result<List<ConfessionPostDTO>> getPendingPosts(@ModelAttribute PageTool pageTool) {
+    public Result<List<ConfessionPostDTO>> getPendingPosts(@Validated @ModelAttribute PageTool pageTool) {
         Integer userId = JwtInterceptor.getUser().getId(); // 从 Thread 中获取用户ID
         List<ConfessionPostDTO> posts = confessionPostService.getPendingPosts(userId, pageTool);
         return Result.ok(posts);
@@ -88,7 +88,7 @@ public class ConfessionPostController {
      * 查询表白墙下要审核的记录
      */
     @GetMapping("userAdmin/pending")
-    public Result getPosts(@RequestParam Integer wallId, @ModelAttribute PageTool pageTool) {
+    public Result getPosts(@RequestParam Integer wallId, @Validated @ModelAttribute PageTool pageTool) {
         Integer id = JwtInterceptor.getUser().getId();
 
         boolean admin = adminService.isAdmin(id, wallId);
@@ -123,7 +123,7 @@ public class ConfessionPostController {
      * @return
      */
     @GetMapping("admin/userList")
-    public Result userList(@ModelAttribute PageTool pageTool,
+    public Result userList( @ModelAttribute PageTool pageTool,
                            @RequestParam(required = false) String fuzzyQueryContent,
                            @RequestParam(required = false) String wallName,
                            @RequestParam(required = false) String userName,

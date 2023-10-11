@@ -178,7 +178,7 @@ public class UserController {
     }
 
     @GetMapping("admin/userList")
-    public Result userList(@ModelAttribute PageTool pageTool,
+    public Result userList(@Validated @ModelAttribute PageTool pageTool,
                            @RequestParam(required = false) String schoolName,
                            @RequestParam(required = false) String userName,
                            @RequestParam(required = false) Integer status) {

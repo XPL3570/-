@@ -14,6 +14,7 @@ import com.confession.pojo.School;
 import com.confession.request.RegistryWhiteWallRequest;
 import com.confession.service.ConfessionwallService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -40,6 +41,8 @@ public class ConfessionwallServiceImpl extends ServiceImpl<ConfessionwallMapper,
     @Resource
     private SchoolMapper schoolMapper;
 
+    @Override
+    @Cacheable(value = "wallUnderSchool", key = "#schoolId")
     public Confessionwall selectSchoolInWallOne(Integer schoolId) {
         LambdaQueryWrapper<Confessionwall> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Confessionwall::getSchoolId,schoolId);

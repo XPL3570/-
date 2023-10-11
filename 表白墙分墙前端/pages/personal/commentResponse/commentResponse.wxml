@@ -1,4 +1,5 @@
-<view wx:if="{{list.length > 0}}">
+<view class="main">
+	<view wx:if="{{list.length > 0}}">
   <view wx:for="{{list}}" wx:key="id" class="zj">
     <view class="comment-item">
       <image class="avatar" src="{{item.avatarURL}}"></image>
@@ -15,4 +16,5 @@
 </view>
 <view wx:else>
   <van-divider contentPosition="center">暂无评论回复</van-divider>
+</view>
 </view>

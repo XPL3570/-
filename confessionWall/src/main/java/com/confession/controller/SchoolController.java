@@ -61,7 +61,7 @@ public class SchoolController {
      * 超级管理员查看所有学校的接口  如何做是不是超级管理员的校验？拦截器里面
      */
     @GetMapping("admin/viewSchool")
-    public Result viewSchool(@ModelAttribute PageTool pageTool) {
+    public Result viewSchool(@Validated @ModelAttribute PageTool pageTool) {
         PageResult list = schoolService.viewSchool(pageTool);
 
         return Result.ok(list);
@@ -72,7 +72,7 @@ public class SchoolController {
      * 超级管理员查看未通过审核的接口
      */
     @GetMapping("admin/viewNoReview")
-    public Result viewNoReview(@ModelAttribute PageTool pageTool) {
+    public Result viewNoReview(@Validated @ModelAttribute PageTool pageTool) {
         PageResult list = schoolService.viewNoReview(pageTool);
         return Result.ok(list);
     }
