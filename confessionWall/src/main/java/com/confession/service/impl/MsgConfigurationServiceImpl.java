@@ -7,6 +7,7 @@ import com.confession.mapper.MsgConfigurationMapper;
 import com.confession.request.MsgGlobalPromptRequest;
 import com.confession.service.MsgConfigurationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +26,7 @@ public class MsgConfigurationServiceImpl extends ServiceImpl<MsgConfigurationMap
     @Resource
     private MsgConfigurationMapper mapper;
     @Override
-    @Cacheable(value = "globalPrompt")
+    @Cacheable(value = "globalPrompt#3#d")
     public MsgConfiguration getGlobalPrompt(){
         QueryWrapper<MsgConfiguration> wrapper = new QueryWrapper<>();
         wrapper.last("LIMIT 1"); // 只查询一条数据
@@ -33,6 +34,7 @@ public class MsgConfigurationServiceImpl extends ServiceImpl<MsgConfigurationMap
     }
 
     @Override
+    @CacheEvict(value = "globalPrompt")
     public void setGlobalPrompts(MsgGlobalPromptRequest request) {
         QueryWrapper<MsgConfiguration> wrapper = new QueryWrapper<>();
         wrapper.last("LIMIT 1"); // 只查询一条数据

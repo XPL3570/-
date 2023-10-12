@@ -45,7 +45,7 @@
 	<!-- 展示主评论 -->
 	<view wx:for="{{item.mainComments}}" wx:key="index" wx:for-index="zjIndex">
 		<view>
-			<van-cell value="{{item.commentTime}}" is-link="{{confession[outIndex].subCommentsExist[zjIndex]===true}}" arrow-direction="{{item.commentContentVisible ? 'up' : 'down'}}" bind:tap="expandComments" data-out-index="{{outIndex}}" data-zj-index="{{zjIndex}}">
+			<van-cell value="{{item.commentTime}}"  is-link="{{confession[outIndex].subCommentsExist[zjIndex]===true}}" arrow-direction="{{item.commentContentVisible ? 'up' : 'down'}}" bind:tap="expandComments" data-out-index="{{outIndex}}" data-zj-index="{{zjIndex}}">
 
 				<view slot="title" class="comment-user">
 					<image class="comment-avatar" src="{{item.avatarURL}}"></image>

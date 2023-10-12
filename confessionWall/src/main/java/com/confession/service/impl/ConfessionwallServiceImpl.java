@@ -42,7 +42,7 @@ public class ConfessionwallServiceImpl extends ServiceImpl<ConfessionwallMapper,
     private SchoolMapper schoolMapper;
 
     @Override
-    @Cacheable(value = "wallUnderSchool", key = "#schoolId")
+    @Cacheable(value = "wallUnderSchool#12#h", key = "#schoolId")
     public Confessionwall selectSchoolInWallOne(Integer schoolId) {
         LambdaQueryWrapper<Confessionwall> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Confessionwall::getSchoolId,schoolId);

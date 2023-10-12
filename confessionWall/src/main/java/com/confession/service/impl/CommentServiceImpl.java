@@ -152,7 +152,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     }
 
     @Override
-    @Cacheable(value = "userComments",  key = "#userId + '_' + #pageTool.page + '_'")
+    @Cacheable(value = "userComments#20#m",  key = "#userId + '_' + #pageTool.page + '_'")
     public List<CommentDTO> getRepliesToUserComments(Integer userId, PageTool pageTool) {
         LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
         List<Integer> userPostId = confessionPostService.getUserPostId(userId);

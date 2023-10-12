@@ -56,7 +56,7 @@ public class LotteryServiceImpl extends ServiceImpl<LotteryMapper, Lottery> impl
     }
 
     @Override
-    @Cacheable(value = "userInsertedNote", key = "#userId")
+    @Cacheable(value = "userInsertedNote#20#m", key = "#userId")
     public List<Lottery> postedNote(Integer userId) {
         LambdaQueryWrapper<Lottery> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Lottery::getUserId,userId);

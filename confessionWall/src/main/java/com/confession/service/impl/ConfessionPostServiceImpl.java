@@ -140,13 +140,13 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
 
 
     @Override
-    @Cacheable(value = "userPublishedPosts", key = "#userId + '_' + #pageTool.page + '_'")
+    @Cacheable(value = "userPublishedPosts#20#m", key = "#userId + '_' + #pageTool.page + '_'")
     public List<ConfessionPostDTO> getPublishedPosts(Integer userId, PageTool pageTool) {
         return getPostsByStatus(pageTool, userId, 1);
     }
 
     @Override
-    @Cacheable(value = "userPendingPosts", key = "#userId + '_' + #pageTool.page + '_'")
+    @Cacheable(value = "userPendingPosts#20#m", key = "#userId + '_' + #pageTool.page + '_'")
     public List<ConfessionPostDTO> getPendingPosts(Integer userId, PageTool pageTool) {
         return getPostsByStatus(pageTool, userId, 0);
     }
@@ -507,7 +507,7 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
     }
 
     @Override
-    @Cacheable(value = "userPostsIds", key = "#userId")
+    @Cacheable(value = "userPostsIds#20#m", key = "#userId")
     public List<Integer> getUserPostId(Integer userId) {
         LambdaQueryWrapper<Confessionpost> wrapper = new LambdaQueryWrapper<>();
         wrapper.select(Confessionpost::getId); // 只查询id字段

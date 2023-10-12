@@ -7,6 +7,8 @@ import com.confession.mapper.GlobalCarouselImageMapper;
 import com.confession.pojo.GlobalCarouselImage;
 import com.confession.request.GlobalCarouselSetRequest;
 import com.confession.service.GlobalCarouselImageService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -36,17 +38,20 @@ public class GlobalcarouselImageServiceImpl extends ServiceImpl<GlobalCarouselIm
     }
 
     @Override
+    @Cacheable(value = "globalImage#3#d")
     public List<GlobalCarouselImage> getAllGlobalCarouselImages() {
         List<GlobalCarouselImage> list = mapper.selectList(null);
         return list;
     }
 
     @Override
+    @CacheEvict(value = "globalImage")
     public void deleteCarouselImage(Integer id) {
         mapper.deleteById(id);
     }
 
     @Override
+    @CacheEvict(value = "globalImage")
     public void addCarouselImage(String addr) {
         GlobalCarouselImage carouselImage = new GlobalCarouselImage().setCarouselImage(addr);
         mapper.insert(carouselImage);

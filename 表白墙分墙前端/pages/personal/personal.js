@@ -33,7 +33,7 @@ Page({
 				 // 获取一个月前的时间戳（单位：秒）
 				 lastUpdateTime = Math.floor(oneMonthAgo.getTime());
 		 }
-		 console.log({timestamp: parseInt(lastUpdateTime, 10)})
+		//  console.log({timestamp: parseInt(lastUpdateTime, 10)})
 		 request.requestWithToken('/api/comment/numberUnreadComments','GET',{timestamp: parseInt(lastUpdateTime, 10)},
 		 (res)=>{
 			 console.log(res.data);
