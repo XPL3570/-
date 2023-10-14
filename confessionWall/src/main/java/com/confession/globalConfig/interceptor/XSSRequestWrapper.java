@@ -49,7 +49,7 @@ public class XSSRequestWrapper extends HttpServletRequestWrapper {
         if (value != null) {
             value = Jsoup.clean(value, Whitelist.basic());
         }
-        System.out.println(value);
+//        System.out.println(value);
         return value;
     }
 

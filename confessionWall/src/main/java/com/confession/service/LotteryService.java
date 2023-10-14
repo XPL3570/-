@@ -11,7 +11,7 @@ import java.util.List;
  *  服务类
  * </p>
  *
- * @author 作者
+ * @author 作者 xpl
  * @since 2023年09月16日
  */
 public interface LotteryService extends IService<Lottery> {

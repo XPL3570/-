@@ -12,6 +12,7 @@ import com.confession.request.ConfessionPostRequest;
 import com.confession.request.ParameterIntTypeRequest;
 import com.confession.service.AdminService;
 import com.confession.service.ConfessionPostService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,9 +27,10 @@ import static com.confession.comm.ResultCodeEnum.LOGIN_ACL;
  * 前端控制器
  * </p>
  *
- * @author 作者
+ * @author 作者 xpl
  * @since 2023年08月20日
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/confessionPost")
 public class ConfessionPostController {

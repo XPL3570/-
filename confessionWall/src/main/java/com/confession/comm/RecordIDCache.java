@@ -8,8 +8,5 @@ import lombok.Data;
 @Data
 public class RecordIDCache {
     Integer id;
-
     Long timeStamp;
-
-
 }

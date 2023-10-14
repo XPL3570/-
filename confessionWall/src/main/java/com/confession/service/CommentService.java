@@ -14,7 +14,7 @@ import java.util.List;
  *  服务类
  * </p>
  *
- * @author 作者
+ * @author 作者 xpl
  * @since 2023年08月20日
  */
 public interface CommentService extends IService<Comment> {

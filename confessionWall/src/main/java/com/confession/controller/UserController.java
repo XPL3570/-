@@ -33,7 +33,7 @@ import static com.confession.comm.ResultCodeEnum.SCHOOL_NOT_SETTLED;
 
 
 /**
- * @author 作者
+ * @author 作者 xpl
  * @since 2023年08月20日
  */
 @RestController

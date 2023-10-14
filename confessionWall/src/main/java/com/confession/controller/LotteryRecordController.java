@@ -25,7 +25,7 @@ public class LotteryRecordController {
 
 
     /**
-     * 拿到纸条 随机算法，可能会查询多次，注意接口调用次数  调用了记录表，这里读取之后还要记录一个表
+     * 拿到纸条 随机算法，可能会查询多次，注意接口调用次数  调用了记录表，这里读取之后另外记录一个表
      */
     @GetMapping("extractTape")
     public Result extractTape(@RequestParam Integer schoolId,

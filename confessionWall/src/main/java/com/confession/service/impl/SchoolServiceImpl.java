@@ -1,5 +1,6 @@
 package com.confession.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -20,18 +21,23 @@ import com.confession.request.SchoolModifyRequest;
 import com.confession.service.GlobalCarouselImageService;
 import com.confession.service.SchoolService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static com.confession.comm.RedisConstant.SCHOOL_INDEX_INFO;
 import static com.confession.comm.ResultCodeEnum.SCHOOL_REGISTERED;
 
 /**
@@ -39,7 +45,7 @@ import static com.confession.comm.ResultCodeEnum.SCHOOL_REGISTERED;
  *  服务实现类
  * </p>
  *
- * @author 作者
+ * @author 作者 xpl
  * @since 2023年08月20日
  */
 @Service
@@ -67,6 +73,9 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
     @Resource
     private GlobalCarouselImageService globalCarouselImageService;
 
+    @Resource
+    private RedisTemplate redisTemplate;
+
 
 
     /**
@@ -86,8 +95,13 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
     @Override
     public String getPromptMessage(Integer schoolId) {
         //这里那个消息表只能存放一条记录，就有问题
-        MsgConfiguration msgConfiguration = msgConfigurationMapper.selectOne(null);
-        if (msgConfiguration.getMainSwitch()) {
+        MsgConfiguration msgConfiguration=null;
+        try {
+            msgConfiguration = msgConfigurationMapper.selectOne(null);
+        }catch (Exception e){
+            System.out.println("获取全局提示语异常，可能数据过多");
+        }
+        if (msgConfiguration!=null && msgConfiguration.getMainSwitch()) {
             return msgConfiguration.getMessage();
         }
         School school = schoolMapper.selectById(schoolId);
@@ -290,17 +304,13 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
 
     @Override
     public IndexInfoDTO getIndexInfo(Integer schoolId) {
-//        LambdaQueryWrapper<School> wrapper = new LambdaQueryWrapper<>();
-//        wrapper.eq(School::getId, schoolId);
-//        School school = this.getOne(wrapper);
-//        List<String> imageList = new ArrayList<>();
-//        for (GlobalCarouselImage globalCarouselImage : globalCarouselImageService.getGlobalCarouselImages()) {
-//            imageList.add(globalCarouselImage.getCarouselImage());
-//        }
-//        for (String image : Arrays.asList(school.getCarouselImages().split(";"))) {
-//            imageList.add(image);
-//        }
-
+        // 先尝试从缓存中获取数据
+        String cacheKey = SCHOOL_INDEX_INFO + schoolId;
+        JSONObject jsonObject = (JSONObject) redisTemplate.opsForValue().get(cacheKey);
+        if (jsonObject != null) {
+            return jsonObject.toJavaObject(IndexInfoDTO.class);
+        }
+        // 从数据库或其他数据源获取数据
         School school = this.getOne(Wrappers.lambdaQuery(School.class).eq(School::getId, schoolId));
         List<String> imageList = globalCarouselImageService.getGlobalCarouselImages().stream()
                 .map(GlobalCarouselImage::getCarouselImage)
@@ -311,11 +321,16 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
         dto.setCarouselImages(imageList);
         String promptMessage = this.getPromptMessage(schoolId);
         dto.setPrompt(promptMessage);
+
+        // 将数据存入缓存并设置过期时间
+        redisTemplate.opsForValue().set(cacheKey, dto, 2, TimeUnit.DAYS);
+
         return dto;
     }
 
     @Override
     public void modifySchool(SchoolModifyRequest request) {
+        redisTemplate.delete(SCHOOL_INDEX_INFO + request.getId());
         // 根据学校ID和请求参数进行学校修改的逻辑处理
         School school = new School();
         school.setId(request.getId());
@@ -331,6 +346,16 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
         if (update<1){
             throw new WallException("修改失败",201);
         }
+    }
+
+    @Override
+    public void deleteAllSchoolHomepageCaches() {
+        redisTemplate.executePipelined((RedisCallback<Object>) connection -> {
+            for (int i = 1; i <= 2244; i++) {
+                connection.del(("SCHOOL_INDEX_INFO" + i).getBytes());
+            }
+            return null;
+        });
     }
 
 }

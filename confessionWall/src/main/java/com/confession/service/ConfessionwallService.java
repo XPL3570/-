@@ -11,7 +11,7 @@ import com.confession.request.RegistryWhiteWallRequest;
  *  服务类
  * </p>
  *
- * @author 作者
+ * @author 作者 xpl
  * @since 2023年08月20日
  */
 public interface ConfessionwallService extends IService<Confessionwall> {

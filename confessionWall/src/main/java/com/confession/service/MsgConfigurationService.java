@@ -10,7 +10,7 @@ import com.confession.request.MsgGlobalPromptRequest;
  *  服务类
  * </p>
  *
- * @author 作者
+ * @author 作者 xpl
  * @since 2023年09月14日
  */
 public interface MsgConfigurationService extends IService<MsgConfiguration> {

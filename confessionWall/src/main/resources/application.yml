@@ -1,5 +1,24 @@
+# 项目相关配置
+txbbq:
+  # 名称
+  name: tongxiaobbq
+  # 版本
+  version: 1.0.0
 server:
   port: 2204
+  servlet:
+    # 应用的访问路径
+    context-path: /
+  tomcat:
+    # tomcat的URI编码
+    uri-encoding: UTF-8
+    # 连接数满后的排队数，默认为100
+    accept-count: 500
+    threads:
+      # tomcat最大线程数，默认为200
+      max: 200
+      # Tomcat启动初始化的线程数，默认值10
+      min-spare: 15
 spring:
   servlet:
     multipart:
@@ -54,6 +73,12 @@ wechat:
   app-secret: 28e18de4781d84bd1badab528cf736a6
   msgDataFormat: JSON
 
+# 日志配置
+logging:
+  level:
+    com.com.confession: debug
+    org.springframework: warn
+
 
 wall:
   admin:
@@ -68,5 +93,12 @@ wall:
       yearly: 2   #年次数
       monthly: 3   #月次数
       total: 3   #总次数
+
+aLiYun:
+  endpoint: oss-cn-shanghai.aliyuncs.com
+  keyId: LTAI5tJnBLY8wsLU8AnPJHYw
+  keySecret: DbSJYM77sOGYzhATfAGqGRjx7wrReV
+  bucketName: tongxiaobiaobaiqiang
+
 
 

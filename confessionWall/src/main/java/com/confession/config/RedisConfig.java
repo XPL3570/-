@@ -10,6 +10,7 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
@@ -31,37 +32,60 @@ public class RedisConfig extends CachingConfigurerSupport {
 
     /**
      * 配置缓存管理器来实现自定义过期时间
-     * @param redisTemplate
      * @return
      */
-    @Bean
-    @SuppressWarnings(value = {"unchecked", "rawtypes"})
-    public RedisCacheManager redisCacheManager(RedisTemplate redisTemplate) {
-        RedisCacheWriter redisCacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(Objects.requireNonNull(redisTemplate.getConnectionFactory()));
-        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(redisTemplate.getValueSerializer()));
-        return new CustomRedisCacheManager(redisCacheWriter, redisCacheConfiguration);
-    }
+//    @Bean
+//    @SuppressWarnings(value = {"unchecked", "rawtypes"})
+//    public RedisCacheManager redisCacheManager(RedisTemplate redisTemplate) {
+//        RedisCacheWriter redisCacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(Objects.requireNonNull(redisTemplate.getConnectionFactory()));
+//        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
+//                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(redisTemplate.getValueSerializer()));
+//        return new CustomRedisCacheManager(redisCacheWriter, redisCacheConfiguration);
+//    }
 
 
+//    @Bean
+//    @SuppressWarnings(value = {"unchecked", "rawtypes"})
+//    public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
+//        RedisTemplate<Object, Object> template = new RedisTemplate<>();
+//        template.setConnectionFactory(connectionFactory);
+//
+//        FastJsonRedisSerializer serializer = new FastJsonRedisSerializer(Object.class);
+//
+//        // 使用StringRedisSerializer来序列化和反序列化redis的key值
+//        template.setKeySerializer(new StringRedisSerializer());
+//        // 设置value的序列化方式
+//        template.setValueSerializer(serializer);
+//        // Hash的key也采用StringRedisSerializer的序列化方式
+//        template.setHashKeySerializer(new StringRedisSerializer());
+//        template.setHashValueSerializer(serializer);
+//        template.afterPropertiesSet();
+//        return template;
+//    }
+
     @Bean
     @SuppressWarnings(value = {"unchecked", "rawtypes"})
-    public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<Object, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(connectionFactory);
+    public RedisTemplate<String, Object> redisTemplate(LettuceConnectionFactory connectionFactory) {
+        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+
+        // 设置redis连接（LettuceConnectionFactory实现了RedisConnectionFactory）
+        redisTemplate.setConnectionFactory(connectionFactory);
 
         FastJsonRedisSerializer serializer = new FastJsonRedisSerializer(Object.class);
 
-        // 使用StringRedisSerializer来序列化和反序列化redis的key值
-        template.setKeySerializer(new StringRedisSerializer());
-        // 设置value的序列化方式
-        template.setValueSerializer(serializer);
-        // Hash的key也采用StringRedisSerializer的序列化方式
-        template.setHashKeySerializer(new StringRedisSerializer());
-        template.setHashValueSerializer(serializer);
-        template.afterPropertiesSet();
-        return template;
+        // key设置StringRedisSerializer序列化
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        // value设置FastJsonRedisSerializer序列化
+        redisTemplate.setValueSerializer(serializer);
+
+        // Hash key设置序列化
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        // Hash value设置序列化
+        redisTemplate.setHashValueSerializer(serializer);
+
+        return redisTemplate;
     }
+
 
     @Bean
     public DefaultRedisScript<Long> limitScript() {

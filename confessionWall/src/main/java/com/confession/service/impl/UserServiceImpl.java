@@ -45,7 +45,7 @@ import static com.confession.comm.ResultCodeEnum.USER_NOT_EXIST;
  * 服务实现类
  * </p>
  *
- * @author 作者
+ * @author 作者 xpl
  * @since 2023年08月20日
  */
 @Service

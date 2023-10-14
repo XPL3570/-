@@ -1,6 +1,8 @@
 package com.confession.service.impl;
 
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -12,8 +14,9 @@ import com.confession.mapper.LotteryRecordMapper;
 import com.confession.pojo.Lottery;
 import com.confession.pojo.LotteryRecord;
 import com.confession.service.LotteryRecordService;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,8 +25,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static com.confession.comm.RedisConstant.SCHOOL_EXTRACTION_LOCK;
+import static com.confession.comm.RedisConstant.USER_OBTAINED_NODE;
+import static com.confession.comm.ResultCodeEnum.DATA_ERROR;
 import static com.confession.comm.ResultCodeEnum.WITHDRAWAL_EXCEEDS_LIMIT;
 
 @Service
@@ -37,10 +44,15 @@ public class LotteryRecordServiceImpl extends ServiceImpl<LotteryRecordMapper, L
     @Resource
     private WallConfig wallConfig;
 
+    @Resource
+    private RedisTemplate redisTemplate;
+
+    @Resource
+    private RedissonClient redissonClient;
+
 
     @Override
     @Transactional
-    @CacheEvict(value = "obtainedNote",key="#userId")
     public Lottery extractTape(Integer schoolId, Integer gender, Integer userId) {
         //校验拿到的纸条是否超过限制
         checkStrategy(userId);
@@ -48,19 +60,40 @@ public class LotteryRecordServiceImpl extends ServiceImpl<LotteryRecordMapper, L
         //获取用户抽到过的集合id
         List<Integer> lotteryIds = getLotteryIdsByUserId(userId);
 
-        Lottery lottery = getRandomLotteryByGenderAndSchoolIdAndDrawCount(gender, schoolId, 0,lotteryIds,userId);
+        Lottery lottery;
+        //加分布式锁
+        RLock lock = redissonClient.getLock(SCHOOL_EXTRACTION_LOCK + schoolId);
+        boolean isLockAcquired = false;
+        try {
+            isLockAcquired = lock.tryLock(3, TimeUnit.SECONDS);
+            if (!isLockAcquired) {
+                System.out.println("获取学校抽取锁失败，学校id："+schoolId);
+                throw new RuntimeException("获取学校抽取锁失败");
+            }
+            lottery = getRandomLotteryByGenderAndSchoolIdAndDrawCount(gender, schoolId, 0, lotteryIds, userId);
+        } catch (InterruptedException e) {
+            throw new WallException(DATA_ERROR);
+        } finally {
+            if (isLockAcquired) {
+                lock.unlock();
+            }
+        }
         // 创建一个新的 LotteryRecord 对象
         LotteryRecord record = new LotteryRecord();
         record.setLotteryId(lottery.getId());
         record.setUserId(userId);
         // 插入记录
         lotteryRecordMapper.insert(record);
+        redisTemplate.delete(USER_OBTAINED_NODE + userId);
         return lottery;
     }
 
     @Override
-    @Cacheable(value = "obtainedNote#20#m", key = "#userId")
     public List<Lottery> obtainedNote(Integer userId) {
+        JSON json = (JSON) redisTemplate.opsForValue().get(USER_OBTAINED_NODE + userId);
+        if (json != null) {
+            return json.toJavaObject(List.class);
+        }
         LambdaQueryWrapper<LotteryRecord> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(LotteryRecord::getUserId, userId)
                 .ge(LotteryRecord::getDrawAt, LocalDateTime.now().minusMonths(3))
@@ -72,6 +105,8 @@ public class LotteryRecordServiceImpl extends ServiceImpl<LotteryRecordMapper, L
             Lottery lottery = lotteryMapper.selectById(record.getLotteryId());
             list.add(lottery);
         }
+        redisTemplate.opsForValue().set(USER_OBTAINED_NODE + userId, JSONObject.toJSON(list), 20, TimeUnit.MINUTES);
+
         return list;
     }
 
@@ -86,13 +121,13 @@ public class LotteryRecordServiceImpl extends ServiceImpl<LotteryRecordMapper, L
 
 
     // 可以使用行级锁查询符合条件的记录,或者redis分布式锁
-    private synchronized Lottery getRandomLotteryByGenderAndSchoolIdAndDrawCount(int gender, int schoolId, int drawCount,List<Integer> lotteryIds,Integer userId) {
+    private synchronized Lottery getRandomLotteryByGenderAndSchoolIdAndDrawCount(int gender, int schoolId, int drawCount, List<Integer> lotteryIds, Integer userId) {
 
         LambdaQueryWrapper<Lottery> queryWrapper = new LambdaQueryWrapper<Lottery>()
                 .eq(Lottery::getGender, gender)
                 .eq(Lottery::getSchoolId, schoolId)
                 .eq(Lottery::getDrawCount, drawCount)
-                .ne(Lottery::getUserId,userId)
+                .ne(Lottery::getUserId, userId)
                 .notIn(Lottery::getId, lotteryIds);
 
 
@@ -101,10 +136,10 @@ public class LotteryRecordServiceImpl extends ServiceImpl<LotteryRecordMapper, L
         if (lotteryList.isEmpty()) {
             // 如果没有满足条件的记录，则递归调用自身，将drawCount加1
             //  注意点，可以设置最多比如每个纸条匹配5次，也可以还有防止空数据
-            if(drawCount>5){
+            if (drawCount > 5) {
                 throw new WallException(WITHDRAWAL_EXCEEDS_LIMIT);
             }
-            return getRandomLotteryByGenderAndSchoolIdAndDrawCount(gender, schoolId, drawCount + 1,lotteryIds,userId);
+            return getRandomLotteryByGenderAndSchoolIdAndDrawCount(gender, schoolId, drawCount + 1, lotteryIds, userId);
         } else {
             // 随机选择一条记录
             Random random = new Random();

@@ -1,7 +1,9 @@
 package com.confession.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
 import com.confession.dto.WallDTO;
@@ -13,24 +15,24 @@ import com.confession.pojo.Confessionwall;
 import com.confession.pojo.School;
 import com.confession.request.RegistryWhiteWallRequest;
 import com.confession.service.ConfessionwallService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static com.confession.comm.RedisConstant.WALL_UNDER_SCHOOL;
 import static com.confession.comm.ResultCodeEnum.DATA_ERROR;
 import static com.confession.comm.ResultCodeEnum.FAIL;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
- * @author 作者
+ * @author 作者 xpl
  * @since 2023年08月20日
  */
 @Service
@@ -41,32 +43,44 @@ public class ConfessionwallServiceImpl extends ServiceImpl<ConfessionwallMapper,
     @Resource
     private SchoolMapper schoolMapper;
 
+    @Resource
+    private RedisTemplate redisTemplate;
+
     @Override
-    @Cacheable(value = "wallUnderSchool#12#h", key = "#schoolId")
     public Confessionwall selectSchoolInWallOne(Integer schoolId) {
-        LambdaQueryWrapper<Confessionwall> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Confessionwall::getSchoolId,schoolId);
-        wrapper.eq(Confessionwall::getStatus,0); //状态
-        List<Confessionwall> wallList = confessionwallMapper.selectList(wrapper);
-        if (wallList!=null){
-            return wallList.get(0); //拿到第一个墙id
-        }else {
-            throw new WallException(DATA_ERROR);
+        String cacheKey = WALL_UNDER_SCHOOL + schoolId; //学校对应的墙信息
+        JSONObject jsonObject = (JSONObject) redisTemplate.opsForValue().get(cacheKey);
+        Confessionwall confessionwall;
+        if (jsonObject != null) {
+            confessionwall = jsonObject.toJavaObject(Confessionwall.class);
+            return confessionwall;
+        } else {
+            LambdaQueryWrapper<Confessionwall> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(Confessionwall::getSchoolId, schoolId);
+            wrapper.eq(Confessionwall::getStatus, 0); // 状态
+            List<Confessionwall> wallList = confessionwallMapper.selectList(wrapper);
+            if (wallList != null && !wallList.isEmpty()) {
+                confessionwall = wallList.get(0);
+                redisTemplate.opsForValue().set(cacheKey, confessionwall, 2 * 24 * 60 * 60, TimeUnit.SECONDS); // 缓存2天
+                return confessionwall;
+            } else {
+                throw new WallException(DATA_ERROR);
+            }
         }
     }
 
     @Override
     public void register(RegistryWhiteWallRequest registryWhiteWallRequest) {
         School school = schoolMapper.selectById(registryWhiteWallRequest.getSchoolId());
-        if (school==null){
+        if (school == null) {
             throw new WallException(FAIL);
         }
-        System.out.println(JwtInterceptor.getUser());
+//        System.out.println(JwtInterceptor.getUser());
         Confessionwall zj = new Confessionwall();
         zj.setSchoolId(registryWhiteWallRequest.getSchoolId());
         zj.setAvatarURL(registryWhiteWallRequest.getAvatarURL());
         zj.setWallName(registryWhiteWallRequest.getConfessionWallName());
-        zj.setCreatorUserId( JwtInterceptor.getUser().getId());
+        zj.setCreatorUserId(JwtInterceptor.getUser().getId());
         zj.setDescription(registryWhiteWallRequest.getDescription());
         zj.setStatus(1); //默认禁用
         confessionwallMapper.insert(zj);
@@ -79,10 +93,10 @@ public class ConfessionwallServiceImpl extends ServiceImpl<ConfessionwallMapper,
         List<WallDTO> wallDtoS = list.stream().map(
                 this::toWallDTO
         ).collect(Collectors.toList());
-        return new PageResult<>(wallDtoS,page.getTotal(),wallDtoS.size());
+        return new PageResult<>(wallDtoS, page.getTotal(), wallDtoS.size());
     }
 
-    private WallDTO toWallDTO(Confessionwall wall){
+    private WallDTO toWallDTO(Confessionwall wall) {
         WallDTO wallDTO = new WallDTO();
 
         // 将实体类的属性逐个赋值给 DTO 对象

@@ -22,9 +22,6 @@ public class XSSInterceptor implements HandlerInterceptor {
         XSSRequestWrapper requestWrapper = new XSSRequestWrapper(request);
 
         String contentType = request.getContentType();
-        System.out.println("contentType=" + contentType);
-
-        System.out.println("拦截器执行 requestWrapper");
         ServletInputStream inputStream = requestWrapper.getInputStream();
         // 使用Jsoup解析请求体的内容
         Document doc = Jsoup.parse(inputStream, null, "");

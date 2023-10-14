@@ -9,7 +9,8 @@ import org.springframework.data.redis.cache.RedisCacheWriter;
 import java.time.Duration;
 
 /**
- * 自定义redis缓存管理器
+ * 自定义redis缓存管理器 测试不通过，报错，改成手动 弃用
+ *
  */
 public class CustomRedisCacheManager extends RedisCacheManager {
 
@@ -35,8 +36,10 @@ public class CustomRedisCacheManager extends RedisCacheManager {
 
             // 缓存键名
             String cacheName = split[0];
+//            System.out.println("cacheName"+cacheName);
             // "#"后第一位是时间
             int expire = Integer.parseInt(split[1]);
+//            System.out.println("expire"+expire);
             // 过期时间，默认为h(小时)
             Duration duration = Duration.ofHours(expire);
             // 根据"#"后第二位字符判断过期时间的单位，设置相应的过期时间，默认时间单位是h(小时)

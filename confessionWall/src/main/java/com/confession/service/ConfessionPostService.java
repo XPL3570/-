@@ -17,7 +17,7 @@ import java.util.List;
  *  服务类
  * </p>
  *
- * @author 作者
+ * @author 作者 xpl
  * @since 2023年08月20日
  */
 public interface ConfessionPostService extends IService<Confessionpost> {
@@ -80,7 +80,7 @@ public interface ConfessionPostService extends IService<Confessionpost> {
     PageResult confessionWallContentQuery(PageTool pageTool, String fuzzyQueryContent, String wallName, String userName, Boolean isAnonymous,Boolean isAdminPost, Integer postStatus, Boolean reverseOrder);
 
     /**
-     * 管理员修改发布状态
+     * 管理员修改发布状态 ,也可以是审核
      */
     void modifyPublishingStatus(AuditRequest request);
 

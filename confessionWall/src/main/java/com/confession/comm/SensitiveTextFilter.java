@@ -44,8 +44,7 @@ public class SensitiveTextFilter {
         for (Resource resource : resources) {
             fileNames.add(resource.getFilename());
         }
-
-        System.out.println(fileNames);
+//        System.out.println(fileNames);
 
         Map<String, String> sensitiveWords = new HashMap<>();
         for (String fileName : fileNames) {

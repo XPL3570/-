@@ -17,7 +17,7 @@ import java.util.List;
  *  服务类
  * </p>
  *
- * @author 作者
+ * @author 作者 xpl
  * @since 2023年08月20日
  */
 public interface SchoolService extends IService<School> {
@@ -30,7 +30,7 @@ public interface SchoolService extends IService<School> {
     School findBySchoolName(String schoolName);
 
     /**
-     * 拿到提示语，后台可以统一控制是否拿到学校的提示语，所以先读取设置提示语的表
+     * 拿到提示语，后台可以统一控制是否拿到学校的提示语，所以先读取设置提示语的表  接口好像不用了
      * @param schoolId
      * @return
      */
@@ -88,4 +88,9 @@ public interface SchoolService extends IService<School> {
      * @param request
      */
     void modifySchool(SchoolModifyRequest request);
+
+    /**
+     * 清除所有学校的首页信息
+     */
+    void deleteAllSchoolHomepageCaches();
 }

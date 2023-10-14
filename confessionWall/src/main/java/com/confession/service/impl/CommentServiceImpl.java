@@ -1,5 +1,6 @@
 package com.confession.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -21,22 +22,23 @@ import com.confession.service.CommentService;
 import com.confession.service.ConfessionPostService;
 import com.confession.service.UserService;
 import com.hankcs.algorithm.AhoCorasickDoubleArrayTrie;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static com.confession.comm.RedisConstant.CONFESSION_PREFIX_LOCK;
+import static com.confession.comm.RedisConstant.USER_COMMENT_REPLY;
 import static com.confession.comm.ResultCodeEnum.*;
 
 /**
@@ -44,7 +46,7 @@ import static com.confession.comm.ResultCodeEnum.*;
  * 服务实现类
  * </p>
  *
- * @author 作者
+ * @author 作者 xpl
  * @since 2023年08月20日
  */
 @Service
@@ -70,6 +72,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
     @Resource
     private RedisTemplate redisTemplate;
+
+    @Resource
+    private RedissonClient redissonClient;
 
 
     @Override
@@ -97,12 +102,15 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         comment.setCommentContent(request.getCommentContent());
         comment.setCommentTime(LocalDateTime.now());
         commentMapper.insert(comment);
-        //这里同步缓存  todo  可以加一个锁
+        //这里同步缓存  todo  可以加一个锁 防止多个线程同时操作一个投稿记录
+        //后面获取记录的时候就获取这个锁了，方式要获取的锁太多，毫秒级别的延迟也可以
+        RLock lock = redissonClient.getLock(CONFESSION_PREFIX_LOCK + request.getConfessionPostReviewId());
+        lock.lock();
 
         String key = RedisConstant.CONFESSION_PREFIX + request.getConfessionPostReviewId();
         JSONObject redisDtoTemp = (JSONObject) redisTemplate.opsForValue().get(key);
         ConfessionPostDTO postDTO;
-        if (redisDtoTemp != null) { //这里有缓存就更新，一般都是有的
+        if (redisDtoTemp != null) { //这里有缓存就更新,这里不为空就是有缓存
             postDTO = redisDtoTemp.toJavaObject(ConfessionPostDTO.class);
             if (request.getParentCommentId() != null) { //这就是子评论
                 postDTO.getSubComments().add(createCommentDTO(comment));
@@ -112,6 +120,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             // 更新缓存
             updateCacheWithExpiration(key, postDTO);
         }
+        lock.unlock();
 
         // 获取插入数据的 ID
         Integer commentId = comment.getId();
@@ -120,10 +129,19 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
     // 更新缓存并设置过期时间
     private void updateCacheWithExpiration(String key, ConfessionPostDTO postDTO) {
-        redisTemplate.opsForValue().set(key, postDTO);
         long expiration = redisTemplate.getExpire(key, TimeUnit.SECONDS);
-        if (expiration < TimeUnit.DAYS.toSeconds(1)) {
-            redisTemplate.expire(key, expiration + TimeUnit.MINUTES.toSeconds(30), TimeUnit.SECONDS);
+//        if (expiration < 0) {  //这里逻辑不要了，因为调用的之后key有值，说明key存在
+//            // key不存在或没有设置过期时间
+//            redisTemplate.opsForValue().set(key, postDTO);
+//            redisTemplate.expire(key, 30, TimeUnit.MINUTES);
+//        } else
+        redisTemplate.opsForValue().set(key, postDTO);
+        if (expiration < 24 * 60 * 60) {
+            // key的过期时间小于一天
+            redisTemplate.expire(key, expiration + 30 * 60, TimeUnit.SECONDS);
+        } else {
+            // key的过期时间大于等于一天
+            redisTemplate.expire(key, expiration, TimeUnit.SECONDS);
         }
     }
 
@@ -152,8 +170,11 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     }
 
     @Override
-    @Cacheable(value = "userComments#20#m",  key = "#userId + '_' + #pageTool.page + '_'")
     public List<CommentDTO> getRepliesToUserComments(Integer userId, PageTool pageTool) {
+        JSON json = (JSON) redisTemplate.opsForValue().get(USER_COMMENT_REPLY + userId + ":" + pageTool.getPage());
+        if (json != null) {
+            return json.toJavaObject(List.class);
+        }
         LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
         List<Integer> userPostId = confessionPostService.getUserPostId(userId);
         Page<Comment> page = new Page<>(pageTool.getPage(), pageTool.getLimit());
@@ -161,10 +182,10 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         queryWrapper.ne(Comment::getUserId, userId)//todo 这里为了测试注释了，才能看到本人的评论
                 .gt(Comment::getCommentTime, LocalDateTime.now().minusMonths(6))
                 .inSql(Comment::getParentCommentId, "SELECT Id FROM comment WHERE userId = " + userId)
-                        .or()
-                        .orderByDesc(Comment::getCommentTime);
-        if (userPostId.size()>0){
-            queryWrapper.in(Comment::getConfessionPostReviewId,userPostId);
+                .or()
+                .orderByDesc(Comment::getCommentTime);
+        if (userPostId.size() > 0) {
+            queryWrapper.in(Comment::getConfessionPostReviewId, userPostId).ne(Comment::getUserId, userId);  //这里还要加条件
         }
         List<Comment> list = commentMapper.selectPage(page, queryWrapper).getRecords();
         List<CommentDTO> comments = new ArrayList<>();
@@ -176,7 +197,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             commentDTO.setAvatarURL(userDTO.getAvatarURL());
             comments.add(commentDTO);
         }
-        System.out.println(comments);
+        redisTemplate.opsForValue().set(USER_COMMENT_REPLY + userId + ":" +
+                pageTool.getPage(), JSONObject.toJSON(comments), 30, TimeUnit.MINUTES);
         return comments;
     }
 
@@ -184,8 +206,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     public int numberUnreadCommentsByUsers(Integer userId, LocalDateTime dateTime) {
         List<Integer> userPostId = confessionPostService.getUserPostId(userId);
         LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
-        if (userPostId.size()>0){
-            queryWrapper.in(Comment::getConfessionPostReviewId,userPostId);
+        if (userPostId.size() > 0) {
+            queryWrapper.in(Comment::getConfessionPostReviewId, userPostId);
         }
         queryWrapper.inSql(Comment::getParentCommentId, "SELECT Id FROM comment WHERE userId = " + userId)
                 .gt(Comment::getCommentTime, dateTime)

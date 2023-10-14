@@ -27,7 +27,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
         String key = "rate_limit:" + ip;
         Long count = redisTemplate.execute(limitScript, Collections.singletonList(key), 5, 1); // 设置每秒最多5个请求的限制
 
-        if (count != null && count > 5) {
+        if (count != null && count > 8) {
             response.setStatus(702);
             return false; // 如果超过限制，返回请求拒绝
         }

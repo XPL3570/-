@@ -7,8 +7,10 @@ import com.confession.mapper.GlobalCarouselImageMapper;
 import com.confession.pojo.GlobalCarouselImage;
 import com.confession.request.GlobalCarouselSetRequest;
 import com.confession.service.GlobalCarouselImageService;
+import com.confession.service.SchoolService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -29,6 +31,10 @@ public class GlobalcarouselImageServiceImpl extends ServiceImpl<GlobalCarouselIm
     @Resource
     private GlobalCarouselImageMapper mapper;
 
+    @Resource
+    @Lazy
+    private SchoolService schoolService;
+
     @Override
     public List<GlobalCarouselImage> getGlobalCarouselImages() {
         LambdaQueryWrapper<GlobalCarouselImage> wrapper = new LambdaQueryWrapper<>();
@@ -38,20 +44,17 @@ public class GlobalcarouselImageServiceImpl extends ServiceImpl<GlobalCarouselIm
     }
 
     @Override
-    @Cacheable(value = "globalImage#3#d")
     public List<GlobalCarouselImage> getAllGlobalCarouselImages() {
         List<GlobalCarouselImage> list = mapper.selectList(null);
         return list;
     }
 
     @Override
-    @CacheEvict(value = "globalImage")
     public void deleteCarouselImage(Integer id) {
         mapper.deleteById(id);
     }
 
     @Override
-    @CacheEvict(value = "globalImage")
     public void addCarouselImage(String addr) {
         GlobalCarouselImage carouselImage = new GlobalCarouselImage().setCarouselImage(addr);
         mapper.insert(carouselImage);
@@ -108,7 +111,6 @@ public class GlobalcarouselImageServiceImpl extends ServiceImpl<GlobalCarouselIm
                 imagesToDelete.add(existingImage);
             }
         }
-
         // Step 3: 根据比较结果执行相应的操作
         for (GlobalCarouselImage image : imagesToAdd) {
             mapper.insert(image);
@@ -120,6 +122,9 @@ public class GlobalcarouselImageServiceImpl extends ServiceImpl<GlobalCarouselIm
         //设置是否禁用
         LambdaUpdateWrapper<GlobalCarouselImage> wrapper = new LambdaUpdateWrapper<>();
         wrapper.set(GlobalCarouselImage::getIsDisable,!request.getCarouselIsDisabled()); //前端传递过来的开启是1
-        mapper.update(null,wrapper);
+        int update = mapper.update(null, wrapper);
+        if (update>1){  //删除缓存
+            schoolService.deleteAllSchoolHomepageCaches();
+        }
     }
 }

@@ -1,5 +1,7 @@
 package com.confession.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -10,14 +12,14 @@ import com.confession.mapper.LotteryMapper;
 import com.confession.pojo.Lottery;
 import com.confession.request.LotteryRequest;
 import com.confession.service.LotteryService;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import static com.confession.comm.RedisConstant.USER_POSTED_NODE;
 import static com.confession.comm.ResultCodeEnum.SUBMISSION_EXCEEDS_LIMIT;
 
 /**
@@ -25,7 +27,7 @@ import static com.confession.comm.ResultCodeEnum.SUBMISSION_EXCEEDS_LIMIT;
  * 服务实现类
  * </p>
  *
- * @author 作者
+ * @author 作者 xpl
  * @since 2023年09月16日
  */
 @Service
@@ -37,12 +39,13 @@ public class LotteryServiceImpl extends ServiceImpl<LotteryMapper, Lottery> impl
     @Resource
     private WallConfig wallConfig;
 
+    @Resource
+    private RedisTemplate redisTemplate;
+
     @Override
-    @CacheEvict(value = "userInsertedNote",key="#userId") //这里可以优化成添加 这么写吧
     public boolean insert(LotteryRequest request, Integer userId) {
         // 检查策略
         checkStrategy(userId);
-
         // 如果检查通过，执行写入操作
         Lottery lottery = new Lottery();
         lottery.setUserId(userId);
@@ -52,19 +55,22 @@ public class LotteryServiceImpl extends ServiceImpl<LotteryMapper, Lottery> impl
         lottery.setGender(request.getGender());
         lottery.setIntroduction(request.getIntroduction());
         boolean saveOk = save(lottery);
+        redisTemplate.delete(USER_POSTED_NODE + userId);
         return saveOk;
     }
 
     @Override
-    @Cacheable(value = "userInsertedNote#20#m", key = "#userId")
     public List<Lottery> postedNote(Integer userId) {
+        JSON json = (JSON) redisTemplate.opsForValue().get(USER_POSTED_NODE + userId);
+        if (json != null) {
+            return json.toJavaObject(List.class);
+        }
         LambdaQueryWrapper<Lottery> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Lottery::getUserId,userId);
-
+        wrapper.eq(Lottery::getUserId, userId);
         Page<Lottery> page = new Page<>(1, 20);
         List<Lottery> records = lotteryMapper.selectPage(page, wrapper).getRecords();
+        redisTemplate.opsForValue().set(USER_POSTED_NODE + userId, JSONObject.toJSON(records), 20, TimeUnit.MINUTES);
         return records;
-
     }
 
     private void checkStrategy(Integer userId) {

@@ -19,7 +19,7 @@ import javax.annotation.Resource;
  * 前端控制器
  * </p>
  *
- * @author 作者
+ * @author 作者 xpl
  * @since 2023年08月20日
  */
 @RestController
@@ -31,7 +31,7 @@ public class SchoolController {
 
 
     /**
-     * 拿到学校的提示语，可以是管理员可以设置是否读取管理员设置的统一提示语 暂时弃用
+     * 拿到学校的提示语，可以是管理员可以设置是否读取管理员设置的统一提示语 好像不用这个接口了
      */
     @GetMapping("getPromptMessage")
     public Result getPromptMessage(@RequestParam Integer schoolId) {

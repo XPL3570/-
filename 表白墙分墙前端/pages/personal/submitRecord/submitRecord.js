@@ -20,7 +20,7 @@ Page({
   loadData() {
     if (!this.data.canLoadMore) {
 		wx.showToast({
-		  title: '没有更多数据了哦！',
+			title: '没有更多您的投稿了！',
 		  icon:'none'
 		});
       return; // 如果不能继续加载更多数据，则直接返回
