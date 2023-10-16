@@ -1,4 +1,5 @@
 var util = require('../../../utils/util');
+var oos = require('../../../utils/oosRequest');
 var request = require('../../../utils/request');
 
 Page({
@@ -29,7 +30,7 @@ Page({
 			sourceType: ['album', 'camera'],
 			success: (res) => {
 			  const tempFilePath = res.tempFiles[0].tempFilePath;
-			  util.uploadAndRetrieveImageUrl(tempFilePath).then(url => {
+			  oos.uploadImagesAlibabaCloud(tempFilePath,(url)=>{
 				console.log('上传成功，服务器返回的图片地址为:', url);
 				this.setData({
 				  avatarUrl: url,

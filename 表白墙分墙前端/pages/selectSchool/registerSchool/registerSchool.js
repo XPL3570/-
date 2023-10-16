@@ -1,4 +1,5 @@
 var util = require('../../../utils/util')
+var oos = require('../../../utils/oosRequest');
 var request = require('../../../utils/request')
 import Dialog from '@vant/weapp/dialog/dialog';
 
@@ -92,14 +93,19 @@ Page({
 		const {
 			file
 		} = event.detail;
-		const avatarUrl = await util.uploadAndRetrieveImageUrl(file.url);
-		const newRecord = {
-			url: avatarUrl
-		};
-		this.data.fileList.push(newRecord);
-		this.setData({
-			fileList: this.data.fileList,
+		oos.uploadImagesAlibabaCloud(file.url, (url) => {
+			if (url) {
+				const newRecord = {
+					url: url
+				};
+				this.data.fileList.push(newRecord);
+				this.setData({
+					fileList: this.data.fileList,
+				});
+			}
 		});
+
+
 	},
 	// 删除图片，拿到地址信息往后端发起删除操作
 	handleDeleteImage(event) {
@@ -131,7 +137,7 @@ Page({
 			phoneNumber: this.data.phoneNumber,
 		};
 		// 获取全局变量
-		request.requestWithToken('/api/school/register','POST',data,(res) => {
+		request.requestWithToken('/api/school/register', 'POST', data, (res) => {
 			if (res.data.code === 200) {
 				//保存schoolId并跳转到表白墙
 				try {
@@ -149,21 +155,21 @@ Page({
 						url: '/pages/selectSchool/registerWall/registerWall',
 					});
 				});
-			}else if(res.data.code===210){
+			} else if (res.data.code === 210) {
 				Dialog.alert({
 					message: '学校已经入驻或者正在等待审核! 您可以入驻其他学校或者选择其他学校登录',
 				}).then(() => {
 					// on close
 				});
-			}else if(res.data.code===257){
+			} else if (res.data.code === 257) {
 				Dialog.alert({
 					message: res.data.message,
 				}).then(() => {
 				});
-			}else{
+			} else {
 				console.log(res.data)
 			}
-		},(res) => {
+		}, (res) => {
 			console.log(res.data);
 		});
 

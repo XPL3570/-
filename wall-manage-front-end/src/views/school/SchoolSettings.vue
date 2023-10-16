@@ -89,17 +89,15 @@
 
         <el-form-item label="学校轮播图">
           <el-upload
-              :action="uploadUrl"
+              :action="host"
               list-type="picture-card"
               :file-list="fileList"
               :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload"
+              :before-upload="ossPolicy"
               :on-preview="showDetailFile"
               :limit="3"
-              :on-remove="handleRemove"
-              :headers="{
-              authentication:token
-        }">
+              :data="objectData"
+              :on-remove="handleRemove">
             <i class="el-icon-plus"></i>
           </el-upload>
         </el-form-item>
@@ -128,11 +126,8 @@
 
 <script>
 
-
-
 import api from "@/axios";
 import PageView from '@/components/PageView.vue'
-
 
 export default {
 
@@ -167,8 +162,23 @@ export default {
         limit: 5
       },
       schoolList: [], // 假设你已经从后端获取到了学校数据并赋值给schoolList
-      uploadUrl: 'http://127.0.0.1:2204/admin/upload', //这是上传图片的地址  超过4张小程序显示有点问题，后面优化
+      // uploadUrl: 'http://127.0.0.1:2204/admin/upload', //这是上传图片的地址  超过4张小程序显示有点问题，后面优化
       token: localStorage.getItem('token'), //从本地变量中获取token
+      host:'', //上传地址
+      objectData:{  //临时票据信息
+        //访问keyId
+        OSSAccessKeyId:'',
+        //临时秘钥签名
+        Signature:'',
+        //过期时间
+        expire:'',
+        //文件存放的相对路劲
+        key:'',
+        //转码之后的权限标识
+        policy:'',
+        'x-oss-security-token': '', // security-token 字段
+        name:'file'
+      },
     };
   },
   created() {
@@ -181,13 +191,10 @@ export default {
       this.schoolAvatarCache = [];
       this.schoolDataToBeModified = {};
     },
-    handleAvatarSuccess(res) {
-      if (res.code === 200) {
-        this.fileList.push({url: res.data})
-      } else {
-        console.log(res)
-        this.$message.error('图片上传失败！' + res)
-      }
+    handleAvatarSuccess() {
+      this.fileList.push({
+        url: this.host + '/' + this.objectData.key,
+      });
     },
     handleAvatarSuccessAvatar(res) {
       if (res.code === 200) {
@@ -196,6 +203,39 @@ export default {
         console.log(res)
         this.$message.error('图片上传失败！' + res)
       }
+    },
+    ossPolicy(file){ //上传前进行服务器签名
+      const zj=this.beforeAvatarUpload(file);
+      if (zj===false){
+        return false;
+      }
+      return new Promise((resolve,reject)=>{
+        let _self=this;
+        //请求后端
+        api.get('/admin/getStsToken',null)
+            .then(response=>{
+              // console.log(response.data);
+              _self.objectData.OSSAccessKeyId=response.data.data.accessid;
+              _self.objectData.Signature=response.data.data.signature;
+              // _self.objectData.securityToken=response.data.data.securityToken;
+              _self.host=response.data.data.host;
+              _self.objectData.key=response.data.data.dir;
+              _self.objectData.policy=response.data.data.policy;
+              _self.objectData.expire=response.data.data.expire;
+              _self.objectData['x-oss-security-token']=response.data.data.securityToken;
+              // console.log(_self.objectData);
+              //   setTimeout(function() {
+              //   _self.fileListSub.push({
+              //     url: _self.host + '/' + _self.objectData.key,
+              //   });
+              // }, 200);
+              //   console.log(_self.fileListSub)
+              resolve(true);//继续
+            }).catch(function (error){
+          console.error(error);
+          reject(false);
+        })
+      });
     },
     beforeAvatarUpload(file) {
       const isJPG = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif' || file.type === 'image/bmp';
@@ -227,7 +267,7 @@ export default {
       this.fileList = [];//先重置图片数据
       this.isDialogSchoolOpen = true;
       this.schoolDataToBeModified = row;
-      console.log(this.schoolDataToBeModified.avatarURL);
+      // console.log(this.schoolDataToBeModified.avatarURL);
       // console.log(row);
       if (this.schoolDataToBeModified.carouselImages) {
         this.fileList = this.schoolDataToBeModified.carouselImages.map(url => {
@@ -289,7 +329,7 @@ export default {
                   this.page.total = res.data.data.total;
                   this.loading = false
                 }
-                console.log(res.data);
+                // console.log(res.data);
               }
           ).catch(
           error => {

@@ -65,14 +65,18 @@ Page({
 		const {
 			file
 		} = event.detail;
-		const avatarUrl = await util.uploadAndRetrieveImageUrl(file.url);
-		const newRecord = {
-			url: avatarUrl
-		};
-		this.data.fileList.push(newRecord);
-		this.setData({
-			fileList: this.data.fileList,
-		});
+
+		oos.uploadImagesAlibabaCloud(file.url,(url)=>{
+			if (url) {
+				const newRecord = {
+					url: url
+				};
+				this.data.fileList.push(newRecord);
+				this.setData({
+					fileList: this.data.fileList,
+				});
+			}
+		})		
 	},
 	handleDeleteImage(event) {
 		const {

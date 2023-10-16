@@ -182,7 +182,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             //这里切换头像就把之前的头像删除了
             DeleteImageRequest zj = new DeleteImageRequest();
             zj.setDeleteUrl(attributeValue);
-            imageService.deleteImage(zj);
+            imageService.deleteImage(zj,userId);
             user.setAvatarURL(attributeValue);
         } else if ("name".equals(attributeName)) {
             LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();

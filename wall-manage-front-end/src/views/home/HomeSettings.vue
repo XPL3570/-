@@ -58,17 +58,16 @@
     <div>首页轮播图</div>
     <div style="margin:10px"></div>
     <el-upload
-        :action="uploadUrl"
+        :before-upload="ossPolicy"
+        :action="host"
         list-type="picture-card"
         :file-list="fileListSub"
-        :on-success="handleImageSuccess"
-        :before-upload="beforeAvatarUpload"
+        :data="objectData"
         :on-preview="showDetailFile"
+        :on-success="handleImageSuccess"
         :limit="3"
         :on-remove="handleRemove"
-        :headers="{
-          authentication:token
-        }">
+    >
       <i class="el-icon-plus"></i>
     </el-upload>
     <div style="margin:20px"></div>
@@ -106,7 +105,7 @@ export default {
       dialogVisiblePrompt:false, //显示编辑全局提示语
       dialogCarousel:false,//显示编辑全局轮播图
       selectedImage:'',
-      uploadUrl: 'http://127.0.0.1:2204/admin/upload', //这是上传图片的地址  超过4张小程序显示有点问题，后面优化
+      // uploadUrl: 'http://127.0.0.1:2204/admin/upload', //这是上传图片的地址  超过4张小程序显示有点问题，后面优化
       token: localStorage.getItem('token'), //从本地变量中获取token
       fileList:[
         {url: 'http://127.0.0.1:2204/upload/20231003005702ECxztV.png'},
@@ -118,7 +117,21 @@ export default {
       promptSwitchSub:null,
       promptText:'没有加载到数据哦，这里是页面默认初始数据！',
       promptTextSub:'',
-
+      objectData:{  //临时票据信息
+        //访问keyId
+        OSSAccessKeyId:'',
+        //临时秘钥签名
+         Signature:'',
+        //过期时间
+        expire:'',
+        //文件存放的相对路劲
+        key:'',
+        //转码之后的权限标识
+        policy:'',
+        'x-oss-security-token': '', // security-token 字段
+        name:'file'
+      },
+      host:'',
     }
   },
   created() {
@@ -157,6 +170,39 @@ export default {
         console.error(error);
       }
     },
+    ossPolicy(file){ //上传前进行服务器签名
+      const zj=this.beforeAvatarUpload(file);
+      if (zj===false){
+        return false;
+      }
+      return new Promise((resolve,reject)=>{
+        let _self=this;
+            //请求后端
+          api.get('/admin/getStsToken',null)
+              .then(response=>{
+                // console.log(response.data);
+                _self.objectData.OSSAccessKeyId=response.data.data.accessid;
+                _self.objectData.Signature=response.data.data.signature;
+                // _self.objectData.securityToken=response.data.data.securityToken;
+                _self.host=response.data.data.host;
+                _self.objectData.key=response.data.data.dir;
+                _self.objectData.policy=response.data.data.policy;
+                _self.objectData.expire=response.data.data.expire;
+                _self.objectData['x-oss-security-token']=response.data.data.securityToken;
+                // console.log(_self.objectData);
+              //   setTimeout(function() {
+              //   _self.fileListSub.push({
+              //     url: _self.host + '/' + _self.objectData.key,
+              //   });
+              // }, 200);
+              //   console.log(_self.fileListSub)
+                resolve(true);//继续
+              }).catch(function (error){
+                  console.error(error);
+                  reject(false);
+          })
+      });
+    },
     SubmitGlobalPromptModification(){
         let zj={
           message:this.promptTextSub,
@@ -194,10 +240,7 @@ export default {
                 }
               }
           )
-
-
     },
-
     clickSetPrompt(){
       this.dialogVisiblePrompt=true;
       this.promptSwitchSub=this.promptSwitch;
@@ -209,16 +252,22 @@ export default {
       this.carouselSwitchSub=this.carouselSwitch;
       this.fileListSub = this.fileList.slice();
     },
-    a(){
-      console.log('a方法调用')
-    },
-    handleImageSuccess(res) {
-      if (res.code === 200) {
-        this.fileListSub.push({url: res.data})
-      } else {
-        console.log(res)
-        this.$message.error('图片上传失败！' + res)
-      }
+    handleImageSuccess() { //不写回调这个就不用了
+      this.fileListSub.push({
+            url: this.host + '/' + this.objectData.key,
+          });
+
+
+      // console.log(res)
+      // if (res){
+      //   console.log('res存在')
+      // }
+      // if (res.code === 200||res.code===204) {
+      //   this.fileListSub.push({url: res.data})
+      // } else {
+      //   console.log(res)
+      //   this.$message.error('图片上传失败！' + res)
+      // }
     },
     handleAvatarSuccessAvatar(res) {
       if (res.code === 200) {
@@ -240,6 +289,8 @@ export default {
       return isJPG && isLt2M;
     },
     handleRemove(file, fileListSub) { //这里删除就不调用后端的方法了，因为可能删除之后不会提交，增加容错，误操作
+      console.log(file);
+      console.log(fileListSub);
       const index = fileListSub.findIndex(item => item.url === file.url);
       if (index !== -1) {
         fileListSub.splice(index, 1);

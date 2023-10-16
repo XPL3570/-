@@ -54,7 +54,6 @@ spring:
 
 
 mybatis-plus:
-
   global-config:
     db-config:
       logic-delete-value: true
@@ -95,10 +94,13 @@ wall:
       total: 3   #总次数
 
 aLiYun:
-  endpoint: oss-cn-shanghai.aliyuncs.com
-  keyId: LTAI5tJnBLY8wsLU8AnPJHYw
-  keySecret: DbSJYM77sOGYzhATfAGqGRjx7wrReV
+#  endpoint: oss-cn-shanghai.aliyuncs.com
+  endpoint: sts.cn-shanghai.aliyuncs.com  #sts访问的节点
+  keyId: LTAI5tFNr1wyRB7pDRe9193H           #这是临时角色的key
+  keySecret: GIcgYHRoFq8IdeU96xsIoqj4xRtuxn  #这是临时角色的的秘钥
   bucketName: tongxiaobiaobaiqiang
+  ramRoleArn: acs:ram::1204375983108350:role/ramosstxbbq  #STS临时访问角色
+  endpointNode: https://tongxiaobiaobaiqiang.oss-cn-shanghai.aliyuncs.com  #实际访问的节点
 
 
 

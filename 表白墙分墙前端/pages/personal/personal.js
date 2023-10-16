@@ -24,7 +24,6 @@ Page({
 		 var localLastUpdateTime=wx.getStorageSync('lastUpdateTime');
 		 if (localLastUpdateTime !== '' &&localLastUpdateTime!==null && localLastUpdateTime!=undefined) {
 				lastUpdateTime=localLastUpdateTime;
-				console.log('自定义')
 		 }else{
 			   // 获取当前时间
 				 var currentTime = new Date();
@@ -36,7 +35,7 @@ Page({
 		//  console.log({timestamp: parseInt(lastUpdateTime, 10)})
 		 request.requestWithToken('/api/comment/numberUnreadComments','GET',{timestamp: parseInt(lastUpdateTime, 10)},
 		 (res)=>{
-			 console.log(res.data);
+			//  console.log(res.data);
 				if(res.data.code===200){
 					this.setData({
 						numberUnreadComments:res.data.data

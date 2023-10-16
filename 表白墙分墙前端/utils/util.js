@@ -20,9 +20,9 @@ function URLDeleteImage(fileUrl) {
 	request.requestWithToken('/deleteImage', 'POST', data, (res) => {
 		// console.log(res);
 		if (res.data.code === 200) {
-			console.log('图片删除成功')
+			// console.log('图片删除成功')
 		} else {
-			console.log('图片删除失败')
+			// console.log('图片删除失败')
 		}
 	}, () => {
 		console.log('删除图片调用异常');

@@ -1,52 +1,61 @@
 var request = require('../../utils/request')
 var util = require('../../utils/util')
+var oos = require('../../utils/oosRequest')
 import Toast from '@vant/weapp/toast/toast';
 Page({
 
 	data: {
 		show: false,
-		showZj:false, //展示纸条
+		buttonDisabled: false,  //四个按钮是否可以点击，这里设置每4.4秒可以点击发起请求一次
+		showZj: false, //展示纸条
 		carton: '', //显示当前的纸箱
 		gender: -1,  //性别 0男 1女
 		Introduction: '', //介绍
 		ContactInfo: '', //微信号
 		fileList: [],      //地址
-		paper:{},   //抽取到的纸条
+		paper: {},   //抽取到的纸条
 		activeTab: 0, // 默认选中我的纸条的tab
 		lastLoadTime01: 0, // 我的抽到纸条上一次加载数据的时间  
 		lastLoadTime02: 0, // 我的放入纸条上一次加载数据的时间  
-		drawnNote:[], //用户抽到的纸条
-		insertNote:[], //用户放入的纸条
+		drawnNote: [], //用户抽到的纸条
+		insertNote: [], //用户放入的纸条
 	},
-	handleOuterTabTap(){
-			   // 根据activeTab来判断应该调用哪个方法
-				 if (this.data.activeTab === 0) {
-					this.loadData1();
-				} else if (this.data.activeTab === 1) {
-					this.loadData2();
-				}
+	disableButton: function() {
+		this.setData({ buttonDisabled: true });
+		setTimeout(() => {
+		  this.setData({ buttonDisabled: false });
+		}, 4400);
+	  },
+
+	handleOuterTabTap() {
+		// 根据activeTab来判断应该调用哪个方法
+		if (this.data.activeTab === 0) {
+			this.loadData1();
+		} else if (this.data.activeTab === 1) {
+			this.loadData2();
+		}
 	},
 	loadData1() { //我抽到的纸条
 		var currentTime = new Date().getTime();
-		if (currentTime - this.data.lastLoadTime02 < 3000) {
+		if (currentTime - this.data.lastLoadTime02 < 5000) {
 			return;
 		}
-		request.requestWithToken('/api/lotteryRecord/obtainedNote',"GET",null,(res)=>{
-			if(res.data.code===200){
-				var dataList = res.data.data.map(function(item) {
+		request.requestWithToken('/api/lotteryRecord/obtainedNote', "GET", null, (res) => {
+			if (res.data.code === 200) {
+				var dataList = res.data.data.map(function (item) {
 					var imageUrl = item.imageUrl;
 					var sbzj = imageUrl.split(';');
 					item.sbzj = sbzj;
 					return item;
-				});				
+				});
 				this.setData({
-					drawnNote:dataList
+					drawnNote: dataList
 				});
 				// console.log(this.data.drawnNote);
-			}else{
+			} else {
 				console.log(res.data);
 			}
-		},(res)=>{
+		}, (res) => {
 			console.log(res.data);
 		})
 		this.setData({
@@ -55,12 +64,12 @@ Page({
 	},
 	loadData2() {//我放入的纸条
 		var currentTime = new Date().getTime();
-		if (currentTime - this.data.lastLoadTime01 < 3000) {
+		if (currentTime - this.data.lastLoadTime01 < 5000) {
 			return;
 		}
-		request.requestWithToken('/api/lottery/postedNote','GET',null,(res)=>{
-			if(res.data.code===200){
-				var dataList = res.data.data.map((item) =>{
+		request.requestWithToken('/api/lottery/postedNote', 'GET', null, (res) => {
+			if (res.data.code === 200) {
+				var dataList = res.data.data.map((item) => {
 					var imageUrl = item.imageUrl;
 					var sbzj = imageUrl.split(';');
 					item.sbzj = sbzj;
@@ -70,29 +79,29 @@ Page({
 					insertNote: dataList
 				});
 				// console.log(this.data.insertNote)
-			}else{
+			} else {
 				console.log(res.data);
 			}
-		},(res)=>{
+		}, (res) => {
 			console.log(res.data);
 		})
 		this.setData({
 			lastLoadTime01: currentTime
 		});
 	},
-	handleTabChange: function(e) {
+	handleTabChange: function (e) {
 		// 更新activeTab
 		this.setData({
 			activeTab: e.detail.index
 		});
-		 this.handleOuterTabTap();
+		this.handleOuterTabTap();
 	},
-	handleOuterTabChange(e){
+	handleOuterTabChange(e) {
 		// 当切换外部 van-tab 时调用的方法
-      // e.detail.index 是当前选中的 van-tab 的索引
-      if (e.detail.index == 2) { // 判断如果切换到的是"我的纸条"，那么就加载"我抽到的纸条"的内容
-        this.handleOuterTabTap();
-      }
+		// e.detail.index 是当前选中的 van-tab 的索引
+		if (e.detail.index == 2) { // 判断如果切换到的是"我的纸条"，那么就加载"我抽到的纸条"的内容
+			this.handleOuterTabTap();
+		}
 	},
 
 	handleUserInfoInput(event) {
@@ -123,17 +132,25 @@ Page({
 			ContactInfo: '', //微信号
 			fileList: []    //地址
 		});
-	}, 
-	onCloseZj(){
+	},
+	onCloseZj() {
 		this.setData({
-			showZj:false
+			showZj: false
 		})
 	},
 	takeOutX() { // 抽男生纸条
+		if (this.data.buttonDisabled) {
+			return;
+		  }
+		  this.disableButton();
 		this.extractTape(0, '男生');
 	},
-	
+
 	takeOutZ() { // 抽女生纸条
+		if (this.data.buttonDisabled) {
+			return;
+		  }
+		  this.disableButton();
 		this.extractTape(1, '女生');
 	},
 	extractTape(gender, carton) {
@@ -154,6 +171,10 @@ Page({
 					paper: res.data.data,
 					showZj: true
 				});
+				//加载对应的抽到的纸条的数据
+				setTimeout(() => {
+					this.loadData1();
+				  }, 500);
 				// console.log(this.data.paper);
 			} else if (res.data.code === 239) {
 				Toast.fail(res.data.message);
@@ -162,29 +183,29 @@ Page({
 			console.log(res.data);
 		})
 	},
-		
-	previewImage(event) { 
-		var index=event.currentTarget.dataset.index;
-    wx.previewImage({
-      current: this.data.paper.sbzj[index], // 当前显示图片的http链接
-      urls: this.data.paper.sbzj // 需要预览的图片http链接列表
-    })
+
+	previewImage(event) {
+		var index = event.currentTarget.dataset.index;
+		wx.previewImage({
+			current: this.data.paper.sbzj[index], // 当前显示图片的http链接
+			urls: this.data.paper.sbzj // 需要预览的图片http链接列表
+		})
 	},
-	
+
 	previewImage01(event) {  //用户抽到纸条 图片展示
-		var {outerIndex,innerIndex}=event.currentTarget.dataset;
-    wx.previewImage({
-      current: this.data.drawnNote[outerIndex].sbzj[innerIndex], // 当前显示图片的http链接
-      urls: this.data.drawnNote[outerIndex].sbzj // 需要预览的图片http链接列表
-    })
+		var { outerIndex, innerIndex } = event.currentTarget.dataset;
+		wx.previewImage({
+			current: this.data.drawnNote[outerIndex].sbzj[innerIndex], // 当前显示图片的http链接
+			urls: this.data.drawnNote[outerIndex].sbzj // 需要预览的图片http链接列表
+		})
 	},
 	previewImage02(event) {  //用户放入的纸条 图片展示
-		var {outerIndex,innerIndex}=event.currentTarget.dataset;
-    wx.previewImage({
-      current: this.data.insertNote[outerIndex].sbzj[innerIndex], // 当前显示图片的http链接
-      urls: this.data.insertNote[outerIndex].sbzj // 需要预览的图片http链接列表
-    })
-  },
+		var { outerIndex, innerIndex } = event.currentTarget.dataset;
+		wx.previewImage({
+			current: this.data.insertNote[outerIndex].sbzj[innerIndex], // 当前显示图片的http链接
+			urls: this.data.insertNote[outerIndex].sbzj // 需要预览的图片http链接列表
+		})
+	},
 
 	drawPaperX() {
 		this.setData({
@@ -225,14 +246,18 @@ Page({
 		const {
 			file
 		} = event.detail;
-		const avatarUrl = await util.uploadAndRetrieveImageUrl(file.url);
-		const newRecord = {
-			url: avatarUrl
-		};
-		this.data.fileList.push(newRecord);
-		this.setData({
-			fileList: this.data.fileList,
-		});
+		oos.uploadImagesAlibabaCloud(file.url, (url) => {
+			if (url) {
+				const newRecord = {
+					url: url
+				};
+				this.data.fileList.push(newRecord);
+				this.setData({
+					fileList: this.data.fileList,
+				});
+			}
+		})
+
 	},
 	handleDeleteImage(event) {
 		const {
@@ -249,6 +274,10 @@ Page({
 	},
 
 	handleSubmit() {
+		if (this.data.buttonDisabled) {
+			return;
+		  }
+		  this.disableButton();
 		var data = {
 			schoolId: wx.getStorageSync('userInfo').schoolId,
 			gender: this.data.gender,
@@ -275,6 +304,9 @@ Page({
 					fileList: [],   //地址
 				});
 				Toast.success('放入成功!');
+				setTimeout(() => {
+					this.loadData2();
+				  }, 500);
 			} else if (res.data.code === 238) {
 				Toast.fail(res.data.message);
 			} else {

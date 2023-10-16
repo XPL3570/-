@@ -1,5 +1,6 @@
 var util = require('../../utils/util')
 var request = require('../../utils/request')
+var oos = require('../../utils/oosRequest')
 /*可以优化点，数据可以提交然后保存到本地变量，把图片每次都保存，不然后台可能都有无效的图片 */
 Page({
 	data: {
@@ -71,18 +72,35 @@ Page({
 		callback(true);
 	},
 	// 文件上传完成后的回调函数 这里要往后端发起请求保存返回地址，
-	async afterRead(event) {
+	// async afterRead(event) {
+	// 	// console.log('afterRead调用')
+	// 	const {
+	// 		file  
+	// 	} = event.detail;   //这个url应该就是本地的图片temp地址 
+	// 	const avatarUrl = await util.uploadAndRetrieveImageUrl(file.url);
+	// 	const newRecord = {
+	// 		url: avatarUrl
+	// 	};
+	// 	this.data.fileList.push(newRecord);
+	// 	this.setData({
+	// 		fileList: this.data.fileList,
+	// 	});
+	// },
+	async afterRead(event) { //修改代码
 		// console.log('afterRead调用')
 		const {
-			file
-		} = event.detail;
-		const avatarUrl = await util.uploadAndRetrieveImageUrl(file.url);
-		const newRecord = {
-			url: avatarUrl
-		};
-		this.data.fileList.push(newRecord);
-		this.setData({
-			fileList: this.data.fileList,
+			file  
+		} = event.detail;   //这个url应该就是本地的图片temp地址 
+		oos.uploadImagesAlibabaCloud(file.url,(url)=>{
+			if (url) {
+				const newRecord = {
+					url: url
+				};
+				this.data.fileList.push(newRecord);
+				this.setData({
+					fileList: this.data.fileList,
+				});
+			}
 		});
 	},
 	// 删除图片，拿到地址信息往后端发起删除操作

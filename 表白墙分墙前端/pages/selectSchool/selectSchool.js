@@ -1,4 +1,4 @@
-var util = require('../../utils/util');
+var oos = require('../../utils/oosRequest');
 const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0';
 import Dialog from '@vant/weapp/dialog/dialog';
 Page({
@@ -38,16 +38,13 @@ Page({
 	onChooseAvatar(event) {
 		const tempAvatarUrl = event.detail.avatarUrl;
 		// console.log(tempAvatarUrl)
-		try {
-			util.uploadAndRetrieveImageUrl(tempAvatarUrl).then(url => {
-				// console.log('上传成功，服务器返回的图片地址为:', url);
+		oos.uploadImagesAlibabaCloud(tempAvatarUrl,(url)=>{
+			if (url) {
 				this.setData({
 					avatarUrl: url,
 				});
-			})
-		} catch (error) {
-			console.error('上传失败:', error);
-		}
+			}
+		});
 	},
 	onSubmit() {
 		wx.login({
