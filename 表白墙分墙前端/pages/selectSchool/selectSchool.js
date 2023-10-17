@@ -1,4 +1,5 @@
 var oos = require('../../utils/oosRequest');
+var request = require('../../utils/request');
 const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0';
 import Dialog from '@vant/weapp/dialog/dialog';
 Page({
@@ -58,14 +59,7 @@ Page({
 					avatarUrl,
 					schoolName
 				};
-				wx.request({
-					url: 'http://localhost:2204/api/user/register',
-					method: 'POST',
-					header: {
-						'content-type': 'application/json'
-					},
-					data: JSON.stringify(data),
-					success: (res) => {
+				request.requestWithToken('/api/user/register','POST',data, (res) => {
 						if (res.data.code === 200) {
 							// 学校已入驻，跳转到其他页面
 							wx.setStorageSync('token', res.data.token);
@@ -102,10 +96,11 @@ Page({
 							console.log(res.data.message);
 						}
 					},
-					fail: (res) => {
+					 (res) => {
 						console.log('注册失败')
 					}
-				})
+				);
+			
 			},
 		})
 

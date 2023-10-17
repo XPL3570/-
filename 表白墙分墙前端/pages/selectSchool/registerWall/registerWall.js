@@ -1,4 +1,5 @@
 var util = require('../../../utils/util')
+var oos = require('../../../utils/oosRequest')
 var request = require('../../../utils/request')
 import Dialog from '@vant/weapp/dialog/dialog';
 
@@ -106,7 +107,7 @@ Page({
 			confessionWallName: this.data.ConfessionWallName,
 			description: this.data.description
 		};
-		// console.log(data);
+		console.log(data);
 		request.requestWithToken('/api/confession/register','POST',data,(res) => {
 			if (res.data.code === 200) {
 				const beforeClose = (action) =>

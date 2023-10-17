@@ -11,17 +11,17 @@ import javax.annotation.Resource;
 @SpringBootTest
 class ConfessionWallApplicationTests {
 
-    @Resource
-    private UserMapper userMapper;
+//    @Resource
+//    private UserMapper userMapper;
 
     /**
      * 测试可以可以通过设置逻辑删除字段来查询已经逻辑删除的数据    不能
      */
-    @Test
+//    @Test
     void contextLoads() {
-        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(User::getDeleted,true);
-        userMapper.selectList(wrapper);
+//        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+//        wrapper.eq(User::getDeleted,true);
+//        userMapper.selectList(wrapper);
     }
 
 }

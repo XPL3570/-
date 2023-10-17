@@ -52,7 +52,7 @@ public class EncryptionUtil {
 
 
     public static void main(String[] args) throws Exception {
-        String plainText = "222";
+        String plainText = "123a";
         String encryptedText = EncryptionUtil.encrypt(plainText);
         System.out.println(encryptedText);
         String decryptedText = EncryptionUtil.decrypt(encryptedText);

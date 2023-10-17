@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.confession.comm.ResultCodeEnum.FAIL;
 import static com.confession.comm.ResultCodeEnum.SCHOOL_NOT_SETTLED;
 
 
@@ -118,9 +119,11 @@ public class UserController {
             } else {
                 user.setSchoolId(null);
             }
-
             // 插入新的用户
-            userService.save(user);
+            boolean save = userService.save(user);
+            if (!save){
+                throw new WallException("写入用户失败",201);
+            }
         } else {
             // 更新用户的信息
             user.setUsername(request.getUserName());

@@ -28,7 +28,7 @@ function requestWithToken(url, method, data, successCallback, failCallback) {
 			const code=res.code
 		  // 发送 res.code 到后台获取openid查询用户是否登录过  没有则跳转好选择学校处注册
 		  wx.request({
-			url: 'http://localhost:2204/api/user/login',
+			url: 'http://txbbq.xyz:2204/api/user/login',
 			method:'POST',
 			header: {
 				'content-type': 'application/json'
@@ -42,11 +42,11 @@ function requestWithToken(url, method, data, successCallback, failCallback) {
 				wx.setStorageSync('userInfo',userInfo);
 				wx.setStorageSync('wall',wall);  //这里后端是返回一个id
 				wx.setStorageSync('isAdmin',isAdmin); 
-
 				// 跳转到主页面
-				// wx.switchTab({
+				// wx.reLaunch({
 				//   url: '/pages/index/index'
 				// });
+			
 				wx.showToast({
 					title: '自动登录成功!',
 					icon: 'none', // success, loading, none

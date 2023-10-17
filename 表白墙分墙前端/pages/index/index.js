@@ -31,13 +31,20 @@ Page({
 		mainIndex: -1, //如果回复的是主评论，这就是记录主评论的下标
 	},
 	onLoad() { //获取首页数据和表白数据，分开哦
+		console.log('index的onLoad函数触发')
 		this.setData({
 			title: wx.getStorageSync('wall').wallName
 		});
+		// console.log(wx.getStorageSync('userInfo').schoolId)
 		//获取轮播图和提示语
+		if (wx.getStorageSync('userInfo').schoolId===undefined) {
+			return;
+		}
 		var sbzj = {
 			schoolId: wx.getStorageSync('userInfo').schoolId
 		}
+		console.log(sbzj);
+	
 		request.requestWithToken("/api/school/getIndexInfo", "GET", sbzj,
 			(res) => {
 				if (res.data.code === 200) {

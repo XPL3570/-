@@ -107,9 +107,7 @@ export default {
       selectedImage:'',
       // uploadUrl: 'http://127.0.0.1:2204/admin/upload', //这是上传图片的地址  超过4张小程序显示有点问题，后面优化
       token: localStorage.getItem('token'), //从本地变量中获取token
-      fileList:[
-        {url: 'http://127.0.0.1:2204/upload/20231003005702ECxztV.png'},
-        {url:'http://127.0.0.1:2204/upload/20231003005704Bqrhrb.png'}],
+      fileList:[],
       fileListSub:[],
       carouselSwitch:null,
       carouselSwitchSub:null,
@@ -160,6 +158,7 @@ export default {
         }
 
         if (carouselResponse.data.code === 200) {
+          console.log(carouselResponse.data)
           this.fileList = carouselResponse.data.data.map(url => {
             return { url: url.carouselImage };
           });

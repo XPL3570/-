@@ -34,14 +34,13 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
     @Override
     public boolean isAdmin(Integer userId, Integer wallId) {
         // 查询用户是否是超级管理员
-        LambdaQueryWrapper<Admin> superAdminQuery = Wrappers.<Admin>lambdaQuery()
-                .eq(Admin::getUserId, userId)
-                .eq(Admin::getPermission, 1);
-        int superAdminCount = getBaseMapper().selectCount(superAdminQuery);
-        if (superAdminCount > 0) {
-            return true;
-        }
-
+//        LambdaQueryWrapper<Admin> superAdminQuery = Wrappers.<Admin>lambdaQuery()
+//                .eq(Admin::getUserId, userId)
+//                .eq(Admin::getPermission, 1);
+//        int superAdminCount = getBaseMapper().selectCount(superAdminQuery);
+//        if (superAdminCount > 0) {
+//            return true;
+//        }
         // 查询用户是否是该表白墙的管理员
         LambdaQueryWrapper<Admin> wallAdminQuery = Wrappers.<Admin>lambdaQuery()
                 .eq(Admin::getUserId, userId)

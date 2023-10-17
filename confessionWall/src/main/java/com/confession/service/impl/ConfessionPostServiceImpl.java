@@ -353,15 +353,20 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
 
             // 从数据库中查询缺失的记录的id和时间戳添加
             List<RecordIDCache> iDsByWallId =
-                    confessionpostMapper.getConfessionPostIDsByWallId(wallId, startIndex, endIndex + 1 - (int) missingCount);
-            if (iDsByWallId.size() < 1) {
-                throw new WallException(NO_SUBMISSION_DATA); //提示没有数据了
+                    confessionpostMapper.getConfessionPostIDsByWallId(wallId, startIndex- zSetMembers.size(), endIndex + 2 - (int) missingCount);
+            if (iDsByWallId.size() < 1) {                                                                                       //多加一条，防止有数据突然删除
+//                throw new WallException(NO_SUBMISSION_DATA); //提示没有数据了
+                posts=getPostsFromDatabase(new ArrayList<Integer>(zSetMembers));
+            }else {
+                // 将缺失的数据的id添加到有序集合中
+
+                for (RecordIDCache record : iDsByWallId) {
+                    redisTemplate.opsForZSet().add(WALL_SUBMISSION_RECORD + wallId, record.getId(), record.getTimeStamp());
+                    zSetMembers.add(record.getId());  //这里先用set集合装，也防止数据重复
+                }
+                posts = getPostsFromDatabase(zSetMembers.stream().collect(Collectors.toList()));
             }
-            // 将缺失的数据的id添加到有序集合中
-            for (RecordIDCache record : iDsByWallId) {
-                redisTemplate.opsForZSet().add(WALL_SUBMISSION_RECORD + wallId, record.getId(), record.getTimeStamp());
-            }
-            posts = getPostsFromDatabase(iDsByWallId.stream().map(item -> item.getId()).collect(Collectors.toList()));
+
             lock.unlock();
         } else {
 //            System.out.println(zSetMembers);
@@ -464,7 +469,7 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
             } else {
                 // 如果没有拿到就要查询数据库并放到缓存里面去
                 Confessionpost confessionpost = confessionpostMapper.selectById(id);
-                System.out.println("记录：" + id + "记录是" + confessionpost);
+//                System.out.println("记录：" + id + "记录是" + confessionpost);
                 ConfessionPostDTO dbDto = null;
                 if (confessionpost != null) {
                     dbDto = this.convertToDTOAll(confessionpost);
@@ -541,7 +546,7 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
     //处理投稿数据，不要评论
     private ConfessionPostDTO convertToDTO(Confessionpost post) {
         ConfessionPostDTO dto = new ConfessionPostDTO();
-        System.out.println("id是：" + post.getId());
+//        System.out.println("id是：" + post.getId());
         dto.setId(post.getId());
         dto.setWallId(post.getWallId());
         dto.setUserId(post.getUserId());

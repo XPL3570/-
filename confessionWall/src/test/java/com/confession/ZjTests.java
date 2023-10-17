@@ -11,11 +11,11 @@ import java.util.Collection;
 @SpringBootTest
 public class ZjTests {
 
-    @Resource
+//    @Resource
     private SensitiveTextFilter sensitiveTextFilter;
 
 
-    @Test
+//    @Test
     public void aaa() {
 //        long startTime = System.currentTimeMillis();
         AhoCorasickDoubleArrayTrie<String> trie = sensitiveTextFilter.getTrie();

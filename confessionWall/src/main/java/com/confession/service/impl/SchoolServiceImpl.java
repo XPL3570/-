@@ -315,7 +315,10 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
         List<String> imageList = globalCarouselImageService.getGlobalCarouselImages().stream()
                 .map(GlobalCarouselImage::getCarouselImage)
                 .collect(Collectors.toList());
-        imageList.addAll(Arrays.asList(school.getCarouselImages().split(";")));
+        List<String> schoolImage = Arrays.asList(school.getCarouselImages().split(";"));
+        if (schoolImage.size()!=0){
+            imageList.addAll(schoolImage);
+        }
 
         IndexInfoDTO dto = new IndexInfoDTO();
         dto.setCarouselImages(imageList);
@@ -349,10 +352,10 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
     }
 
     @Override
-    public void deleteAllSchoolHomepageCaches() {
+    public void deleteAllSchoolHomepageCaches() {  //最后来优化，反正现在没这么多学校
         redisTemplate.executePipelined((RedisCallback<Object>) connection -> {
             for (int i = 1; i <= 2244; i++) {
-                connection.del(("SCHOOL_INDEX_INFO" + i).getBytes());
+                connection.del((SCHOOL_INDEX_INFO + i).getBytes());
             }
             return null;
         });

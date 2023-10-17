@@ -13,27 +13,27 @@ server:
     # tomcat的URI编码
     uri-encoding: UTF-8
     # 连接数满后的排队数，默认为100
-    accept-count: 200
+    accept-count: 500
     threads:
       # tomcat最大线程数，默认为200
-      max: 100
+      max: 200
       # Tomcat启动初始化的线程数，默认值10
-      min-spare: 5
+      min-spare: 15
 spring:
   servlet:
     multipart:
       max-file-size: 2MB
       max-request-size: 2MB
   datasource:
-    url: jdbc:mysql://localhost:3306/txbbq?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/con_wall?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: root
-    password: xpl231016z
+    password: zhangjie
     driver-class-name: com.mysql.jdbc.Driver
   redis:
     host: localhost
     port: 6379
     database: 0
-    password: xpl231016
+    password:
     # 连接超时时间
     timeout: 10s
     lettuce:

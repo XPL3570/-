@@ -62,7 +62,7 @@ public interface ConfessionPostService extends IService<Confessionpost> {
     List<ConfessionPostDTO> getPendingPostsAdmin(Integer wallId,PageTool pageTool);
 
     /**
-     * 修改投稿的状态
+     * 修改投稿的状态  普通管理员用
      * @param userId  用户id
      * @param request 投稿id和要修改的状态
      */

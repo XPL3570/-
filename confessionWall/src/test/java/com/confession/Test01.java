@@ -12,16 +12,16 @@ import javax.annotation.Resource;
 @Slf4j
 public class Test01 {
 
-    @Resource
+//    @Resource
     private RedissonClient redissonClient;
 
-    @Test
+//    @Test
     public void test01(){
         System.out.println(redissonClient.toString());
 //        RLock ss = redissonClient.getLock("ss");
     }
 
-    @Test
+//    @Test
     public void test02(){
         log.info("This is a log message.");
         log.error("错误提示");

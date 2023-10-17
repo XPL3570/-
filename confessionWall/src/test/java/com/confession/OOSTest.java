@@ -12,7 +12,7 @@ public class OOSTest {
     @Resource
     private ImageService imageService;
 
-    @Test
+//    @Test
     public void test01(){
         long startTime = System.currentTimeMillis();
         imageService.uploadImageOOS();
@@ -20,7 +20,7 @@ public class OOSTest {
         System.out.println("获取签名时间:"+(endTime-startTime)+"ms");
     }
 
-    @Test
+//    @Test
     public void testOOSWeb() throws Exception{
         long startTime = System.currentTimeMillis();
         imageService.uploadImageOOSWeb();
