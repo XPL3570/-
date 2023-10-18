@@ -177,7 +177,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
 
         // 更新属性和更新时间
-
         if ("avatar".equals(attributeName)) {
             //这里切换头像就把之前的头像删除了
             DeleteImageRequest zj = new DeleteImageRequest();
@@ -185,11 +184,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             imageService.deleteImage(zj,userId);
             user.setAvatarURL(attributeValue);
         } else if ("name".equals(attributeName)) {
+            if (attributeName.contains("表白墙") || attributeName.contains("墙")) {
+                throw new WallException("该名字合适哦", 400);
+            }
             LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(User::getUsername, attributeName);
             int count = this.count(queryWrapper);
             if (count > 1) {
-                throw new WallException("该名字已经存在", 400);
+                throw new WallException("该名字已存在", 400);
             }
             user.setUsername(attributeValue);
         }
@@ -214,7 +216,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 计算当前时间与上次更新时间的间隔
         LocalDateTime currentTime = LocalDateTime.now(); // 使用java.time.LocalDateTime类获取当前时间
         Duration interval = Duration.between(lastUpdateTime, currentTime);
-        Duration threeDays = Duration.ofDays(3);
+        Duration threeDays = Duration.ofDays(1);
         boolean res = interval.compareTo(threeDays) >= 0;
         System.out.println("res=" + res);
         return res;

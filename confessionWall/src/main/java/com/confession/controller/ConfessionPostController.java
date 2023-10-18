@@ -139,7 +139,7 @@ public class ConfessionPostController {
     }
 
     /**
-     * 修改发布状态
+     * 修改发布状态  todo 这里没有如果修改成未发布没有同步缓存
      */
     @PostMapping("admin/modifyState")
     public Result modifyState(@RequestBody @Validated AuditRequest request) { //这里的请求参数表白墙id也用不到
@@ -148,7 +148,7 @@ public class ConfessionPostController {
     }
 
     /**
-     * 删除投稿内容
+     * 删除投稿内容  todo 这里也没有同步缓存，要删除哦
      */
     @PostMapping("admin/delete")
     public Result adminDelete(@RequestBody @Validated ParameterIntTypeRequest request) {

@@ -7,7 +7,9 @@ App({
 	},
 	LoginorRegister:LoginorRegister,
   globalData: {
-	apiUrl: 'http://txbbq.xyz:2204',
+	// apiUrl: 'https://www.txbbq.xyz:2204',
+	apiUrl: 'http://localhost:2204',
+	// apiUrl: 'http://172.18.124.117:2204',
 	token:null,
 	userInfo:{}
   }

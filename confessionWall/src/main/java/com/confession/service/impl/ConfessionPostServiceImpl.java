@@ -353,7 +353,7 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
 
             // 从数据库中查询缺失的记录的id和时间戳添加
             List<RecordIDCache> iDsByWallId =
-                    confessionpostMapper.getConfessionPostIDsByWallId(wallId, startIndex- zSetMembers.size(), endIndex + 2 - (int) missingCount);
+                    confessionpostMapper.getConfessionPostIDsByWallId(wallId, startIndex, endIndex + 2 - (int) missingCount);
             if (iDsByWallId.size() < 1) {                                                                                       //多加一条，防止有数据突然删除
 //                throw new WallException(NO_SUBMISSION_DATA); //提示没有数据了
                 posts=getPostsFromDatabase(new ArrayList<Integer>(zSetMembers));

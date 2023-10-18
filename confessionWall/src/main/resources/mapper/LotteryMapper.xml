@@ -24,7 +24,7 @@
     <!-- 查询过去一年该用户的记录数 -->
     <select id="countYearlyRecords" resultType="int">
         SELECT COUNT(*)
-        FROM Lottery
+        FROM lottery
         WHERE UserId = #{userId}
           AND CreatedAt >= DATE_SUB(NOW(), INTERVAL 1 YEAR)
           AND IsDeleted = 0
@@ -33,7 +33,7 @@
     <!-- 查询过去一个月该用户的记录数 -->
     <select id="countMonthlyRecords" resultType="int">
         SELECT COUNT(*)
-        FROM Lottery
+        FROM lottery
         WHERE UserId = #{userId}
           AND CreatedAt >= DATE_SUB(NOW(), INTERVAL 1 MONTH)
           AND IsDeleted = 0
@@ -42,7 +42,7 @@
     <!-- 查询过去一天该用户的记录数 -->
     <select id="countDailyRecords" resultType="int">
         SELECT COUNT(*)
-        FROM Lottery
+        FROM lottery
         WHERE UserId = #{userId}
           AND CreatedAt >= DATE_SUB(NOW(), INTERVAL 1 DAY)
           AND IsDeleted = 0
@@ -51,7 +51,7 @@
     <!-- 查询该用户的总记录数 -->
     <select id="countTotalRecords" resultType="int">
         SELECT COUNT(*)
-        FROM Lottery
+        FROM lottery
         WHERE UserId = #{userId}
           AND IsDeleted = 0
     </select>

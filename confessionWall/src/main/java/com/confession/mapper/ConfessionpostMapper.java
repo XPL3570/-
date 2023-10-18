@@ -45,7 +45,7 @@ public interface ConfessionpostMapper extends BaseMapper<Confessionpost> {
     List<RecordIDCache> getConfessionPostIDsByWallId(
             @Param("wallId") Integer wallId,
             @Param("startIndex") Integer startIndex,
-            @Param("pageSize") Integer limit
+            @Param("limit") Integer limit
     );
 
 

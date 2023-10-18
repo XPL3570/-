@@ -21,17 +21,16 @@
     <div style="margin: 20px 0;">
 
     <el-upload
-        :action="uploadUrl"
+        :action="host"
         list-type="picture-card"
         :file-list="fileList"
         :on-success="handleAvatarSuccess"
-        :before-upload="beforeAvatarUpload"
+        :before-upload="ossPolicy"
         :on-preview="handlePictureCardPreview"
         :limit="4"
+        :data="objectData"
         :on-remove="handleRemove"
-        :headers="{
-          authentication:token
-        }">
+      >
       <i class="el-icon-plus"></i>
     </el-upload>
 
@@ -58,6 +57,7 @@
 
 <script>
 import axios from "@/axios";
+import api from "@/axios";
 
 export default {
   name: "ConfessionRelease",
@@ -69,21 +69,39 @@ export default {
       isAnonymous:false,    //是否匿名
       dialogImageUrl: '',  //显示图片
       dialogVisible: false,  //是否显示
-      uploadUrl: 'http://127.0.0.1:2204/admin/upload', //这是上传图片的地址  超过4张小程序显示有点问题，后面优化
-      token: localStorage.getItem('token'), //从本地变量中获取token
+      // uploadUrl: 'http://127.0.0.1:2204/admin/upload', //这是上传图片的地址  超过4张小程序显示有点问题，后面优化
+      // token: localStorage.getItem('token'), //从本地变量中获取token
       fileList: [],
+      objectData:{  //临时票据信息
+        //访问keyId
+        OSSAccessKeyId:'',
+        //临时秘钥签名
+        Signature:'',
+        //过期时间
+        expire:'',
+        //文件存放的相对路劲
+        key:'',
+        //转码之后的权限标识
+        policy:'',
+        'x-oss-security-token': '', // security-token 字段
+        name:'file'
+      },
+      host:'',
     };
   },
   created() {
   },
   methods: {
-    handleAvatarSuccess(res) {
-      if (res.code === 200) {
-        this.fileList.push({url: res.data})
-      } else {
-        console.log(res)
-        this.$message.error('图片上传失败！' + res)
-      }
+    handleAvatarSuccess() {
+      // if (res.code === 200) {
+      //   this.fileList.push({url: res.data})
+      // } else {
+      //   console.log(res)
+      //   this.$message.error('图片上传失败！' + res)
+      // }
+      this.fileList.push({
+        url: this.host + '/' + this.objectData.key,
+      });
     },
     beforeAvatarUpload(file) {
       const isJPG = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif' || file.type === 'image/bmp';
@@ -122,6 +140,39 @@ export default {
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url;
       this.dialogVisible = true;
+    },
+    ossPolicy(file){ //上传前进行服务器签名
+      const zj=this.beforeAvatarUpload(file);
+      if (zj===false){
+        return false;
+      }
+      return new Promise((resolve,reject)=>{
+        let _self=this;
+        //请求后端
+        api.get('/admin/getStsToken',null)
+            .then(response=>{
+              // console.log(response.data);
+              _self.objectData.OSSAccessKeyId=response.data.data.accessid;
+              _self.objectData.Signature=response.data.data.signature;
+              // _self.objectData.securityToken=response.data.data.securityToken;
+              _self.host=response.data.data.host;
+              _self.objectData.key=response.data.data.dir;
+              _self.objectData.policy=response.data.data.policy;
+              _self.objectData.expire=response.data.data.expire;
+              _self.objectData['x-oss-security-token']=response.data.data.securityToken;
+              // console.log(_self.objectData);
+              //   setTimeout(function() {
+              //   _self.fileListSub.push({
+              //     url: _self.host + '/' + _self.objectData.key,
+              //   });
+              // }, 200);
+              //   console.log(_self.fileListSub)
+              resolve(true);//继续
+            }).catch(function (error){
+          console.error(error);
+          reject(false);
+        })
+      });
     },
     submitPost() {
       // 校验所有的值是否为空

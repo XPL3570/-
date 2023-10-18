@@ -175,7 +175,8 @@ public class UserController {
         User user = userService.getById(userId);
         // 检查时间间隔
         if (!userService.checkTimeInterval(user.getUpdateTime())) {
-            return Result.build(400, "修改头像或名字的时间间隔不足三天");
+            return Result.build(400, "最多一天可以修改一次头像或名字哦");
+
         }
         return Result.ok();
     }

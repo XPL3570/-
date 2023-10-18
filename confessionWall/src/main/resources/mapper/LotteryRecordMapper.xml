@@ -19,28 +19,28 @@
 
     <select id="countDailyRecords" resultType="int">
         SELECT COUNT(*)
-        FROM LotteryRecord
+        FROM lotteryrecord
         WHERE UserId = #{userId}
           AND DrawAt >= CURDATE()
     </select>
 
     <select id="countMonthlyRecords" resultType="int">
         SELECT COUNT(*)
-        FROM LotteryRecord
+        FROM lotteryrecord
         WHERE UserId = #{userId}
           AND DrawAt >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
     </select>
 
     <select id="countYearlyRecords" resultType="int">
         SELECT COUNT(*)
-        FROM LotteryRecord
+        FROM lotteryrecord
         WHERE UserId = #{userId}
           AND DrawAt >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
     </select>
 
     <select id="countTotalRecords" resultType="int">
         SELECT COUNT(*)
-        FROM LotteryRecord
+        FROM lotteryrecord
         WHERE UserId = #{userId}
     </select>
 

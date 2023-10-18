@@ -21,7 +21,7 @@
     </sql>
 
     <select id="isWallInSchool" resultType="java.lang.Integer">
-        SELECT COUNT(*) FROM ConfessionWall WHERE SchoolId = #{schoolId} AND Id = #{wallId}
+        SELECT COUNT(*) FROM confessionwall WHERE SchoolId = #{schoolId} AND Id = #{wallId}
     </select>
     
 

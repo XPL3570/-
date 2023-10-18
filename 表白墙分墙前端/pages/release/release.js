@@ -4,20 +4,21 @@ var oos = require('../../utils/oosRequest')
 /*可以优化点，数据可以提交然后保存到本地变量，把图片每次都保存，不然后台可能都有无效的图片 */
 Page({
 	data: {
-		buttonDisabled: false, //按钮是否禁用
+		// buttonDisabled: false, //按钮是否禁用
 		title: '', // 存储投稿标题
 		TitleErrorMsg: '',
 		content: '', // 存储投稿内容
 		fileList: [],
 		checked: false, //匿名发布
 		isAnonymous: 0, //是否匿名
-		maxNumberImageUploads:2, //最大图片上传数量,默认2，管理员可以3张
+		maxNumberImageUploads: 2, //最大图片上传数量,默认2，管理员可以3张
+		lastClickTime: 0,//上次点击提交时间
 	},
 	onLoad() {
-		if(wx.getStorageSync('isAdmin')){
-				this.setData({
-					maxNumberImageUploads:3
-				});
+		if (wx.getStorageSync('isAdmin')) {
+			this.setData({
+				maxNumberImageUploads: 3
+			});
 		}
 		this.setData({
 			title: '', // 初始化投稿标题
@@ -89,9 +90,9 @@ Page({
 	async afterRead(event) { //修改代码
 		// console.log('afterRead调用')
 		const {
-			file  
+			file
 		} = event.detail;   //这个url应该就是本地的图片temp地址 
-		oos.uploadImagesAlibabaCloud(file.url,(url)=>{
+		oos.uploadImagesAlibabaCloud(file.url, (url) => {
 			if (url) {
 				const newRecord = {
 					url: url
@@ -119,9 +120,18 @@ Page({
 	},
 	handleSubmit() { //提交
 		if (this.validateForm()) { //校验标题和投稿内容
-			this.setData({ //校验通过直接禁用
-				buttonDisabled: true
-			});
+			// this.setData({ //校验通过直接禁用
+			// 	buttonDisabled: true
+			// });
+			//通过校验之后判断是否超过两秒点击的
+			const currentTime = Date.now();
+			if (currentTime - this.data.lastClickTime < 2000) {
+				// 如果距离上次点击的时间小于2秒，则不执行后续操作
+				return;
+			}
+			this.setData({
+				lastClickTime:currentTime
+			})
 			var data = {
 				isAnonymous: this.data.isAnonymous,
 				wallId: wx.getStorageSync('wall').id,
@@ -155,12 +165,16 @@ Page({
 				} else {
 					wx.showToast({
 						title: '投稿异常请稍后重试',
-						icon:'none'
+						icon: 'none'
 					})
 					console.log(res.data.message);
 				}
 			}, (res) => {
 				console.log('投稿发布异常' + res.data);
+				wx.showToast({
+					title:'投稿异常，请稍后重试',
+					icon:"none"
+				})
 			})
 		}
 	},
@@ -172,7 +186,7 @@ Page({
 		// 校验标题长度
 		if (title.length <= 3 || title.length > 20) {
 			this.setData({
-				TitleErrorMsg: '标题长度应大于3且不超过20个字符'
+				TitleErrorMsg: '标题长度应在4到20个字哦'
 			});
 			return false; // 返回校验失败
 		}

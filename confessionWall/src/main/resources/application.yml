@@ -13,27 +13,27 @@ server:
     # tomcat的URI编码
     uri-encoding: UTF-8
     # 连接数满后的排队数，默认为100
-    accept-count: 200
+    accept-count: 500
     threads:
       # tomcat最大线程数，默认为200
-      max: 100
+      max: 200
       # Tomcat启动初始化的线程数，默认值10
-      min-spare: 5
+      min-spare: 15
 spring:
   servlet:
     multipart:
       max-file-size: 2MB
       max-request-size: 2MB
   datasource:
-    url: jdbc:mysql://localhost:3306/txbbq?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/con_wall?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: root
-    password: xpl231016z
+    password: zhangjie
     driver-class-name: com.mysql.jdbc.Driver
   redis:
     host: localhost
     port: 6379
     database: 0
-    password: xpl231016
+    password:
     # 连接超时时间
     timeout: 10s
     lettuce:
@@ -80,20 +80,20 @@ logging:
 
 wall:
   admin:
-    daily-post-limit: 10 #墙每天投稿上限数量
+    daily-post-limit: 20 #墙每天投稿上限数量
   user:
     daily-post-limit: 8
     comment-limit: 10  #每天评论数量限制
   lottery:   #恋爱墙投递和读取配置   只能选择一个  投递和拿的限制都是一样的
-    strategy: ONCE    # YEARLY, MONTHLY, DAILY, ONCE 其中之一  ONCE是一共只能放的
+    strategy: DAILY    # YEARLY, MONTHLY, DAILY, ONCE 其中之一  ONCE是一共只能放的
     limit:    #次数限制
-      daily: 2     #天次数
+      daily: 5     #天次数
       yearly: 2   #年次数
       monthly: 3   #月次数
       total: 3   #总次数
 
 aLiYun:
-#  endpoint: oss-cn-shanghai.aliyuncs.com
+  #  endpoint: oss-cn-shanghai.aliyuncs.com
   endpoint: sts.cn-shanghai.aliyuncs.com  #sts访问的节点
   keyId: LTAI5tFNr1wyRB7pDRe9193H           #这是临时角色的key
   keySecret: GIcgYHRoFq8IdeU96xsIoqj4xRtuxn  #这是临时角色的的秘钥

@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotNull;
 
 /**
  * <p>
@@ -43,7 +44,7 @@ public class SchoolController {
      * 获取首页的提示语和学习的轮播图地址
      */
     @GetMapping("getIndexInfo")
-    public Result getIndexInfo(@RequestParam("schoolId") Integer schoolId) {
+    public Result getIndexInfo(@RequestParam("schoolId") @NotNull(message = "schoolId不能为空")Integer schoolId) {
         IndexInfoDTO info=schoolService.getIndexInfo(schoolId);
         return Result.ok(info);
     }

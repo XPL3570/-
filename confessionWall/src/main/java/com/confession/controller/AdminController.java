@@ -76,7 +76,7 @@ public class AdminController {
 
 
     /**
-     * 发布投稿，直接通过  这里指定了某个学校  普通管理员可用  但是不能调用
+     * 发布投稿，直接通过  这里指定了某个学校  超级管理员调用
      *
      * @param confessionRequest
      * @return
@@ -85,11 +85,11 @@ public class AdminController {
     public Result submitConfessionPostAsAdmin(@RequestBody @Validated ConfessionPostRequest confessionRequest) {
         Integer userId = JwtInterceptor.getUser().getId();
 
-        // 校验管理员身份
-        boolean isAdmin = adminService.isAdmin(userId, confessionRequest.getWallId());
-        if (!isAdmin) {
-            return Result.fail("您不是该表白墙的管理员");
-        }
+//        // 校验管理员身份
+//        boolean isAdmin = adminService.isAdmin(userId, confessionRequest.getWallId());
+//        if (!isAdmin) {
+//            return Result.fail("您不是该表白墙的管理员");
+//        }
 
         //判断该管理员每天的投稿有没有超过限制
         int count = confessionPostService.getPostCountByUserIdAndDate(userId, LocalDate.now());
@@ -118,7 +118,8 @@ public class AdminController {
         Confessionpost confessionPost = createConfessionPost(confessionRequest, adminId, true);
         confessionPostService.save(confessionPost);
 
-        saveToRedis(confessionPost);
+        //todo 这里调用发布投稿的方法来同步缓存，还没有写，也顺便在那里加锁
+        saveToRedis(confessionPost); //表白墙的缓存
 
         return Result.ok();
     }

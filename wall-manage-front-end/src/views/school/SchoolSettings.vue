@@ -66,13 +66,14 @@
         </el-form-item>
         <el-form-item label="学校头像">
           <el-upload
-              :action="uploadUrl"
+              :action="host"
               list-type="picture-card"
               :file-list="schoolAvatarCache"
               :on-success="handleAvatarSuccessAvatar"
-              :before-upload="beforeAvatarUpload"
+              :before-upload="ossPolicy"
               :on-preview="showDetailFile"
               :limit="1"
+              :data="objectData"
               :on-remove="handleRemoveAvatar"
               :headers="{
           authentication:token
@@ -196,13 +197,16 @@ export default {
         url: this.host + '/' + this.objectData.key,
       });
     },
-    handleAvatarSuccessAvatar(res) {
-      if (res.code === 200) {
-        this.schoolAvatarCache.push({url: res.data})
-      } else {
-        console.log(res)
-        this.$message.error('图片上传失败！' + res)
-      }
+    handleAvatarSuccessAvatar() {
+      // if (res.code === 200) {
+      //   this.schoolAvatarCache.push({url: res.data})
+      // } else {
+      //   console.log(res)
+      //   this.$message.error('图片上传失败！' + res)
+      // }
+      this.schoolAvatarCache.push({
+        url: this.host + '/' + this.objectData.key,
+      });
     },
     ossPolicy(file){ //上传前进行服务器签名
       const zj=this.beforeAvatarUpload(file);

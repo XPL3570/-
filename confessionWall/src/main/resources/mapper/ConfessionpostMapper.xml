@@ -36,7 +36,7 @@
         FROM confessionpost
         WHERE (WallId = #{wallId} OR IsAdminPost = true) AND PostStatus = 1 AND IsDeleted=false
         ORDER BY PublishTime DESC
-        LIMIT #{startIndex}, #{pageSize}
+        LIMIT #{startIndex}, #{limit}
     </select>
 
 
