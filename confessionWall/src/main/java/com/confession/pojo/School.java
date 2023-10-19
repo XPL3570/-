@@ -37,18 +37,6 @@ public class School implements Serializable {
     private String schoolName;
 
     /**
-     * 头像地址
-     */
-    @TableField("AvatarURL")
-    private String avatarURL;
-
-    /**
-     * 描述内容
-     */
-    @TableField("Description")
-    private String description;
-
-    /**
      * 创建者ID
      */
     @TableField("CreatorId")
@@ -83,6 +71,9 @@ public class School implements Serializable {
      */
     @TableField("IsVerified")
     private Integer isVerified;
+
+    @TableField("NumberLuckyDraws")
+    private Integer numberLuckyDraws;
 
 
     /**

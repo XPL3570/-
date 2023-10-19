@@ -2,6 +2,7 @@ package com.confession.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.confession.comm.PageResult;
@@ -96,9 +97,19 @@ public class ConfessionwallServiceImpl extends ServiceImpl<ConfessionwallMapper,
         return new PageResult<>(wallDtoS, page.getTotal(), wallDtoS.size());
     }
 
+    @Override
+    public List<Integer> getAvailableWallsIds() {
+        // 创建LambdaQueryWrapper对象
+        LambdaQueryWrapper<Confessionwall> queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper.eq(Confessionwall::getStatus, 0);
+        queryWrapper.select(Confessionwall::getId);
+        // 执行查询
+        List<Confessionwall> list = confessionwallMapper.selectList(queryWrapper);
+        return list.stream().map(item->item.getId()).collect(Collectors.toList());
+    }
+
     private WallDTO toWallDTO(Confessionwall wall) {
         WallDTO wallDTO = new WallDTO();
-
         // 将实体类的属性逐个赋值给 DTO 对象
         wallDTO.setId(wall.getId());
         wallDTO.setSchoolId(wall.getSchoolId());
@@ -115,7 +126,5 @@ public class ConfessionwallServiceImpl extends ServiceImpl<ConfessionwallMapper,
         }
 
         return wallDTO;
-
-
     }
 }

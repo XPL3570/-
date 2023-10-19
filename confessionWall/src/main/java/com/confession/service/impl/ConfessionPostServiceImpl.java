@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.confession.comm.*;
@@ -23,10 +24,7 @@ import com.confession.pojo.Confessionwall;
 import com.confession.pojo.User;
 import com.confession.request.AuditRequest;
 import com.confession.request.ConfessionPostRequest;
-import com.confession.service.AdminService;
-import com.confession.service.CommentService;
-import com.confession.service.ConfessionPostService;
-import com.confession.service.UserService;
+import com.confession.service.*;
 import com.hankcs.algorithm.AhoCorasickDoubleArrayTrie;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -76,6 +74,9 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
 
     @Resource
     private ConfessionwallMapper confessionwallMapper;
+
+    @Resource
+    private ConfessionwallService confessionwallService;
 
     @Resource
     private RedisTemplate redisTemplate;
@@ -234,7 +235,7 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         }
         //这里通过判断发布状态字段同步缓存
         if (request.getPostStatus() == 1) {
-            this.saveRecordsCache(request.getWallId(), request.getId());
+            this.obtainWallLockSyncCache(request.getWallId(), request.getId(),new Date().toInstant().getEpochSecond(),true);
         }
 
     }
@@ -418,7 +419,7 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         confessionPost.setIsAnonymous(confessionRequest.getIsAnonymous());
         confessionPost.setPostStatus(status);
         this.save(confessionPost);
-        if (status == 1) this.saveRecordsCache(confessionRequest.getWallId(), confessionPost.getId());
+        if (status == 1) this.obtainWallLockSyncCache(confessionRequest.getWallId(), confessionPost.getId(),new Date().toInstant().getEpochSecond(),true);
         try {
             if (status == 1) {
                 this.removeUserPublishedPosts(userId);
@@ -437,17 +438,36 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
     }
 
 
-    private void saveRecordsCache(Integer wallId, Integer recordId) {
-        //这里获取更新学校列表的锁
+    @Override
+    public void obtainWallLockSyncCache(Integer wallId, Integer recordId,long publishTimestamp, boolean isSyncPostCache) {
+        //这里获取更新学校表白墙列表的锁
         RLock lock = redissonClient.getLock(SCHOOL_WALL_MAIN_LIST_MOD_LOCK + wallId);
         lock.lock();
-
-        Confessionpost byId = confessionpostMapper.selectById(recordId);
         redisTemplate.opsForZSet().add(WALL_SUBMISSION_RECORD + wallId,
-                recordId, byId.getPublishTime().toInstant(ZoneOffset.UTC).getEpochSecond());
-        String key = RedisConstant.CONFESSION_PREFIX + recordId;
-        redisTemplate.opsForValue().set(key, this.convertToDTOAll(byId), 3, TimeUnit.DAYS);
+                recordId,publishTimestamp);
+        if(isSyncPostCache){
+            Confessionpost byId = confessionpostMapper.selectById(recordId);
+            String key = RedisConstant.CONFESSION_PREFIX + recordId;
+            redisTemplate.opsForValue().set(key, this.convertToDTOAll(byId), 3, TimeUnit.DAYS);
+        }
         lock.unlock();
+    }
+
+
+    @Override  //注意点，这里可能会有没有用到的墙但是还是同步了缓存
+    public void putSubmissionOfAllWalls(Integer postIds) {
+        List<Integer> wallsIds = confessionwallService.getAvailableWallsIds();
+        if (wallsIds.size()<1){
+            throw new WallException("获取表白墙列表失败，大小为0",224);
+        }
+        //先把该投稿同步到缓存，然后同步表白墙下面的ZSet集合
+        Confessionpost byId = confessionpostMapper.selectById(postIds);
+        String key = RedisConstant.CONFESSION_PREFIX + postIds;
+        redisTemplate.opsForValue().set(key, this.convertToDTOAll(byId), 3, TimeUnit.DAYS);
+
+        for (Integer wallsId : wallsIds) {
+            obtainWallLockSyncCache(wallsId,postIds,new Date().toInstant().getEpochSecond(),false);
+        }
     }
 
 
@@ -589,4 +609,6 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         redisTemplate.opsForValue().set("userPostIds:" + userId, JSONObject.toJSON(list), 20, TimeUnit.MINUTES);
         return list;
     }
+
+
 }

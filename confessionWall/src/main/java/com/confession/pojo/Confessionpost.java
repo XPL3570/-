@@ -99,5 +99,4 @@ public class Confessionpost implements Serializable {
     @TableLogic
     private Boolean deleted;
 
-
 }

@@ -6,8 +6,6 @@
     <resultMap id="BaseResultMap" type="com.confession.pojo.School">
         <id column="Id" property="id" />
         <result column="SchoolName" property="schoolName" />
-        <result column="AvatarURL" property="avatarURL" />
-        <result column="Description" property="description" />
         <result column="CreatorId" property="creatorId" />
         <result column="UpdateTime" property="updateTime" />
         <result column="CreateTime" property="createTime" />
@@ -18,7 +16,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        Id, SchoolName, AvatarURL, Description, CreatorId, CreateTime,UpdateTime,CarouselImages,Prompt,IsAdminPost,IsDeleted
+        Id, SchoolName,CreatorId, CreateTime,UpdateTime,CarouselImages,Prompt,IsAdminPost,IsDeleted
     </sql>
 
 </mapper>

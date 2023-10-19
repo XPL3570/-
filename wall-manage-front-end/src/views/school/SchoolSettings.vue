@@ -9,18 +9,9 @@
     >
       <el-table-column prop="id" fixed label="ID" width="45"></el-table-column>
       <el-table-column prop="schoolName" fixed label="学校名称" width="120"></el-table-column>
-      <el-table-column prop="avatarURL" label="学校头像" width="120" >
-        <template v-slot:default="scope">
-          <div style="display: flex; justify-content: center;">
-            <img :src="scope.row['avatarURL']" alt="avatar"  height="90" @click="showDetail(scope.row['avatarURL'])"/>
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column prop="description" label="描述内容" width="140"></el-table-column>
-
-
       <el-table-column prop="createTime" label="创建时间" width="132"></el-table-column>
       <el-table-column prop="creatorName" label="创建者名字" width="90"></el-table-column>
+      <el-table-column prop="numberLuckyDraws" label="恋爱墙可抽奖次数" width="90"></el-table-column>
       <el-table-column prop="creatorWeChat" label="创建者微信号" width="133"></el-table-column>
       <el-table-column prop="creatorPhone" label="创建者手机号" width="108"></el-table-column>
       <el-table-column prop="carouselImages" label="首页轮播图" width="244">
@@ -39,8 +30,7 @@
       </el-table-column>
       <el-table-column
           label="操作"
-          width="100"
-          fixed="right">
+          width="80">
         <template v-slot:default="scope">
           <el-button @click="showSchoolSetting(scope.row)" plain type="primary" size="small">编辑</el-button>
         </template>
@@ -64,28 +54,12 @@
         <el-form-item label="学校名称">
           <el-input v-model="schoolDataToBeModified.schoolName"></el-input>
         </el-form-item>
-        <el-form-item label="学校头像">
-          <el-upload
-              :action="host"
-              list-type="picture-card"
-              :file-list="schoolAvatarCache"
-              :on-success="handleAvatarSuccessAvatar"
-              :before-upload="ossPolicy"
-              :on-preview="showDetailFile"
-              :limit="1"
-              :data="objectData"
-              :on-remove="handleRemoveAvatar"
-              :headers="{
-          authentication:token
-        }">
-            <i class="el-icon-plus"></i>
-          </el-upload>
-        </el-form-item>
-        <el-form-item label="描述">
-          <el-input v-model="schoolDataToBeModified.description"></el-input>
-        </el-form-item>
         <el-form-item label="提示语">
           <el-input v-model="schoolDataToBeModified.prompt"></el-input>
+        </el-form-item>
+
+        <el-form-item label="可抽奖次数">
+          <el-input v-model="schoolDataToBeModified.numberLuckyDraws" type="number"></el-input>
         </el-form-item>
 
         <el-form-item label="学校轮播图">
@@ -141,7 +115,7 @@ export default {
       showImageDialog: false,
       selectedImage: '', // 存储选中的图片URL
       schoolDataToBeModified: {},//每次查看的学校数据
-      schoolAvatarCache: [], //学校头像地址，因为要固定的格式，所有用数组存对象
+      // schoolAvatarCache: [], //学校头像地址，因为要固定的格式，所有用数组存对象
       options: [{
         value: 0,
         label: '未审核'
@@ -164,7 +138,7 @@ export default {
       },
       schoolList: [], // 假设你已经从后端获取到了学校数据并赋值给schoolList
       // uploadUrl: 'http://127.0.0.1:2204/admin/upload', //这是上传图片的地址  超过4张小程序显示有点问题，后面优化
-      token: localStorage.getItem('token'), //从本地变量中获取token
+      // token: localStorage.getItem('token'), //从本地变量中获取token
       host:'', //上传地址
       objectData:{  //临时票据信息
         //访问keyId
@@ -279,20 +253,19 @@ export default {
         });
       }
       this.schoolAvatarCache = [];
-      if (this.schoolDataToBeModified.avatarURL) {
-        this.schoolAvatarCache.push({
-          url: this.schoolDataToBeModified.avatarURL
-        })
-      }
+      // if (this.schoolDataToBeModified.avatarURL) {
+      //   this.schoolAvatarCache.push({
+      //     url: this.schoolDataToBeModified.avatarURL
+      //   })
+      // }
       console.log(this.schoolDataToBeModified);
     },
     confirmDialogSchoolInfo() { //提交学校修改
       console.log(this.schoolDataToBeModified);
       let zj = {
         id: this.schoolDataToBeModified.id,
-        avatarURL: this.schoolAvatarCache[0].url,
         schoolName: this.schoolDataToBeModified.schoolName,
-        description: this.schoolDataToBeModified.description,
+        numberLuckyDraws:this.schoolDataToBeModified.numberLuckyDraws,
         carouselImages: this.fileList.map(item => item.url).join(';'),
         prompt: this.schoolDataToBeModified.prompt,
         isVerified: this.schoolDataToBeModified.isVerified

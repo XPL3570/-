@@ -11,6 +11,7 @@ import com.confession.config.WallConfig;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.mapper.LotteryMapper;
 import com.confession.mapper.LotteryRecordMapper;
+import com.confession.mapper.SchoolMapper;
 import com.confession.pojo.Lottery;
 import com.confession.pojo.LotteryRecord;
 import com.confession.service.LotteryRecordService;
@@ -30,8 +31,7 @@ import java.util.stream.Collectors;
 
 import static com.confession.comm.RedisConstant.SCHOOL_EXTRACTION_LOCK;
 import static com.confession.comm.RedisConstant.USER_OBTAINED_NODE;
-import static com.confession.comm.ResultCodeEnum.DATA_ERROR;
-import static com.confession.comm.ResultCodeEnum.WITHDRAWAL_EXCEEDS_LIMIT;
+import static com.confession.comm.ResultCodeEnum.*;
 
 @Service
 public class LotteryRecordServiceImpl extends ServiceImpl<LotteryRecordMapper, LotteryRecord> implements LotteryRecordService {
@@ -50,12 +50,15 @@ public class LotteryRecordServiceImpl extends ServiceImpl<LotteryRecordMapper, L
     @Resource
     private RedissonClient redissonClient;
 
+    @Resource
+    private SchoolMapper schoolMapper;
+
 
     @Override
     @Transactional
     public Lottery extractTape(Integer schoolId, Integer gender, Integer userId) {
         //校验拿到的纸条是否超过限制
-        checkStrategy(userId);
+        checkStrategy(schoolId,userId);
 
         //获取用户抽到过的集合id
         List<Integer> lotteryIds = getLotteryIdsByUserId(userId);
@@ -159,37 +162,42 @@ public class LotteryRecordServiceImpl extends ServiceImpl<LotteryRecordMapper, L
      *
      * @param userId
      */
-    private void checkStrategy(Integer userId) {
+    private void checkStrategy(Integer schoolId,Integer userId) {
         // 将配置文件中的字符串转换为枚举值
         Strategy strategy = Strategy.valueOf(wallConfig.getStrategyString().toUpperCase());
+
+        Integer luckyDraws = schoolMapper.selectById(schoolId).getNumberLuckyDraws();
+        if (luckyDraws<1){
+            throw new WallException(NOT_OPEN_LOVE_WALL);
+        }
 
         // 根据策略进行检查
         switch (strategy) {
             case YEARLY:
                 // 查询过去一年该用户是否已经抽过奖
                 int yearlyCount = lotteryRecordMapper.countYearlyRecords(userId);
-                if (yearlyCount >= wallConfig.getYearlyLimit()) {
+                if (yearlyCount >= luckyDraws) {
                     throw new WallException(WITHDRAWAL_EXCEEDS_LIMIT);
                 }
                 break;
             case MONTHLY:
                 // 查询过去一个月该用户是否已经抽过奖
                 int monthlyCount = lotteryRecordMapper.countMonthlyRecords(userId);
-                if (monthlyCount >= wallConfig.getMonthlyLimit()) {
+                if (monthlyCount >= luckyDraws) {
                     throw new WallException(WITHDRAWAL_EXCEEDS_LIMIT);
                 }
                 break;
             case DAILY:
                 // 查询过去一天该用户是否已经抽过奖
                 int dailyCount = lotteryRecordMapper.countDailyRecords(userId);
-                if (dailyCount >= wallConfig.getDailyLimit()) {
+                if (dailyCount >= luckyDraws) {
                     throw new WallException(WITHDRAWAL_EXCEEDS_LIMIT);
                 }
                 break;
             case ONCE:
                 // 查询该用户是否已经抽过奖
                 int totalCount = lotteryRecordMapper.countTotalRecords(userId);
-                if (totalCount >= wallConfig.getTotalLimit()) {
+                if (totalCount >= luckyDraws) {
                     throw new WallException(WITHDRAWAL_EXCEEDS_LIMIT);
                 }
                 break;

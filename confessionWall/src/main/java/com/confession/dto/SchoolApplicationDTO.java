@@ -29,12 +29,6 @@ public class SchoolApplicationDTO implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
-    // 学校头像
-    private String avatarURL;
-
-    // 描述内容
-    private String description;
-
     // 微信号
     private String wechatNumber;
 

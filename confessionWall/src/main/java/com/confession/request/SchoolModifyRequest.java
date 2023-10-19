@@ -11,18 +11,12 @@ public class SchoolModifyRequest {
     @NotNull(message = "学校id不能为空")
     private Integer id;
 
-    @NotBlank(message = "学校图标不能为空")
-    @Size(max = 255, message = "学校头像地址过长")
-    private String avatarURL;
+    @NotNull(message = "学校恋爱墙可抽奖次数不能为空")
+    private Integer numberLuckyDraws;
 
     @NotBlank(message = "学校名称不能为空")
     @Size(min=4,max = 50, message = "学校名称的长度在4-50位之间")
     private String schoolName;
-
-    // 描述内容
-    @NotBlank(message = "描述内容不能是null")
-    @Size(max = 1000,message = "描述内容最长1000个字")
-    private String description;
 
     // 轮播图地址
     private String carouselImages;

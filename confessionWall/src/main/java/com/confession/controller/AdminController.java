@@ -1,22 +1,23 @@
 package com.confession.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
-import com.confession.comm.RedisConstant;
 import com.confession.comm.Result;
 import com.confession.config.WallConfig;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
 import com.confession.pojo.Admin;
 import com.confession.pojo.Confessionpost;
+import com.confession.pojo.Confessionwall;
 import com.confession.request.AdminLoginRequest;
 import com.confession.request.ConfessionPostRequest;
 import com.confession.service.AdminService;
 import com.confession.service.ConfessionPostService;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static com.confession.comm.ResultCodeEnum.CONTRIBUTE_OVER_LIMIT;
 
@@ -76,7 +76,7 @@ public class AdminController {
 
 
     /**
-     * 发布投稿，直接通过  这里指定了某个学校  超级管理员调用
+     * 发布投稿，直接通过  这里指定了某个学校  超级管理员调用 ，也有单个用户的投稿限制
      *
      * @param confessionRequest
      * @return
@@ -84,12 +84,6 @@ public class AdminController {
     @PostMapping("/submit")
     public Result submitConfessionPostAsAdmin(@RequestBody @Validated ConfessionPostRequest confessionRequest) {
         Integer userId = JwtInterceptor.getUser().getId();
-
-//        // 校验管理员身份
-//        boolean isAdmin = adminService.isAdmin(userId, confessionRequest.getWallId());
-//        if (!isAdmin) {
-//            return Result.fail("您不是该表白墙的管理员");
-//        }
 
         //判断该管理员每天的投稿有没有超过限制
         int count = confessionPostService.getPostCountByUserIdAndDate(userId, LocalDate.now());
@@ -100,9 +94,8 @@ public class AdminController {
         Confessionpost confessionPost = createConfessionPost(confessionRequest, userId, false);
 
         confessionPostService.save(confessionPost);
-
-        saveToRedis(confessionPost);
-
+        confessionPostService.obtainWallLockSyncCache(confessionPost.getWallId(),confessionPost.getId(),
+                confessionPost.getPublishTime().toInstant(ZoneOffset.UTC).getEpochSecond(),true);
         return Result.ok();
     }
 
@@ -118,9 +111,8 @@ public class AdminController {
         Confessionpost confessionPost = createConfessionPost(confessionRequest, adminId, true);
         confessionPostService.save(confessionPost);
 
-        //todo 这里调用发布投稿的方法来同步缓存，还没有写，也顺便在那里加锁
-        saveToRedis(confessionPost); //表白墙的缓存
-
+        //这里调用发布投稿的方法来同步缓存，也顺便在那里加锁同步, 里面获取所有的可用的表白墙列表,然后for循序
+        confessionPostService.putSubmissionOfAllWalls(confessionPost.getId());
         return Result.ok();
     }
 
@@ -138,13 +130,13 @@ public class AdminController {
         return confessionPost;
     }
 
-    private void saveToRedis(Confessionpost confessionPost) {
-        //保存到redis
-        String key = RedisConstant.CONFESSION_PREFIX + confessionPost.getWallId();
-        ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
-        zSetOperations.add(key, confessionPost, confessionPost.getPublishTime().toEpochSecond(ZoneOffset.UTC));
-        redisTemplate.expire(key, 3, TimeUnit.DAYS);
-    }
+//    private void saveToRedis(Confessionpost confessionPost) {
+//        //保存到redis
+//        String key = RedisConstant.CONFESSION_PREFIX + confessionPost.getWallId();
+//        ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
+//        zSetOperations.add(key, confessionPost, confessionPost.getPublishTime().toEpochSecond(ZoneOffset.UTC));
+//        redisTemplate.expire(key, 3, TimeUnit.DAYS);
+//    }
 
 
 

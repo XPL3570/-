@@ -6,6 +6,8 @@ import com.confession.comm.PageTool;
 import com.confession.pojo.Confessionwall;
 import com.confession.request.RegistryWhiteWallRequest;
 
+import java.util.List;
+
 /**
  * <p>
  *  服务类
@@ -35,5 +37,10 @@ public interface ConfessionwallService extends IService<Confessionwall> {
      * @return
      */
     PageResult wallList(PageTool pageTool);
+
+    /**
+     * 获取可用墙的id集合  同步所有表白墙下的ZSet的时候要用
+     */
+    List<Integer> getAvailableWallsIds();
 
 }

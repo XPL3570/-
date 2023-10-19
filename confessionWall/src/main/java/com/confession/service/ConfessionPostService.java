@@ -7,7 +7,6 @@ import com.confession.dto.ConfessionPostDTO;
 import com.confession.pojo.Confessionpost;
 import com.confession.request.AuditRequest;
 import com.confession.request.ConfessionPostRequest;
-import org.springframework.data.relational.core.sql.In;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -100,4 +99,22 @@ public interface ConfessionPostService extends IService<Confessionpost> {
      * 查询用户发布的投稿id集合 时间限定半年内，最多44条
      */
     List<Integer> getUserPostId(Integer userId);
+
+    /**
+     * 获取表白墙锁并同步投稿缓存  投稿到单个表白墙
+     * @param wallId
+     * @param recordId
+     * @param publishTimestamp 发布时间时间戳，
+     * @param isSyncPostCache 是否同步改投稿id下的缓存
+     *
+     */
+    void obtainWallLockSyncCache(Integer wallId, Integer recordId,long publishTimestamp, boolean isSyncPostCache);
+
+
+    /**
+     * 把投稿放到所有表白墙的投稿列表下面
+     * @param postIds 投稿id
+     */
+    void putSubmissionOfAllWalls(Integer postIds);
+
 }

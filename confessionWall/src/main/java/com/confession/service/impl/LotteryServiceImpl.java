@@ -9,6 +9,7 @@ import com.confession.comm.Strategy;
 import com.confession.config.WallConfig;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.mapper.LotteryMapper;
+import com.confession.mapper.SchoolMapper;
 import com.confession.pojo.Lottery;
 import com.confession.request.LotteryRequest;
 import com.confession.service.LotteryService;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static com.confession.comm.RedisConstant.USER_POSTED_NODE;
+import static com.confession.comm.ResultCodeEnum.NOT_OPEN_LOVE_WALL;
 import static com.confession.comm.ResultCodeEnum.SUBMISSION_EXCEEDS_LIMIT;
 
 /**
@@ -42,10 +44,13 @@ public class LotteryServiceImpl extends ServiceImpl<LotteryMapper, Lottery> impl
     @Resource
     private RedisTemplate redisTemplate;
 
+    @Resource
+    private SchoolMapper schoolMapper;
+
     @Override
     public boolean insert(LotteryRequest request, Integer userId) {
         // 检查策略
-        checkStrategy(userId);
+        checkStrategy(request.getSchoolId(),userId);
         // 如果检查通过，执行写入操作
         Lottery lottery = new Lottery();
         lottery.setUserId(userId);
@@ -73,37 +78,42 @@ public class LotteryServiceImpl extends ServiceImpl<LotteryMapper, Lottery> impl
         return records;
     }
 
-    private void checkStrategy(Integer userId) {
+    private void checkStrategy(Integer schoolId,Integer userId) {
         // 将配置文件中的字符串转换为枚举值
+        //这里可以也许可以用反射优化，这里先不管了
         Strategy strategy = Strategy.valueOf(wallConfig.getStrategyString().toUpperCase());
 
+        Integer luckyDraws = schoolMapper.selectById(schoolId).getNumberLuckyDraws();
+        if (luckyDraws<1){
+            throw new WallException(NOT_OPEN_LOVE_WALL);
+        }
         // 根据策略进行检查
         switch (strategy) {
             case YEARLY:
                 // 查询过去一年该用户是否已经创建过记录
                 int yearlyCount = lotteryMapper.countYearlyRecords(userId);
-                if (yearlyCount >= wallConfig.getYearlyLimit()) {
+                if (yearlyCount >= luckyDraws) {
                     throw new WallException(SUBMISSION_EXCEEDS_LIMIT);
                 }
                 break;
             case MONTHLY:
                 // 查询过去一个月该用户是否已经创建过记录
                 int monthlyCount = lotteryMapper.countMonthlyRecords(userId);
-                if (monthlyCount >= wallConfig.getMonthlyLimit()) {
+                if (monthlyCount >= luckyDraws) {
                     throw new WallException(SUBMISSION_EXCEEDS_LIMIT);
                 }
                 break;
             case DAILY:
                 // 查询过去一天该用户是否已经创建过记录
                 int dailyCount = lotteryMapper.countDailyRecords(userId);
-                if (dailyCount >= wallConfig.getDailyLimit()) {
+                if (dailyCount >= luckyDraws) {
                     throw new WallException(SUBMISSION_EXCEEDS_LIMIT);
                 }
                 break;
             case ONCE:
                 // 查询该用户是否已经创建过记录
                 int totalCount = lotteryMapper.countTotalRecords(userId);
-                if (totalCount >= wallConfig.getTotalLimit()) {
+                if (totalCount >=luckyDraws) {
                     throw new WallException(SUBMISSION_EXCEEDS_LIMIT);
                 }
                 break;

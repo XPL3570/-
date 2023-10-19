@@ -35,7 +35,7 @@ spring:
     port: 6379
     database: 0
 #    password:
-    password: xpl231016
+        password: xpl231016
     # 连接超时时间
     timeout: 10s
     lettuce:

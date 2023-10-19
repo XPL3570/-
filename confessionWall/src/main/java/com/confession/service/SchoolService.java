@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
 import com.confession.dto.IndexInfoDTO;
-import com.confession.dto.SchoolApplicationDTO;
 import com.confession.pojo.School;
 import com.confession.request.RegisterSchoolRequest;
 import com.confession.request.SchoolExamineRequest;

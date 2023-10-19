@@ -8,7 +8,6 @@ import lombok.Data;
  * 自定义全局异常类
  */
 @Data
-
 public class WallException extends RuntimeException {
 
 

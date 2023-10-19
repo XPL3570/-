@@ -102,7 +102,6 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         comment.setCommentContent(request.getCommentContent());
         comment.setCommentTime(LocalDateTime.now());
         commentMapper.insert(comment);
-        //这里同步缓存  todo  可以加一个锁 防止多个线程同时操作一个投稿记录
         //后面获取记录的时候就获取这个锁了，方式要获取的锁太多，毫秒级别的延迟也可以
         RLock lock = redissonClient.getLock(CONFESSION_PREFIX_LOCK + request.getConfessionPostReviewId());
         lock.lock();

@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
-import com.confession.config.JwtConfig;
 import com.confession.dto.IndexInfoDTO;
 import com.confession.dto.SchoolApplicationDTO;
 import com.confession.dto.SchoolDTO;
@@ -141,8 +140,6 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
             school = new School();
             school.setCreatorId(userId);
             school.setSchoolName(registerSchool.getSchoolName());
-            school.setAvatarURL(registerSchool.getAvatarURL());
-            school.setDescription(registerSchool.getDescription());
             school.setIsVerified(0);//初始状态
             schoolMapper.insert(school);
 
@@ -182,9 +179,8 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
         dto.setId(school.getId());
         dto.setSchoolName(school.getSchoolName());
         dto.setPrompt(school.getPrompt());
-        dto.setDescription(school.getDescription());
         dto.setIsVerified(school.getIsVerified());
-        dto.setAvatarURL(school.getAvatarURL());
+        dto.setNumberLuckyDraws(school.getNumberLuckyDraws());
         String aaa = school.getCarouselImages();
         if (!StringUtils.isEmpty(aaa)){
             dto.setCarouselImages(school.getCarouselImages().split(";"));
@@ -217,8 +213,6 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
             SchoolApplicationDTO dto = new SchoolApplicationDTO();
             dto.setSchoolId(school.getId());
             dto.setSchoolName(school.getSchoolName());
-            dto.setAvatarURL(school.getAvatarURL());
-            dto.setDescription(school.getDescription());
             dto.setCreateTime(school.getCreateTime());
             User user = userMapper.selectById(school.getCreatorId());
             dto.setCreatorUsername(user.getUsername());
@@ -246,7 +240,7 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
 
         LambdaUpdateWrapper<SchoolApplication> updateWrapperZj = new LambdaUpdateWrapper<>(); //记录
         updateWrapperZj.eq(SchoolApplication::getSchoolId,schoolExamineRequest.getSchoolId()).
-                set(SchoolApplication::getIsApproved,JwtInterceptor.getUser().getId())
+                set(SchoolApplication::getApprovedby,JwtInterceptor.getUser().getId())
                 .set(SchoolApplication::getIsApproved,schoolExamineRequest.getIsVerified());
 
         School school = schoolMapper.selectById(schoolExamineRequest.getSchoolId());
@@ -337,9 +331,7 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
         // 根据学校ID和请求参数进行学校修改的逻辑处理
         School school = new School();
         school.setId(request.getId());
-        school.setAvatarURL(request.getAvatarURL());
         school.setSchoolName(request.getSchoolName());
-        school.setDescription(request.getDescription());
         school.setCarouselImages(request.getCarouselImages());
         school.setPrompt(request.getPrompt());
         school.setIsVerified(request.getIsVerified());

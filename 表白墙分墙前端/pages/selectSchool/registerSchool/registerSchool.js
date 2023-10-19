@@ -6,16 +6,13 @@ import Dialog from '@vant/weapp/dialog/dialog';
 Page({
 	data: {
 		schoolName: '',
-		description: '',
 		wechatNumber: '',
 		phoneNumber: '',
 		schoolNameError: '',
-		descriptionError: '',
 		wechatNumberError: '',
 		phoneNumberError: '',
 		fileList: []
 	},
-
 	onLoad(options) {
 		const schoolName = options.schoolName;
 		this.setData({
@@ -36,12 +33,6 @@ Page({
 		});
 	},
 
-	onInputDescription(event) {
-		this.setData({
-			description: event.detail,
-			descriptionError: event.detail.length > 1000 ? '学校描述的长度不能超过1000' : '',
-		});
-	},
 	onInputWechatNumber(event) {
 		this.setData({
 			wechatNumber: event.detail,
@@ -66,63 +57,63 @@ Page({
 			content: event.detail
 		});
 	},
-	// 在选择文件之前触发,判断大小
-	beforeRead(event) {
-		const { file, callback } = event.detail;
-		if (file.type !== 'image') {
-			wx.showToast({
-				title: '文件类型异常',
-				icon: 'error',
-			});
-			callback(false);
-		}
-		// 检查文件大小是否超过限制，单位为字节（例如，限制为 2MB）
-		if (file.size > 2 * 1024 * 1024) {
-			wx.showToast({
-				title: '文件大小超过2M',
-				icon: 'error',
-			});
-			// 可以根据需要返回 false 阻止文件上传
-			callback(false);
-		}
-		callback(true);
-	},
-	// 文件上传完成后的回调函数 这里要往后端发起请求保存返回地址，
-	async afterRead(event) {
-		// console.log('afterRead调用')
-		const {
-			file
-		} = event.detail;
-		oos.uploadImagesAlibabaCloud(file.url, (url) => {
-			if (url) {
-				const newRecord = {
-					url: url
-				};
-				this.data.fileList.push(newRecord);
-				this.setData({
-					fileList: this.data.fileList,
-				});
-			}
-		});
+	// // 在选择文件之前触发,判断大小
+	// beforeRead(event) {
+	// 	const { file, callback } = event.detail;
+	// 	if (file.type !== 'image') {
+	// 		wx.showToast({
+	// 			title: '文件类型异常',
+	// 			icon: 'error',
+	// 		});
+	// 		callback(false);
+	// 	}
+	// 	// 检查文件大小是否超过限制，单位为字节（例如，限制为 2MB）
+	// 	if (file.size > 2 * 1024 * 1024) {
+	// 		wx.showToast({
+	// 			title: '文件大小超过2M',
+	// 			icon: 'error',
+	// 		});
+	// 		// 可以根据需要返回 false 阻止文件上传
+	// 		callback(false);
+	// 	}
+	// 	callback(true);
+	// },
+	// // 文件上传完成后的回调函数 这里要往后端发起请求保存返回地址，
+	// async afterRead(event) {
+	// 	// console.log('afterRead调用')
+	// 	const {
+	// 		file
+	// 	} = event.detail;
+	// 	oos.uploadImagesAlibabaCloud(file.url, (url) => {
+	// 		if (url) {
+	// 			const newRecord = {
+	// 				url: url
+	// 			};
+	// 			this.data.fileList.push(newRecord);
+	// 			this.setData({
+	// 				fileList: this.data.fileList,
+	// 			});
+	// 		}
+	// 	});
 
 
-	},
-	// 删除图片，拿到地址信息往后端发起删除操作
-	handleDeleteImage(event) {
-		const {
-			index
-		} = event.detail;
-		const fileLists = [...this.data.fileList];
-		fileLists.splice(index, 1);
-		this.setData({
-			fileList: fileLists
-		});
+	// },
+	// // 删除图片，拿到地址信息往后端发起删除操作
+	// handleDeleteImage(event) {
+	// 	const {
+	// 		index
+	// 	} = event.detail;
+	// 	const fileLists = [...this.data.fileList];
+	// 	fileLists.splice(index, 1);
+	// 	this.setData({
+	// 		fileList: fileLists
+	// 	});
 
-		//调用方法删除图片
-		util.URLDeleteImage(event.detail.file.url);
-	},
+	// 	//调用方法删除图片
+	// 	util.URLDeleteImage(event.detail.file.url);
+	// },
 	onSubmit() {
-		if (this.data.schoolNameError || this.data.descriptionError || this.data.wechatNumberError || this.data.phoneNumberError || !this.data.fileList[0]) {
+		if (this.data.schoolNameError  || this.data.wechatNumberError || this.data.phoneNumberError) {
 			wx.showToast({
 				title: '请填写数据完整后再提交',
 				icon: 'none',
@@ -130,9 +121,7 @@ Page({
 			return;
 		}
 		var data = {
-			avatarURL: this.data.fileList[0].url,
 			schoolName: this.data.schoolName,
-			description: this.data.description,
 			wechatNumber: this.data.wechatNumber,
 			phoneNumber: this.data.phoneNumber,
 		};

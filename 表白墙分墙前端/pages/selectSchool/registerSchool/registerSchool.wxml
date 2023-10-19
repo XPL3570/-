@@ -7,27 +7,16 @@
     bind:input="onInputSchoolName"
     error-message="{{ schoolNameError }}"
   ></van-field>
-
-  <van-field
-    label="学校描述"
-    placeholder="请输入学校描述"
-    value="{{ description }}"
-    bind:input="onInputDescription"
-    error-message="{{ descriptionError }}"
-  ></van-field>
-	<view class="school"> <view class="zj"> 学校头像</view>
-  <van-uploader file-list="{{ fileList }}" image-fit="aspectFill" accept="media" use-before-read bind:before-read="beforeRead"  bind:after-read="afterRead"  bind:delete="handleDeleteImage" max-count="1" />
-</view>
   <van-field
     label="微信号"
-    placeholder="请输入微信号"
+    placeholder="请输入您的微信号"
     value="{{ wechatNumber }}"
     bind:input="onInputWechatNumber"
     error-message="{{ wechatNumberError }}"
   ></van-field>
   <van-field
     label="手机号"
-    placeholder="请输入手机号"
+    placeholder="请输入您的手机号"
     value="{{ phoneNumber }}"
     bind:input="onInputPhoneNumber"
     error-message="{{ phoneNumberError }}"
