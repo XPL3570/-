@@ -13,6 +13,7 @@
 		"pages/personal/submitApplication/submitApplication",
 		"pages/personal/administratorReview/administratorReview",
 		"pages/personal/commentResponse/commentResponse",
+		"pages/personal/feedbackToAdmin/feedbackToAdmin",
 		"pages/loveWall/loveWall"
 	],
 	"window": {

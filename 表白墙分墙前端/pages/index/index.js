@@ -1,9 +1,10 @@
 var request = require('../../utils/request')
-var uril = require('../../utils/util')
+var util = require('../../utils/util')
 import Notify from '@vant/weapp/notify/notify';
 
 Page({
 	data: {
+		startTimeStamp:0,
 		title: '', //墙名字
 		prompt: '欢迎来到同校表白墙！        您的投稿是我不懈的动力！',
 		swiperOptions: {  //轮播图参数
@@ -12,6 +13,7 @@ Page({
 			interval: 2000,
 			duration: 1000,
 		},
+		postId:null, //举报id
 		swiperData: [
 			'../../image/Carousel/1.jpg',
 			'../../image/Carousel/2.jpg',
@@ -31,20 +33,20 @@ Page({
 		mainIndex: -1, //如果回复的是主评论，这就是记录主评论的下标
 	},
 	onLoad() { //获取首页数据和表白数据，分开哦
-		console.log('index的onLoad函数触发')
+		// console.log('index的onLoad函数触发')
 		this.setData({
 			title: wx.getStorageSync('wall').wallName
 		});
 		// console.log(wx.getStorageSync('userInfo').schoolId)
 		//获取轮播图和提示语
-		if (wx.getStorageSync('userInfo').schoolId===undefined) {
+		if (wx.getStorageSync('userInfo').schoolId === undefined) {
 			return;
 		}
 		var sbzj = {
 			schoolId: wx.getStorageSync('userInfo').schoolId
 		}
 		console.log(sbzj);
-	
+
 		request.requestWithToken("/api/school/getIndexInfo", "GET", sbzj,
 			(res) => {
 				if (res.data.code === 200) {
@@ -62,6 +64,7 @@ Page({
 		this.loadData();
 	},
 	loadData() {
+		// console.log(this.data.confession.length);
 		if (!this.data.canLoadMore) {
 			wx.showToast({
 				title: '没有更多投稿数据了哦！',
@@ -81,18 +84,27 @@ Page({
 					canLoadMore: res.data.data.length >= this.data.limit,
 					page: this.data.page + 1, // 更新页数
 				});
-				// console.log(this.data.canLoadMore);
+				// console.log(res.data.data);
 				const updatedConfession = res.data.data.map((item) => { //遍历源数据
 					const subCommentsExist = item.mainComments.map((mainComment) => { //拿到主评论去找子评论找有没有匹配的
 						const matchingSubComments = item.subComments.filter(subComment => subComment.parentCommentId === mainComment.id);
 						return matchingSubComments.length > 0;
 					});
+					//优化点，这里是把所有的日志在这里过滤了，但是不展开的数据可能不要用，这里不管
 					const updatedMainComments = item.mainComments.map((mainComment) => ({
-						...mainComment,
+						...mainComment, 
+						commentTime:util.formatDate(mainComment.commentTime), 
 						commentContentVisible: false,
 					}));
+					const updatedSubComments = item.subComments.map((subComment) => ({
+						...subComment, 
+						commentTime:util.formatDate(subComment.commentTime), 
+					}));
+					let formattedpublishTime = util.formatDate(item.publishTime);
 					return {
 						...item,
+						publishTime:formattedpublishTime,
+						subComments:updatedSubComments,
 						mainComments: updatedMainComments,
 						subCommentsExist,
 					};
@@ -148,7 +160,7 @@ Page({
 			urls: images // 需要预览的图片链接列表
 		});
 	},
-	//处理展开数据
+	//处理展开子评论数据
 	expandComments(event) {
 		const { outIndex, zjIndex } = event.currentTarget.dataset;
 		const updatedConfession = this.LoadComments(outIndex, zjIndex, this.data.confession, true);
@@ -369,6 +381,21 @@ Page({
 			mainIndex: -1,
 			replyIndex: -1,
 		});
+	},
+	touchstart(e) {
+		console.log('点击开始：',e.timeStamp)
+	  this.setData({startTimeStamp:e.timeStamp})
+	},
+	touchend(e) {
+		console.log('点击结束',e.timeStamp);
+	  if(e.timeStamp - this.data.startTimeStamp < 404) {
+		  return;
+		} else {
+		  console.log('触发函数') //todo 
+		  this.setData({
+			postId:e.currentTarget.dataset.postId
+		  });
+		}
 	},
 
 })

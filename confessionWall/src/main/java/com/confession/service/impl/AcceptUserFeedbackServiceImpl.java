@@ -8,6 +8,7 @@ import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
 import com.confession.dto.AcceptUserFeedbackDTO;
 import com.confession.pojo.AcceptUserFeedback;
+import com.confession.request.SubmitFeedbackRequest;
 import com.confession.service.AcceptUserFeedbackService;
 import com.confession.mapper.AcceptUserFeedbackMapper;
 import com.confession.service.UserService;
@@ -31,10 +32,11 @@ public class AcceptUserFeedbackServiceImpl extends ServiceImpl<AcceptUserFeedbac
     private UserService userService;
 
     @Override
-    public void userSubmit(Integer userId, String massage) {
+    public void userSubmit(Integer userId, SubmitFeedbackRequest request) {
         AcceptUserFeedback feedback = new AcceptUserFeedback();
         feedback.setUserid(userId);
-        feedback.setMessage(massage);
+        feedback.setScore(request.getScore());
+        feedback.setMessage(request.getMassage());
         save(feedback);
     }
 

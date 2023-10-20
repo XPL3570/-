@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.confession.comm.*;
@@ -285,10 +284,6 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         if (isAnonymous != null) {
             queryWrapper.eq(Confessionpost::getIsAnonymous, isAnonymous);
         }
-        // 是否超级管理员发布
-        if (isAdminPost != null) {
-            queryWrapper.eq(Confessionpost::getIsAdminPost, isAdminPost);
-        }
         // 发布状态查询
         if (postStatus != null) {
             queryWrapper.eq(Confessionpost::getPostStatus, postStatus);
@@ -297,6 +292,15 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         if (reverseOrder != null && reverseOrder) {
             queryWrapper.orderByDesc(Confessionpost::getId);
         }
+        // 是否超级管理员发布
+        if (isAdminPost != null) {
+            queryWrapper.eq(Confessionpost::getIsAdminPost, isAdminPost);
+        }else {
+            if (StringUtils.isNotBlank(fuzzyQueryContent)|| StringUtils.isNotBlank(wallName)||postStatus!=null||isAnonymous!=null||StringUtils.isNotBlank(userName)){
+                queryWrapper.or(wrapper -> wrapper.eq(Confessionpost::getIsAdminPost,true));
+            }
+        }
+
         // 分页查询
         List<Confessionpost> records = this.page(page, queryWrapper).getRecords();
         List<ConfessionPostAdminDTO> res = records.stream().map(
@@ -319,55 +323,47 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
             throw new WallException(FAIL);
         }
         if (request.getPostStatus() == 1) {
-//            获取锁
-            RLock lock = redissonClient.getLock(SCHOOL_WALL_MAIN_LIST_MOD_LOCK + request.getWallId());
-            lock.lock();
-            //放入缓存
-            String key = RedisConstant.CONFESSION_PREFIX + request.getWallId();
-            Confessionpost confessionPost = confessionpostMapper.selectById(request.getId());
-            ConfessionPostDTO dto = convertToDTOAll(confessionPost);
-            // 存入Redis
-            redisTemplate.opsForValue().set(key, dto, 1, TimeUnit.DAYS);
-
-            redisTemplate.opsForZSet().add(WALL_SUBMISSION_RECORD + request.getWallId(),
-                    request.getId(), confessionPost.getPublishTime().toEpochSecond(ZoneOffset.UTC));
-            lock.unlock();
+            //同步缓存
+            obtainWallLockSyncCache(request.getWallId(),request.getId(),new Date().toInstant().getEpochSecond(),true);
+        }
+        if (request.getPostStatus()==2){
+            //todo 删除缓存
         }
     }
 
     @Override
     public List<ConfessionPostDTO> confessionPostService(Integer wallId, int page, int limit) {
-        int startIndex = (page - 1) * page;
+        int startIndex = page==1?0:(page - 1) * limit-1;
         if (startIndex > 220404) {
             //不太可能有这么多的数据，直接报错
             throw new WallException(NO_SUBMISSION_DATA);
         }
-        int endIndex = startIndex + limit - 1;  //注意这里是倒序啊
-        Set<Integer> zSetMembers = redisTemplate.opsForZSet().reverseRange(WALL_SUBMISSION_RECORD + wallId, startIndex, endIndex);
-
+        //这里两个都是索引，包左不包右
+        Set<Integer> zSetMembers = redisTemplate.opsForZSet().reverseRange(WALL_POSTS_PREFIX + wallId, startIndex,startIndex+limit-1);
+        System.out.println(zSetMembers.size());
+        System.out.println(limit);
         List<ConfessionPostDTO> posts;
         if (zSetMembers.isEmpty()||zSetMembers.size()<limit) {
             // 查询这个key的里面集合的数量并添加   这里要加分布式锁，在添加的时候也要获取这个锁
             RLock lock = redissonClient.getLock(SCHOOL_WALL_MAIN_LIST_MOD_LOCK + wallId);
             lock.lock();
-            long missingCount = redisTemplate.opsForZSet().zCard(WALL_SUBMISSION_RECORD + wallId);
-
-            // 从数据库中查询缺失的记录的id和时间戳添加
+            // 计算需要从那个索引下面取值+已经有的值
             List<RecordIDCache> iDsByWallId =
-                    confessionpostMapper.getConfessionPostIDsByWallId(wallId, startIndex, endIndex + 2 - (int) missingCount);
-            if (iDsByWallId.size() < 1) {                                                                                       //多加一条，防止有数据突然删除
-//                throw new WallException(NO_SUBMISSION_DATA); //提示没有数据了
-                posts=getPostsFromDatabase(new ArrayList<Integer>(zSetMembers));
+                    confessionpostMapper.getConfessionPostIDsByWallId(wallId, startIndex+ zSetMembers.size(), limit- zSetMembers.size());
+            if (iDsByWallId.size() < 1) {
+                posts=getPostsFromDatabase(new ArrayList(zSetMembers));
             }else {
                 // 将缺失的数据的id添加到有序集合中
-
-                for (RecordIDCache record : iDsByWallId) {
-                    redisTemplate.opsForZSet().add(WALL_SUBMISSION_RECORD + wallId, record.getId(), record.getTimeStamp());
-                    zSetMembers.add(record.getId());  //这里先用set集合装，也防止数据重复
+                for (int i = 0; i < iDsByWallId.size(); i++) {
+                    redisTemplate.opsForZSet().add(WALL_POSTS_PREFIX + wallId, iDsByWallId.get(i).getId(),iDsByWallId.get(i).getTimeStamp());
+                    zSetMembers.add( iDsByWallId.get(i).getId());  //这里先用set集合装，也防止数据重复
                 }
-                posts = getPostsFromDatabase(zSetMembers.stream().collect(Collectors.toList()));
+                if (zSetMembers.size()>0){
+                    posts = getPostsFromDatabase(zSetMembers.stream().collect(Collectors.toList()));
+                }else {
+                    posts=new ArrayList();
+                }
             }
-
             lock.unlock();
         } else {
 //            System.out.println(zSetMembers);
@@ -443,11 +439,11 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         //这里获取更新学校表白墙列表的锁
         RLock lock = redissonClient.getLock(SCHOOL_WALL_MAIN_LIST_MOD_LOCK + wallId);
         lock.lock();
-        redisTemplate.opsForZSet().add(WALL_SUBMISSION_RECORD + wallId,
+        redisTemplate.opsForZSet().add(WALL_POSTS_PREFIX + wallId,
                 recordId,publishTimestamp);
         if(isSyncPostCache){
             Confessionpost byId = confessionpostMapper.selectById(recordId);
-            String key = RedisConstant.CONFESSION_PREFIX + recordId;
+            String key = RedisConstant.POST_SUBMISSION_RECORD + recordId;
             redisTemplate.opsForValue().set(key, this.convertToDTOAll(byId), 3, TimeUnit.DAYS);
         }
         lock.unlock();
@@ -462,7 +458,7 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         }
         //先把该投稿同步到缓存，然后同步表白墙下面的ZSet集合
         Confessionpost byId = confessionpostMapper.selectById(postIds);
-        String key = RedisConstant.CONFESSION_PREFIX + postIds;
+        String key = RedisConstant.WALL_POSTS_PREFIX + postIds;
         redisTemplate.opsForValue().set(key, this.convertToDTOAll(byId), 3, TimeUnit.DAYS);
 
         for (Integer wallsId : wallsIds) {
@@ -482,7 +478,7 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         for (Integer id : postIds) {
             //拿到id集合也是先从缓存里面拿
 //            ConfessionPostDTO redisDto =(ConfessionPostDTO) redisTemplate.opsForValue().get(CONFESSION_PREFIX + id);
-            JSONObject redisDtoTemp = (JSONObject) redisTemplate.opsForValue().get(CONFESSION_PREFIX + id);
+            JSONObject redisDtoTemp = (JSONObject) redisTemplate.opsForValue().get(POST_SUBMISSION_RECORD + id);
             ConfessionPostDTO redisDto;
             if (redisDtoTemp != null) {
                 redisDto = redisDtoTemp.toJavaObject(ConfessionPostDTO.class);
@@ -494,7 +490,6 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
                 if (confessionpost != null) {
                     dbDto = this.convertToDTOAll(confessionpost);
                 }
-
                 // 根据发布时间设置不同的过期时间
                 LocalDateTime publishTime = confessionpost.getPublishTime();
                 LocalDateTime now = LocalDateTime.now();
@@ -510,7 +505,7 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
                     expirationSeconds = Duration.ofHours(1).getSeconds();
                 }
                 // 将查询结果放入缓存，并设置过期时间
-                redisTemplate.opsForValue().set(CONFESSION_PREFIX + id, dbDto, expirationSeconds, TimeUnit.SECONDS);
+                redisTemplate.opsForValue().set(POST_SUBMISSION_RECORD + id, dbDto, expirationSeconds, TimeUnit.SECONDS);
                 redisDto = dbDto;
             }
             posts.add(redisDto);

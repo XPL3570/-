@@ -13,7 +13,7 @@ public class AuditRequest {
 
     //这里校验数字最小是0
 
-    @NotNull(message = "id不能为空")
+    @NotNull(message = "id不能为空") //投稿id
     @Min(value = 0,message = "id不能小于0")
     private Integer id;
 

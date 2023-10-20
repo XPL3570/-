@@ -86,6 +86,32 @@ const formatNumber = n => {
 	return n[1] ? n : `0${n}`
 }
 
+function formatDate(dateString) {  
+	// 将日期字符串解析为Date对象  
+	const date = new Date(dateString);  
+	// 获取当前年份  
+	const currentYear = new Date().getFullYear();  
+	// 判断年份是否为当前年份  
+	let yearOutput;  
+	if (date.getFullYear() === currentYear) {  
+	  // 如果是今年，只显示月日时分  
+	  yearOutput = '';  
+	} else {  
+	  // 如果不是今年，显示年份  
+	  yearOutput = date.getFullYear();  
+	}  
+	// 获取月份（从0开始，所以加1得到实际的月份）  
+	const month = date.getMonth() + 1;  
+	// 获取日期  
+	const day = date.getDate();  
+	// 获取小时  
+	const hours = date.getHours();  
+	// 获取分钟  
+	const minutes = date.getMinutes();  
+	// 格式化月、日、时和分，并返回结果  
+	return `${yearOutput}${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day} ${hours}:${minutes < 10 ? '0' + minutes : minutes}`;  
+  }
+
 function currentTime() {
 	let currentDate = new Date();  // 获取当前时间
 
@@ -102,6 +128,7 @@ function currentTime() {
 
 module.exports = {
 	formatTime,
+	formatDate:formatDate, //格式化日期，自己的
 	uploadAndRetrieveImageUrl: uploadAndRetrieveImageUrl,
 	URLDeleteImage: URLDeleteImage,
 	currentTime:currentTime

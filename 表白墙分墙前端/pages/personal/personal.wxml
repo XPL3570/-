@@ -79,6 +79,16 @@
 		</view>
 	</view>
 
+	<view  class='panel panel-between item-center border-b' bindtap="feedbackReviewView">
+		<view class='panel-start item-center'>
+			<image src='/image/反馈意见.png' class='icon-65r'></image>
+			<text class='fo-28'>意见反馈</text>
+		</view>
+		<view>
+			<image src='/image/right.png' class='icon-25'></image>
+		</view>
+	</view>
+
 	<view class='panel panel-between item-center' bindtap="shareFriends">
 		<view class='panel-start item-center'>
 			<image src='/image/分享.png' class='icon-65r'></image>

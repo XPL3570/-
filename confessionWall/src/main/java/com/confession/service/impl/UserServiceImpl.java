@@ -173,7 +173,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         // 检查时间间隔
         if (!checkTimeInterval(user.getUpdateTime())) {
-            throw new WallException("修改头像或名字的时间间隔不足三天", 400);
+            throw new WallException( "最多一天可以修改一次头像或名字哦",400);
         }
 
         // 更新属性和更新时间
@@ -184,8 +184,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             imageService.deleteImage(zj,userId);
             user.setAvatarURL(attributeValue);
         } else if ("name".equals(attributeName)) {
-            if (attributeName.contains("表白墙") || attributeName.contains("墙")) {
-                throw new WallException("该名字合适哦", 400);
+            if (attributeValue.contains("表白墙") || attributeValue.contains("墙")) {
+                throw new WallException("该名字不能设置哦,您可以换一个哦", 400);
             }
             LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(User::getUsername, attributeName);
@@ -198,16 +198,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setUpdateTime(LocalDateTime.now()); // 使用java.time.LocalDateTime类获取当前时间
         this.updateById(user);
 
-
         //这里判断redis里面是否有key，有就更新一下缓存
         boolean exists = redisTemplate.hasKey(USER_DTO_PREFIX + userId);
 
         if (exists) {
             UserDTO userDTO = new UserDTO();
-            userDTO.setUsername(user.getUsername());
-            userDTO.setAvatarURL(user.getAvatarURL());
+            User byId = this.getById(userId);
+            userDTO.setAvatarURL(byId.getAvatarURL());
+            userDTO.setUsername(byId.getUsername());
             // 更新缓存逻辑
             redisTemplate.opsForValue().set(USER_DTO_PREFIX + userId, userDTO, 15, TimeUnit.MINUTES);
+
+
         }
     }
 

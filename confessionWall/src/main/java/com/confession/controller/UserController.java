@@ -162,8 +162,7 @@ public class UserController {
     }
 
     @PostMapping("/name")
-    public Result updateName(HttpServletRequest req,
-                             @RequestBody @Validated UpdateNameRequest request) {
+    public Result updateName(@RequestBody @Validated UpdateNameRequest request) {
         userService.updateUserAttribute("name", request.getUsername());
         return Result.ok();
     }

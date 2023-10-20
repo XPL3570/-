@@ -1,4 +1,5 @@
 var request = require('../../../utils/request');
+var util = require('../../../utils/util');
 
 
 Page({
@@ -29,7 +30,16 @@ Page({
     request.requestWithToken('/api/confessionPost/pending', 'GET', { page: this.data.page, limit: this.data.limit }, (res) => {
     if(res.data.code===200){
 			const newData = res.data.data;
-      const newList = this.data.list.concat(newData);
+
+			const formattedData = newData.map(obj => {  
+				const formattedCreateTime = util.formatDate(obj.createTime);  
+				return {  
+				  ...obj,  
+				  createTime: formattedCreateTime  
+				};  
+			  });
+
+      const newList = this.data.list.concat(formattedData);
       this.setData({
         list: newList,
         canLoadMore: newData.length >= this.data.limit, // 判断是否可以继续加载更多数据

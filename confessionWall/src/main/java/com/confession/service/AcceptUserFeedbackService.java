@@ -5,6 +5,7 @@ import com.confession.comm.PageTool;
 import com.confession.dto.AcceptUserFeedbackDTO;
 import com.confession.pojo.AcceptUserFeedback;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.confession.request.SubmitFeedbackRequest;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public interface AcceptUserFeedbackService extends IService<AcceptUserFeedback> 
     /**
      *  用户提交反馈
      */
-    void userSubmit(Integer userId, String massage);
+    void userSubmit(Integer userId, SubmitFeedbackRequest request);
 
     /**
      * 获取未读反馈数

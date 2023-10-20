@@ -29,7 +29,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="是否超级管理员发布：">
-        <el-select size="small" v-model="formInline.isAdminPost" placeholder="请选择要查询是否超级管理员发布">
+        <el-select size="small" v-model="formInline.isAdminPost" placeholder="不设置会查看所有管理员发布的">
           <el-option label="全部" value=""></el-option>
           <el-option label="是" value=true></el-option>
           <el-option label="否" value=false></el-option>
@@ -158,7 +158,7 @@ export default {
         fuzzyQueryContent: '',
         wallName: '',
         userName: '',
-        isAdminPost: null,
+        isAdminPost: false,
         isAnonymous: null,
         postStatus: null,
         reverseOrder: null,
@@ -230,14 +230,17 @@ export default {
     getData() {
       console.log(this.formInline)
       this.loading = true;
+      this.page.page=1;
       api.get('/api/confessionPost/admin/userList', this.formInline)
           .then(
               res => {
                 if (res.data.code === 200) {
-                  this.tableData = res.data.data.data.map(item => {
-                    item.imageURL = item.imageURL.split(';');
-                    return item;
-                  });
+                  if ( res.data.data.data){
+                    this.tableData = res.data.data.data.map(item => {
+                      item.imageURL = item.imageURL.split(';');
+                      return item;
+                    });
+                  }
                   console.log(this.tableData)
                   this.page.total = res.data.data.total;
                   this.loading = false;

@@ -8,12 +8,13 @@
             <id property="id" column="Id" jdbcType="INTEGER"/>
             <result property="userid" column="UserId" jdbcType="INTEGER"/>
             <result property="message" column="Message" jdbcType="VARCHAR"/>
+            <result property="score" column="Score" jdbcType="INTEGER"/>
             <result property="createTime" column="CreateTime" jdbcType="TIMESTAMP"/>
             <result property="isRead" column="IsRead" jdbcType="TINYINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        Id,UserId,Message,
+        Id,UserId,Message,Score
         CreateTime,IsRead
     </sql>
 </mapper>

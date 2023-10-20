@@ -70,6 +70,11 @@ Page({
 			url: './administratorReview/administratorReview',
 		})
 	},
+	feedbackReviewView() {
+		wx.navigateTo({
+			url: './feedbackToAdmin/feedbackToAdmin',
+		})
+	},
 	CommentResponseView(event) {
 		  // 判断是否执行事件逻辑
 			if (event.target.dataset.ignore) {

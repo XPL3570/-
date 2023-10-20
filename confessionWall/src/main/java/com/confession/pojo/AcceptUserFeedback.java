@@ -33,6 +33,12 @@ public class AcceptUserFeedback implements Serializable {
     private String message;
 
     /**
+     * 用户反馈评分
+     */
+    @TableField(value = "Score")
+    private Integer score;
+
+    /**
      * 创建时间
      */
     @TableField(value = "CreateTime")

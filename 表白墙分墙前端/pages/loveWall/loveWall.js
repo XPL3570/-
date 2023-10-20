@@ -176,7 +176,7 @@ Page({
 					this.loadData1();
 				  }, 500);
 				// console.log(this.data.paper);
-			} else if (res.data.code === 239) {
+			} else {
 				Toast.fail(res.data.message);
 			}
 		}, (res) => {
@@ -306,11 +306,9 @@ Page({
 				Toast.success('放入成功!');
 				setTimeout(() => {
 					this.loadData2();
-				  }, 500);
-			} else if (res.data.code === 238) {
-				Toast.fail(res.data.message);
+				  }, 300);
 			} else {
-				console.log(res.data);
+				Toast.fail(res.data.message);
 			}
 		}, (res) => {
 			console.log(res);

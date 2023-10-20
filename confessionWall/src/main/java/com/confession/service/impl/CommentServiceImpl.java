@@ -79,17 +79,20 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
     @Override
     public Integer publishCommentReply(PostCommentRequest request, Integer userId) {
-        //调用方法对敏感字进行匹配，如果匹配到了，直接打回
-        Boolean hasSensitiveWords = this.hasSensitiveWords(request.getCommentContent());
-        if (hasSensitiveWords) {
-            throw new WallException(COMMENT_SENSITIVE_WORD_ALARM);
-        }
+
         //判断用户是不是可以评论的
         User user = userMapper.selectById(userId);  //检查用户状态是否可以评论
         int userStatus = user.getStatus();
         if (userStatus == 2 || userStatus == 3) {
             throw new WallException(CANNOT_COMMENT);
         }
+
+        //调用方法对敏感字进行匹配，如果匹配到了，直接打回
+        Boolean hasSensitiveWords = this.hasSensitiveWords(request.getCommentContent());
+        if (hasSensitiveWords) {
+            throw new WallException(COMMENT_SENSITIVE_WORD_ALARM);
+        }
+
         int count = commentMapper.getCommentCountByUserIdAndDate(userId, LocalDate.now());
 
         if (count >= wallConfig.getUserDailyCommentLimit()) {  //判断是否超过每天评论限制
@@ -106,7 +109,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         RLock lock = redissonClient.getLock(CONFESSION_PREFIX_LOCK + request.getConfessionPostReviewId());
         lock.lock();
 
-        String key = RedisConstant.CONFESSION_PREFIX + request.getConfessionPostReviewId();
+        String key = RedisConstant.WALL_POSTS_PREFIX + request.getConfessionPostReviewId();
         JSONObject redisDtoTemp = (JSONObject) redisTemplate.opsForValue().get(key);
         ConfessionPostDTO postDTO;
         if (redisDtoTemp != null) { //这里有缓存就更新,这里不为空就是有缓存

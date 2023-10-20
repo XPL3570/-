@@ -1,7 +1,6 @@
 package com.confession.dto;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -20,7 +19,7 @@ public class CommentDTO implements Serializable {
 
     private String commentContent;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    //@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime commentTime;
 
     private String userName;

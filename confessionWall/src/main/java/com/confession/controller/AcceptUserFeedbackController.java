@@ -26,7 +26,7 @@ public class AcceptUserFeedbackController {
     @PostMapping("submit")
     public Result submit(@RequestBody @Validated SubmitFeedbackRequest request){
         Integer userId = JwtInterceptor.getUser().getId();
-        service.userSubmit(userId,request.getMassage());
+        service.userSubmit(userId,request);
         return Result.ok();
     }
 
