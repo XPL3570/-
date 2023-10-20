@@ -15,7 +15,7 @@ public class PageTool {
     private int page = 1;
 
     @Min(value = 1, message = "小于最小值")
-    @Max(value = 1000, message = "超过最大值")
+    @Max(value = 10000, message = "超过最大值")
     private int limit = 10;
 
 }

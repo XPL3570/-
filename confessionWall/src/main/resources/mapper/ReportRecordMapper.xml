@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.confession.mapper.ReportRecordMapper">
+
+    <resultMap id="BaseResultMap" type="com.confession.pojo.ReportRecord">
+            <id property="id" column="Id" jdbcType="INTEGER"/>
+            <result property="userId" column="UserId" jdbcType="INTEGER"/>
+            <result property="reportId" column="ReportId" jdbcType="INTEGER"/>
+            <result property="message" column="Message" jdbcType="VARCHAR"/>
+            <result property="createTime" column="CreateTime" jdbcType="TIMESTAMP"/>
+            <result property="isDeleted" column="IsDeleted" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        Id,UserId,ReportId,
+        CreateTime,IsDeleted
+    </sql>
+</mapper>
