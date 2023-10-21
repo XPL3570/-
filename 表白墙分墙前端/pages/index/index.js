@@ -13,7 +13,9 @@ Page({
 			interval: 2000,
 			duration: 1000,
 		},
+		reportPanelShow:false,
 		postId:null, //举报id
+		reportInfo:'', //举报信息
 		swiperData: [
 			'../../image/Carousel/1.jpg',
 			'../../image/Carousel/2.jpg',
@@ -242,7 +244,7 @@ Page({
 				var zj = {
 					id: res.data.data,   //这里后端返回一个id
 					commentContent: this.data.confession[outIndex].submitMainComment,
-					commentTime: uril.currentTime(),
+					commentTime: util.currentTime(),
 					userName: wx.getStorageSync('userInfo').username,
 					avatarURL: wx.getStorageSync('userInfo').avatarURL
 				};
@@ -315,7 +317,7 @@ Page({
 					parentCommentId: this.data.replyCommentId,
 					parentName: this.data.replyName,
 					commentContent: this.data.replyContent,
-					commentTime: uril.currentTime(),
+					commentTime: util.currentTime(),
 					userName: wx.getStorageSync('userInfo').username,
 					avatarURL: wx.getStorageSync('userInfo').avatarURL
 				};
@@ -383,19 +385,49 @@ Page({
 		});
 	},
 	touchstart(e) {
-		console.log('点击开始：',e.timeStamp)
+		// console.log('点击开始：',e.timeStamp)
 	  this.setData({startTimeStamp:e.timeStamp})
 	},
 	touchend(e) {
-		console.log('点击结束',e.timeStamp);
+		// console.log('点击结束',e.timeStamp);
 	  if(e.timeStamp - this.data.startTimeStamp < 404) {
 		  return;
 		} else {
-		  console.log('触发函数') //todo 
 		  this.setData({
-			postId:e.currentTarget.dataset.postId
+			postId:e.currentTarget.dataset.postId,
+			reportPanelShow:true,
 		  });
 		}
 	},
-
+	onCloseReportPanel(){
+		this.setData({
+			reportPanelShow:false,
+			postId:null,
+			reportInfo:''
+		});
+	},
+	submitReportPanel(){
+		console.log('提交举报')
+		console.log(this.data.postId);
+		console.log(this.data.reportInfo);
+		let zj={
+			reportId:this.data.postId,
+			message:this.data.reportInfo
+		}
+		request.requestWithToken('/api/report/sendReport','POST',zj,(res)=>{
+			if (res.data.code===200) {
+				Notify({ 
+					type: 'success',message: '提交举报成功!',   duration: 2204,
+				});
+				this.onCloseReportPanel();
+			}else if(res.data.code>200){
+				Notify({ 
+					type: 'warning', message: res.data.message, duration: 2204,
+				});
+				console.error(res.data);
+			}
+		},(res)=>{
+			console.log(res);
+		});
+	}
 })

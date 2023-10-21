@@ -11,7 +11,8 @@
 		"van-divider": "@vant/weapp/divider/index",
 		"van-button": "@vant/weapp/button/index",
 		"van-popup": "@vant/weapp/popup/index",
-		"van-notify": "@vant/weapp/notify/index"
+		"van-notify": "@vant/weapp/notify/index",
+		"van-action-sheet": "@vant/weapp/action-sheet/index"
 	},
 	"onReachBottom": "onReachBottom",
 	"enablePullDownRefresh": true

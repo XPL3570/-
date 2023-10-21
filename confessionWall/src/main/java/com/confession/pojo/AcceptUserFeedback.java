@@ -1,5 +1,6 @@
 package com.confession.pojo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -17,14 +18,14 @@ public class AcceptUserFeedback implements Serializable {
     /**
      * 主键id
      */
-    @TableId(value = "Id")
+    @TableId(value = "Id" ,type = IdType.AUTO)
     private Integer id;
 
     /**
      * 用户id
      */
     @TableField(value = "UserId")
-    private Integer userid;
+    private Integer userId;
 
     /**
      * 消息

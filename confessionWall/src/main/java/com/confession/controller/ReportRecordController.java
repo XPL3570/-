@@ -1,10 +1,9 @@
 package com.confession.controller;
 
-import com.confession.comm.PageResult;
+
 import com.confession.comm.PageTool;
 import com.confession.comm.Result;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
-import com.confession.pojo.ReportRecord;
 import com.confession.request.SubReportRecordRequest;
 import com.confession.service.ReportRecordService;
 import org.springframework.validation.annotation.Validated;
@@ -24,11 +23,7 @@ public class ReportRecordController {
 
     @PostMapping("sendReport") //接受举报投稿信息
     public Result sendReport(@RequestBody @Validated SubReportRecordRequest request){
-        ReportRecord reportRecord = new ReportRecord();
-        reportRecord.setUserId(JwtInterceptor.getUser().getId());
-        reportRecord.setReportId(reportRecord.getReportId());
-        reportRecord.setMessage(request.getMessage());
-        service.save(reportRecord);
+        service.userSubmitsReport(JwtInterceptor.getUser().getId(),request);
         return Result.ok();
     }
 

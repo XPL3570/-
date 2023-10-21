@@ -26,7 +26,7 @@ public class GlobalCarouselImage implements Serializable {
     /**
      * 主键
      */
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "Id", type = IdType.AUTO)
     private Integer id;
 
     /**

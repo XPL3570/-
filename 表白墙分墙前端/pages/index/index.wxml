@@ -23,17 +23,17 @@
 			</block>
 		</view>
 		<!-- 投稿内容显示主区域 标题内容,长按图片就不加了-->
-		<view bindtouchstart="touchstart" bindtouchend="touchend" data-post-id="{{item.id}}">   
+		<view bindtouchstart="touchstart" bindtouchend="touchend" data-post-id="{{item.id}}">
 			<van-cell title="{{item.title}}" size="large" label="{{item.publishTime}}" />
 			<view class="comment-main">{{item.textContent}}</view>
 		</view>
-			<van-cell wx:if="{{item.imageURL[0]}}">
-				<view class="image-zj">
-					<block wx:for="{{item.imageURL}}" wx:key="index">
-						<van-image width="157rpx" height="157rpx" fit="cover" src="{{item}}" bindtap="handleImageTap" data-out-index="{{outIndex}}" data-image="{{item}}" />
-					</block>
-				</view>
-			</van-cell>
+		<van-cell wx:if="{{item.imageURL[0]}}">
+			<view class="image-zj">
+				<block wx:for="{{item.imageURL}}" wx:key="index">
+					<van-image width="157rpx" height="157rpx" fit="cover" src="{{item}}" bindtap="handleImageTap" data-out-index="{{outIndex}}" data-image="{{item}}" />
+				</block>
+			</view>
+		</van-cell>
 		<view class="comment-container">
 			<view class="input-container">
 				<!-- 评论功能 -->
@@ -81,3 +81,15 @@
 		</view>
 	</van-popup>
 </view>
+
+<!-- 举报 ActionSheet 动作面板 -->
+<van-action-sheet show="{{ reportPanelShow }}" bind:close="onCloseReportPanel"  title="举报投稿">
+	<view style="height: 800rpx;">
+		<van-cell-group>
+			<van-field  model:value="{{ reportInfo }}" autosize label="举报理由：" type="textarea" placeholder="请输入举报理由" border="{{ false }}"  maxlength="63"/>
+		</van-cell-group>
+		<view style="margin-top: 72rpx; display: flex; justify-content: center;">
+			<van-button type="info" bindtap="submitReportPanel">提交举报</van-button>
+		</view>
+	</view>
+</van-action-sheet>

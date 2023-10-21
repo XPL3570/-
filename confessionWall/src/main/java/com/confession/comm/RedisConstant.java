@@ -20,9 +20,9 @@ public class RedisConstant {
     // 表白墙投稿set集合 后面+表白墙id
     public static final String WALL_POSTS_PREFIX = "confession_record:";
 
-    public static final String  SCHOOL_WALL_MAIN_LIST_MOD_LOCK=" school_wall_main_list_modification_lock:";
+    public static final String  SCHOOL_WALL_MAIN_LIST_MOD_LOCK=" school_wall_main_list_modification_lock:"; //学校表白墙修改锁
 
-    public static final String CONFESSION_PREFIX_LOCK="confession_record_lock:";
+    public static final String CONFESSION_PREFIX_LOCK="confession_record_lock:"; //记录锁
 
     public static final String POST_SUBMISSION_RECORD ="wall_submission_record";  //发布记录+投稿id
 

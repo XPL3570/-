@@ -109,7 +109,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         RLock lock = redissonClient.getLock(CONFESSION_PREFIX_LOCK + request.getConfessionPostReviewId());
         lock.lock();
 
-        String key = RedisConstant.WALL_POSTS_PREFIX + request.getConfessionPostReviewId();
+        String key = RedisConstant.POST_SUBMISSION_RECORD + request.getConfessionPostReviewId();
         JSONObject redisDtoTemp = (JSONObject) redisTemplate.opsForValue().get(key);
         ConfessionPostDTO postDTO;
         if (redisDtoTemp != null) { //这里有缓存就更新,这里不为空就是有缓存

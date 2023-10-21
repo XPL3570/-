@@ -36,6 +36,11 @@ public enum ResultCodeEnum {
     CANNOT_POST(242,"您暂时被限制投稿表白了哦，如有疑问联系表白墙"),
     COMMENT_SENSITIVE_WORD_ALARM(243,"该条评论可能存在敏感词，请您调整后再次发布评论"),
     NO_SUBMISSION_DATA(244,"没有数据了哦！"), //没有投稿数据了
+    ALREADY_REPORTED_IT(260,"您已经提交对该投稿的举报信息"),
+    TOO_MANY_REPORTS_TODAY(261,"您今日提交的举报信息过多哦！"),
+    TOO_MANY_FEEDBACK_TODAY(262,"您今日已经提交过反馈了哦，感谢您再次反馈！"),
+
+
     USER_NOT_EXIST(404,"用户不存在"),
 
 

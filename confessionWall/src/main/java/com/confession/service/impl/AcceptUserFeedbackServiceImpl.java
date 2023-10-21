@@ -7,7 +7,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
 import com.confession.dto.AcceptUserFeedbackDTO;
+import com.confession.globalConfig.exception.WallException;
 import com.confession.pojo.AcceptUserFeedback;
+import com.confession.pojo.ReportRecord;
 import com.confession.request.SubmitFeedbackRequest;
 import com.confession.service.AcceptUserFeedbackService;
 import com.confession.mapper.AcceptUserFeedbackMapper;
@@ -15,8 +17,11 @@ import com.confession.service.UserService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.confession.comm.ResultCodeEnum.TOO_MANY_FEEDBACK_TODAY;
 
 /**
  *
@@ -33,10 +38,20 @@ public class AcceptUserFeedbackServiceImpl extends ServiceImpl<AcceptUserFeedbac
 
     @Override
     public void userSubmit(Integer userId, SubmitFeedbackRequest request) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime oneDayAgo = now.minusDays(1);
+        LambdaQueryWrapper<AcceptUserFeedback> wrapper = Wrappers.lambdaQuery();
+        wrapper.eq(AcceptUserFeedback::getUserId, userId)
+                .ge(AcceptUserFeedback::getCreateTime, oneDayAgo)
+                .le(AcceptUserFeedback::getCreateTime, now);
+        Integer count = mapper.selectCount(wrapper);
+        if (count>0){
+            throw new WallException(TOO_MANY_FEEDBACK_TODAY);
+        }
         AcceptUserFeedback feedback = new AcceptUserFeedback();
-        feedback.setUserid(userId);
+        feedback.setUserId(userId);
         feedback.setScore(request.getScore());
-        feedback.setMessage(request.getMassage());
+        feedback.setMessage(request.getMessage());
         save(feedback);
     }
 
@@ -81,7 +96,7 @@ public class AcceptUserFeedbackServiceImpl extends ServiceImpl<AcceptUserFeedbac
         dto.setIsRead(userFeedback.getIsRead());
         dto.setCreateTime(userFeedback.getCreateTime());
         dto.setMessage(userFeedback.getMessage());
-        dto.setUserName(userService.getById(userFeedback.getUserid()).getUsername());
+        dto.setUserName(userService.getById(userFeedback.getUserId()).getUsername());
         return dto;
     }
 }

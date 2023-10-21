@@ -15,7 +15,7 @@ public class SchoolApplication implements Serializable {
     /**
      * 申请ID
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(value = "Id", type = IdType.AUTO)
     private Integer id;
 
     /**

@@ -18,7 +18,7 @@ public class ImageDeleteRecord implements Serializable {
     /**
      * 主键ID
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(value = "Id", type = IdType.AUTO)
     private Integer id;
 
     /**

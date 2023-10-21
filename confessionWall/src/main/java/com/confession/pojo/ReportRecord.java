@@ -16,7 +16,7 @@ public class ReportRecord implements Serializable {
     /**
      * 主键id
      */
-    @TableId(value = "Id")
+    @TableId(value = "Id" ,type = IdType.AUTO)
     private Integer id;
 
     /**

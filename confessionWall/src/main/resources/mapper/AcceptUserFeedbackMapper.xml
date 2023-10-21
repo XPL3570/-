@@ -6,7 +6,7 @@
 
     <resultMap id="BaseResultMap" type="com.confession.pojo.AcceptUserFeedback">
             <id property="id" column="Id" jdbcType="INTEGER"/>
-            <result property="userid" column="UserId" jdbcType="INTEGER"/>
+            <result property="userId" column="UserId" jdbcType="INTEGER"/>
             <result property="message" column="Message" jdbcType="VARCHAR"/>
             <result property="score" column="Score" jdbcType="INTEGER"/>
             <result property="createTime" column="CreateTime" jdbcType="TIMESTAMP"/>

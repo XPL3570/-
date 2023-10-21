@@ -15,7 +15,7 @@ import java.util.List;
 public interface AcceptUserFeedbackService extends IService<AcceptUserFeedback> {
 
     /**
-     *  用户提交反馈
+     *  用户提交反馈，限制用户一天一次反馈
      */
     void userSubmit(Integer userId, SubmitFeedbackRequest request);
 
