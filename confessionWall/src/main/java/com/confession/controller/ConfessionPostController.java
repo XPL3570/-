@@ -9,6 +9,7 @@ import com.confession.globalConfig.exception.WallException;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
 import com.confession.request.AuditRequest;
 import com.confession.request.ConfessionPostRequest;
+import com.confession.request.DeleteSubmissionRequest;
 import com.confession.request.ParameterIntTypeRequest;
 import com.confession.service.AdminService;
 import com.confession.service.ConfessionPostService;
@@ -139,7 +140,7 @@ public class ConfessionPostController {
     }
 
     /**
-     * 修改发布状态  todo 这里没有如果修改成未发布没有同步缓存
+     * 修改发布状态  注意点：这里修改状态没有直接去删除缓存，等定时任务来更新吧
      */
     @PostMapping("admin/modifyState")
     public Result modifyState(@RequestBody @Validated AuditRequest request) { //这里的请求参数表白墙id也用不到
@@ -148,11 +149,11 @@ public class ConfessionPostController {
     }
 
     /**
-     * 删除投稿内容  todo 这里也没有同步缓存，要删除哦
+     * 删除投稿内容  todo 这里也没有同步缓存，要删除
      */
     @PostMapping("admin/delete")
-    public Result adminDelete(@RequestBody @Validated ParameterIntTypeRequest request) {
-        confessionPostService.removeById(request.getRequestId());
+    public Result adminDelete(@RequestBody @Validated DeleteSubmissionRequest request) {
+        confessionPostService.deletePost(request);
         return Result.ok();
     }
 

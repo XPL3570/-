@@ -3,6 +3,7 @@ package com.confession.pojo;
 import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import lombok.Data;
 
@@ -35,7 +36,7 @@ public class ReportRecord implements Serializable {
      * 举报时间
      */
     @TableField(value = "CreateTime")
-    private Date createTime;
+    private LocalDateTime createTime;
 
     /**
      * 举报建议

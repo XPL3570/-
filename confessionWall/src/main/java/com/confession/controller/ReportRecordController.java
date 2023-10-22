@@ -27,7 +27,7 @@ public class ReportRecordController {
         return Result.ok();
     }
 
-    @GetMapping("admin/getReportList") //这里里面放了投稿者的id，后面可以直接去修改投稿者的状态
+    @GetMapping("admin/getReportList") //这里里面放了投稿者的id，后面可以直接去修改投稿者的状态，去调用别的Controller方法修改用户状态
     public Result getReportInfo(@ModelAttribute PageTool pageTool){
         return Result.ok(service.getReportInfoList(pageTool));
     }

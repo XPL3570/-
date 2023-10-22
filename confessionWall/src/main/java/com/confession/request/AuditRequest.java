@@ -17,6 +17,10 @@ public class AuditRequest {
     @Min(value = 0,message = "id不能小于0")
     private Integer id;
 
+    @NotNull(message = "投稿用户id不能为空")
+    @Min(value = 0,message = "id不能小于0")
+    private Integer postUserId;
+
     @NotNull(message = "wallId不能为空")
     @Min(value = 0,message = "wallId不能为空不能小于0")
     private Integer wallId;

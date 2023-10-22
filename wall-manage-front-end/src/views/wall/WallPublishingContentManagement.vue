@@ -98,7 +98,7 @@
             <el-button plain size="mini" type="danger" slot="reference" style="width: 100px; margin-left: 18px">删除</el-button>
             <p>确定要删除该投稿吗？</p>
             <div style="text-align: right; margin: 0">
-              <el-button size="mini" type="warning" @click="handleDeletePostStatus(scope.row.id)">确定</el-button>
+              <el-button size="mini" type="warning" @click="handleDeletePostStatus(scope.row)">确定</el-button>
               <el-button size="mini" type="text">取消</el-button>
             </div>
           </el-popover>
@@ -165,8 +165,9 @@ export default {
       },
       editForm: { //暂存修改状态的数据
         id: -1,
+        postUserId:-1,
         wallId: -1,
-        postStatus: -1
+        postStatus: -1,
       },
       tableData: [], // 表格数据
       options: [{
@@ -186,10 +187,12 @@ export default {
   },
   methods: {
     handleClickPostStatus(row) { //点击修改状态按钮
+      console.log(row);
       this.isDialogPostStatesOpen = true;
       this.editForm.id = row.id;
       this.editForm.wallId = row.wallId;
       this.editForm.postStatus = row.postStatus;
+      this.editForm.postUserId=row.postUserId;
     },
     cancelDialogPostState(){
       //关闭弹窗，数据重置
@@ -212,9 +215,9 @@ export default {
               }
           )
     },
-    handleDeletePostStatus(id){
+    handleDeletePostStatus(row){
       // console.log(id)
-      api.post('/api/confessionPost/admin/delete',{requestId:id})
+      api.post('/api/confessionPost/admin/delete',{requestId:row.id})
           .then(
               res=>{
                 if (res.data.code===200){

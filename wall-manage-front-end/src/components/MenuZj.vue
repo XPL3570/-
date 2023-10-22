@@ -104,6 +104,14 @@ export default {
                   url: 'wall/WallPublishingContentManagement',
                   menus: null
                 },
+                {
+                  menuId: 34,
+                  icon: '投稿举报列表',
+                  menuName: '投稿举报列表',
+                  hasThird: 'N',
+                  url: 'wall/SubmissionReportList',
+                  menus: null
+                },
               ]
             },
             {
@@ -127,6 +135,31 @@ export default {
                   menuName: '管理员列表管理',
                   hasThird: 'N',
                   url: 'user/administrators',
+                  menus: null
+                },
+              ]
+            },
+            {
+              menuId: 50,
+              icon: '用户反馈',
+              menuName: '用户反馈',
+              hasThird: null,
+              url: null,
+              menus: [
+                {
+                  menuId: 51,
+                  icon: '未读反馈',
+                  menuName: '未读反馈',
+                  hasThird: 'N',
+                  url: 'feedback/UnreadFeedback',
+                  menus: null
+                },
+                {
+                  menuId: 52,
+                  icon: '所有反馈',
+                  menuName: '所有反馈信息',
+                  hasThird: 'N',
+                  url: 'feedback/allFeedback',
                   menus: null
                 },
               ]

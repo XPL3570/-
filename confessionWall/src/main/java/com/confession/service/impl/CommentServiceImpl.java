@@ -181,7 +181,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         List<Integer> userPostId = confessionPostService.getUserPostId(userId);
         Page<Comment> page = new Page<>(pageTool.getPage(), pageTool.getLimit());
 
-        queryWrapper.ne(Comment::getUserId, userId)//todo 这里为了测试注释了，才能看到本人的评论
+        queryWrapper.ne(Comment::getUserId, userId)
                 .gt(Comment::getCommentTime, LocalDateTime.now().minusMonths(6))
                 .inSql(Comment::getParentCommentId, "SELECT Id FROM comment WHERE userId = " + userId)
                 .or()

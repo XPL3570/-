@@ -2,6 +2,7 @@ package com.confession.dto;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -11,13 +12,17 @@ public class AcceptUserFeedbackDTO {
 
     private Integer userid;
 
+    private String userName;
+
+    private Integer userStatus;
+
     private Integer schoolId;
 
-    private String userName;
+    private Integer score; //评分
 
     private String message;
 
-    private Date createTime;
+    private LocalDateTime createTime;
 
     private Boolean isRead;
 

@@ -19,7 +19,7 @@ Page({
 				icon: 'none'
 			});
 			return; // 如果不能继续加载更多数据，则直接返回
-		}
+		};
 		let data = {
 			wallId: wx.getStorageSync('wall').id,
 			page: this.data.page,
@@ -42,6 +42,7 @@ Page({
 					canLoadMore: newData.length >= this.data.limit, // 判断是否可以继续加载更多数据
 					page: this.data.page + 1, // 更新页数
 				});
+				console.log(this.data.list);
 			}else{
 				console.error(res)
 			}
@@ -70,6 +71,7 @@ Page({
 		var {id,index}=e.currentTarget.dataset;
 		var data={
 			id, //记录id
+			postUserId:this.data.list[index].userId,
 			wallId:wx.getStorageSync('wall').id,
 			postStatus:1,
 		}
@@ -109,10 +111,10 @@ Page({
 				var {id,index}=e.currentTarget.dataset;
 				var data={
 					id, //记录id
+					postUserId:this.data.list[index].userId,
 					wallId:wx.getStorageSync('wall').id,
 					postStatus:2,
 				}
-				console.log(data)
 				request.requestWithToken("/api/confessionPost/userAdmin/submissionReview","POST",data,(res)=>{
 					console.log(res.data);
 						if(res.data.code===200){
@@ -122,7 +124,7 @@ Page({
 								list:zj
 							});
 						}else{
-							console.log(res.data);
+							// console.log(res.data);
 							wx.showToast({
 								title: res.data.message,
 								icon:'error'

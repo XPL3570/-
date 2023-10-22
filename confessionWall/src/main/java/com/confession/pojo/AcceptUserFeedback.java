@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import lombok.Data;
 
@@ -43,7 +44,7 @@ public class AcceptUserFeedback implements Serializable {
      * 创建时间
      */
     @TableField(value = "CreateTime")
-    private Date createTime;
+    private LocalDateTime createTime;
 
     /**
      * 是否已读

@@ -23,6 +23,7 @@ import com.confession.pojo.Confessionwall;
 import com.confession.pojo.User;
 import com.confession.request.AuditRequest;
 import com.confession.request.ConfessionPostRequest;
+import com.confession.request.DeleteSubmissionRequest;
 import com.confession.service.*;
 import com.hankcs.algorithm.AhoCorasickDoubleArrayTrie;
 import org.redisson.api.RLock;
@@ -161,7 +162,7 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
 
     //删除已经发布投稿的缓存
     private void removeUserPublishedPosts(Integer userId) {
-        for (int i = 1; i < 7; i++) {
+        for (int i = 1; i < 6; i++) {
             redisTemplate.delete(USER_PUBLISHED_POSTS + userId + ":" + i);
         }
     }
@@ -235,6 +236,8 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         //这里通过判断发布状态字段同步缓存
         if (request.getPostStatus() == 1) {
             this.obtainWallLockSyncCache(request.getWallId(), request.getId(),new Date().toInstant().getEpochSecond(),true);
+            this.removeUserPendingPosts(request.getPostUserId());
+            this.removeUserPublishedPosts(request.getPostUserId());
         }
 
     }
@@ -323,11 +326,14 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
             throw new WallException(FAIL);
         }
         if (request.getPostStatus() == 1) {
-            //同步缓存
+            //同步表白墙缓存
             obtainWallLockSyncCache(request.getWallId(),request.getId(),new Date().toInstant().getEpochSecond(),true);
+            //删除用户缓存
+            this.removeUserPendingPosts(request.getPostUserId());
+            this.removeUserPublishedPosts(request.getPostUserId());
         }
         if (request.getPostStatus()==2){
-            //todo 删除缓存
+            // 删除缓存 这里修改状态就不删除缓存了，等明天同步缓存把
         }
     }
 
@@ -394,6 +400,9 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
             throw new WallException(CONTRIBUTE_OVER_LIMIT);
         }
 
+        //判断该表白墙状态，如果是被禁用的，就拒绝发布
+
+
         boolean hasImage = (confessionRequest.getImageURL() != null && !confessionRequest.getImageURL().isEmpty());
         int status = 0;
 
@@ -420,9 +429,9 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
             if (status == 1) {
                 this.removeUserPublishedPosts(userId);
                 redisTemplate.delete("userPostIds:" + userId);//重新加载用户发布id，这里查看评论回复会有
-                for (int i = 1; i < 5; i++) {
-                    redisTemplate.delete(USER_COMMENT_REPLY + userId + ":" + i);  //评论回复的缓存
-                }
+//                for (int i = 1; i < 5; i++) {
+//                    redisTemplate.delete(USER_COMMENT_REPLY + userId + ":" + i);  //评论回复的缓存
+//                }
             } else {
                 this.removeUserPendingPosts(userId);
             }
@@ -466,10 +475,21 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         }
     }
 
+    @Override //todo 待测试
+    public void deletePost(DeleteSubmissionRequest request){ //延时双删，没必要用，这里对应的还要去找zSet下面的id的数据
+        //删除缓存
+        RLock lock = redissonClient.getLock(SCHOOL_WALL_MAIN_LIST_MOD_LOCK + request.getWallId());
+        lock.lock();
+        confessionpostMapper.deleteById(request.getPostId());
+        redisTemplate.opsForZSet().remove(WALL_POSTS_PREFIX + request.getWallId(),request.getPostId());
+        //删数据库记录
+        redisTemplate.delete(POST_SUBMISSION_RECORD + request.getPostId());
+        lock.unlock();
+    }
+
 
     /**
      * 获取投稿记录集合
-     *
      * @param postIds
      * @return
      */
@@ -524,6 +544,7 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
             dto.setWallName(confessionwallMapper.selectById(confessionpost.getWallId()).getWallName());
         }
         dto.setWallId(confessionpost.getWallId());
+        dto.setPostUserId(confessionpost.getUserId());
         dto.setUserName(userDTO.getUsername());
         dto.setUserAvatar(userDTO.getAvatarURL());
         dto.setTitle(confessionpost.getTitle());

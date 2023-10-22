@@ -167,7 +167,7 @@ public class ImageServiceImpl implements ImageService {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             String format = simpleDateFormat.format(new Date());
 
-            String key="src/"+format+"/"+this.generateFileName(".jpg"); //todo 后期优化，这里后缀名不拿了
+            String key="src/"+format+"/"+this.generateFileName(".jpg");
 
             OSSClient ossClient = new OSSClient(endpoint, response.getCredentials().getAccessKeyId(), response.getCredentials().getAccessKeySecret());
             long expireTime = 30;
@@ -371,7 +371,6 @@ public class ImageServiceImpl implements ImageService {
             }
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMM");
-            //新的目录生产策略 todo，注意访问策略暂时不改，等测试完缓存再改，
             String folderPath = UPLOAD_PATH + File.separator + dateFormat.format(new Date());
             File folder = new File(folderPath);
             if (!folder.exists()) {

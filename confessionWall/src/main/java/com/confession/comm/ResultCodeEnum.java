@@ -31,7 +31,7 @@ public enum ResultCodeEnum {
     TOKEN_EXPIRE(222, "token无效或过期"),
     SUBMISSION_EXCEEDS_LIMIT(238,"放入恋爱箱超过限制，请稍后重试"),
     WITHDRAWAL_EXCEEDS_LIMIT(239,"抽纸条数量超过限制，请稍后重试"),
-    NOT_OPEN_LOVE_WALL(245,"学校暂时没有开启恋爱墙！"),
+    NOT_OPEN_LOVE_WALL(245,"学校暂时没有开启恋爱墙，或暂时关闭！"),
     CANNOT_COMMENT(241,"您暂时被限制发言了哦，如有疑问联系表白墙"),
     CANNOT_POST(242,"您暂时被限制投稿表白了哦，如有疑问联系表白墙"),
     COMMENT_SENSITIVE_WORD_ALARM(243,"该条评论可能存在敏感词，请您调整后再次发布评论"),

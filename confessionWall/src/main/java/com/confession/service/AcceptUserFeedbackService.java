@@ -25,6 +25,11 @@ public interface AcceptUserFeedbackService extends IService<AcceptUserFeedback> 
     int getNoReadCount();
 
     /**
+     * 修改反馈状态为
+     */
+    void modifyReadFeedback(Integer requestId);
+
+    /**
      * 获取未读反馈信息，一次八条，会把获取到的改成已读
      */
     List<AcceptUserFeedbackDTO> getNoReadInfo();

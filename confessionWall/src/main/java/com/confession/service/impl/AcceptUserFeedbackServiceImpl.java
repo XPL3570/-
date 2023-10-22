@@ -9,7 +9,7 @@ import com.confession.comm.PageTool;
 import com.confession.dto.AcceptUserFeedbackDTO;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.pojo.AcceptUserFeedback;
-import com.confession.pojo.ReportRecord;
+import com.confession.pojo.User;
 import com.confession.request.SubmitFeedbackRequest;
 import com.confession.service.AcceptUserFeedbackService;
 import com.confession.mapper.AcceptUserFeedbackMapper;
@@ -63,16 +63,23 @@ public class AcceptUserFeedbackServiceImpl extends ServiceImpl<AcceptUserFeedbac
     }
 
     @Override
+    public void modifyReadFeedback(Integer requestId) {
+        AcceptUserFeedback feedback = new AcceptUserFeedback();
+        feedback.setId(requestId);
+        feedback.setIsRead(true);
+        mapper.updateById(feedback);
+    }
+
+    @Override
     public List<AcceptUserFeedbackDTO> getNoReadInfo() {
         LambdaQueryWrapper<AcceptUserFeedback> wrapper = Wrappers.lambdaQuery();
         wrapper.eq(AcceptUserFeedback::getIsRead,false);
         wrapper.last("LIMIT 8");
-
         // 修改查询到的记录的查询条件为true
         List<AcceptUserFeedback> feedbackList = mapper.selectList(wrapper);
         List<AcceptUserFeedbackDTO> resDto = feedbackList.stream().map(this::toDTO).collect(Collectors.toList());
         feedbackList.forEach(feedback -> {
-            feedback.setIsRead(true);
+//            feedback.setIsRead(true);
             mapper.updateById(feedback);
         });
         return resDto;
@@ -94,9 +101,13 @@ public class AcceptUserFeedbackServiceImpl extends ServiceImpl<AcceptUserFeedbac
         AcceptUserFeedbackDTO dto = new AcceptUserFeedbackDTO();
         dto.setId(userFeedback.getId());
         dto.setIsRead(userFeedback.getIsRead());
+        dto.setScore(userFeedback.getScore());
         dto.setCreateTime(userFeedback.getCreateTime());
         dto.setMessage(userFeedback.getMessage());
-        dto.setUserName(userService.getById(userFeedback.getUserId()).getUsername());
+        User user = userService.getById(userFeedback.getUserId());
+        dto.setUserName(user.getUsername());
+        dto.setUserStatus(user.getStatus());
+        dto.setSchoolId(user.getSchoolId());
         return dto;
     }
 }

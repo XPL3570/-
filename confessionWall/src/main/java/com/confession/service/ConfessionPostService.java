@@ -7,6 +7,7 @@ import com.confession.dto.ConfessionPostDTO;
 import com.confession.pojo.Confessionpost;
 import com.confession.request.AuditRequest;
 import com.confession.request.ConfessionPostRequest;
+import com.confession.request.DeleteSubmissionRequest;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -61,7 +62,7 @@ public interface ConfessionPostService extends IService<Confessionpost> {
     List<ConfessionPostDTO> getPendingPostsAdmin(Integer wallId,PageTool pageTool);
 
     /**
-     * 修改投稿的状态  普通管理员用
+     * 修改投稿的状态  普通管理员用 审核
      * @param userId  用户id
      * @param request 投稿id和要修改的状态
      */
@@ -117,4 +118,10 @@ public interface ConfessionPostService extends IService<Confessionpost> {
      */
     void putSubmissionOfAllWalls(Integer postIds);
 
+
+    /**
+     * 删除投稿，目前只有超级管理员用
+     * 先删缓存再删数据库
+     */
+    void deletePost(DeleteSubmissionRequest request);
 }

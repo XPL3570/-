@@ -15,6 +15,8 @@ public class ConfessionPostAdminDTO implements Serializable {
 
     private String wallName; // 墙名称
 
+    private Integer postUserId; //发布者用户id
+
     private String userName; // 用户名
 
     private String userAvatar; // 用户头像

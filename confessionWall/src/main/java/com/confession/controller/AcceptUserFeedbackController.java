@@ -5,6 +5,7 @@ import com.confession.comm.PageTool;
 import com.confession.comm.Result;
 import com.confession.dto.AcceptUserFeedbackDTO;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
+import com.confession.request.ParameterIntTypeRequest;
 import com.confession.request.SubmitFeedbackRequest;
 import com.confession.service.AcceptUserFeedbackService;
 import org.springframework.validation.annotation.Validated;
@@ -36,6 +37,12 @@ public class AcceptUserFeedbackController {
         return Result.ok(count);
     }
 
+    @PostMapping("/admin/modifyRead") //修改反馈信息为已读
+    public Result modifyRead(@RequestBody @Validated ParameterIntTypeRequest request){
+        service.modifyReadFeedback(request.getRequestId());
+        return Result.ok();
+    }
+
     @GetMapping("/admin/noReadObtaining")  //获取未读反馈 一次8条
     public Result obtainingFeedbackNoReadInfo(){
         List<AcceptUserFeedbackDTO> res = service.getNoReadInfo();
@@ -43,7 +50,7 @@ public class AcceptUserFeedbackController {
     }
 
 
-    @GetMapping("/admin/allObtaining")  //获取所有用户反馈,反应查看、最后写，可不用
+    @GetMapping("/admin/allObtaining")  //获取所有用户反馈,反应查看、最后写，可不用, todo 这里最后写
     public Result obtainingFeedbackInformation(@ModelAttribute PageTool pageTool){
         PageResult res=service.obtainingFeedbackInformation(pageTool);
         return Result.ok(res);

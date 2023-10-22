@@ -99,7 +99,32 @@ export default new Router({
                     meta: {
                         requireAuth: true
                     }
-                }
+                },
+                {
+                    path: '/feedback/allFeedback',
+                    name: '所有反馈信息',
+                    component: () => import('../views/feedback/AllFeedback.vue'),
+                    meta: {
+                        requireAuth: true
+                    }
+                },
+                {
+                    path: '/feedback/UnreadFeedback',
+                    name: '未读反馈信息',
+                    component: () => import('../views/feedback/UnreadFeedback.vue'),
+                    meta: {
+                        requireAuth: true
+                    }
+                },
+                {
+                    path: '/wall/SubmissionReportList',
+                    name: '投稿举报列表',
+                    component: () => import('../views/wall/SubmissionReportList.vue'),
+                    meta: {
+                        requireAuth: true
+                    }
+                },
+
             ]
         },
 
