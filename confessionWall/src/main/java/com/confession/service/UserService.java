@@ -7,8 +7,7 @@ import com.confession.comm.Result;
 import com.confession.dto.UserDTO;
 import com.confession.dto.UserManageDTO;
 import com.confession.pojo.User;
-import com.confession.request.UserNameModRequest;
-import com.confession.request.UserStatusModRequest;
+import com.confession.request.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -26,11 +25,20 @@ public interface UserService extends IService<User> {
 
     /**
      * 查询数据库的Openid的用户
-     *
      * @param openid
-     * @return
      */
     User findByOpenid(String openid);
+
+    /**
+     * 登录
+     */
+    Result login(LoginRequest request);
+
+
+    /**
+     * 注册接口
+     */
+    Result register(RegisterRequest request);
 
     /**
      * @param code
@@ -83,4 +91,10 @@ public interface UserService extends IService<User> {
      * 用户三天内是否修改头像或者名字
      */
     boolean checkTimeInterval(LocalDateTime lastUpdateTime);
+
+    /**
+     * 更新用户的微信账号或qq和可获取的状态
+     * @param request
+     */
+    void updateWeChat(UserWeChatModRequest request);
 }

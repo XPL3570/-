@@ -42,6 +42,7 @@ public enum ResultCodeEnum {
 
 
     USER_NOT_EXIST(404,"用户不存在"),
+    FREQUENT_MOD_OF_USER_INFO(400,"最多一天可以修改用户信息哦！"),
 
 
     ;

@@ -10,6 +10,7 @@
         <result column="OpenId" property="openId" />
         <result column="CreateTime" property="createTime" />
         <result column="UpdateTime" property="updateTime" />
+        <result column="CanObtainWeChat" property="canObtainWeChat" />
         <result column="WXAccount" property="wXAccount" />
         <result column="Gender" property="gender" />
         <result column="AvatarURL" property="avatarURL" />
@@ -19,7 +20,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        Id, Username, SchoolId, OpenId, CreateTime, UpdateTime, WXAccount, Gender, AvatarURL, Status,IsDeleted
+        Id, Username, SchoolId, OpenId, CreateTime, UpdateTime,CanObtainWeChat, WXAccount, Gender, AvatarURL, Status,IsDeleted
     </sql>
 
 </mapper>

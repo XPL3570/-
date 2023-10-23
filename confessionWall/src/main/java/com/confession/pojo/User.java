@@ -62,6 +62,11 @@ public class User implements Serializable {
     private LocalDateTime updateTime;
 
     /**
+     * 是否可以获取微信
+     */
+    private Boolean canObtainWeChat;
+
+    /**
      * 微信账号
      */
     @TableField("WXAccount")

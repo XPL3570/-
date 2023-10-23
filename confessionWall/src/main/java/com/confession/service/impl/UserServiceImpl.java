@@ -8,20 +8,20 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
+import com.confession.comm.Result;
 import com.confession.comm.ResultCodeEnum;
+import com.confession.config.JwtConfig;
 import com.confession.config.WechatConfig;
 import com.confession.dto.UserDTO;
 import com.confession.dto.UserManageDTO;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
 import com.confession.mapper.UserMapper;
+import com.confession.pojo.Confessionwall;
+import com.confession.pojo.School;
 import com.confession.pojo.User;
-import com.confession.request.DeleteImageRequest;
-import com.confession.request.UserNameModRequest;
-import com.confession.request.UserStatusModRequest;
-import com.confession.service.ImageService;
-import com.confession.service.SchoolService;
-import com.confession.service.UserService;
+import com.confession.request.*;
+import com.confession.service.*;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,12 +32,14 @@ import javax.annotation.Resource;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.confession.comm.RedisConstant.USER_DTO_PREFIX;
-import static com.confession.comm.ResultCodeEnum.USER_NOT_EXIST;
+import static com.confession.comm.ResultCodeEnum.*;
 
 
 /**
@@ -66,12 +68,101 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Resource
     private SchoolService schoolService;
 
+    @Resource
+    private AdminService adminService;
+
+
+    @Resource
+    private ConfessionwallService confessionwallService;
+
 
     @Override
     public User findByOpenid(String openid) {
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(User::getOpenId, openid);
         return userMapper.selectOne(wrapper);
+    }
+
+    @Override
+    public Result login(LoginRequest request) {
+        if (request.getCode() == null || request.getCode() == "") {
+            throw new WallException("code不能是null", 201);
+        }
+        String openid = this.codeByOpenid(request.getCode());
+        if (openid == null) {
+            throw new WallException("获取openid失败", 244);
+        }
+        // 根据 openid 查询数据库，看是否已存在该用户
+        User user = this.findByOpenid(openid);
+        if (user == null || user.getSchoolId() == null) {
+            return Result.build(206, "请选择学校");
+        }
+        user.setOpenId("");
+        //查询该学校下的一个墙id，如果有多个就返回第一个
+        Confessionwall wall = confessionwallService.selectSchoolInWallOne(user.getSchoolId());
+        String token = JwtConfig.getJwtToken(user);
+        boolean isAdmin = adminService.isAdmin(user.getId(), wall.getId());
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("token", token);
+        responseMap.put("userInfo", user);
+        responseMap.put("wall", wall);
+        responseMap.put("isAdmin", isAdmin);
+//        System.out.println("token=" + token);
+        return Result.ok(responseMap);
+    }
+
+    @Override
+    public Result register(RegisterRequest request) {
+        String code = request.getCode();
+        String openid = this.codeByOpenid(code);
+
+        School school;
+        // 查询用户是否已经存在
+        User user = this.findByOpenid(openid);
+        if (user == null) {
+            // 如果用户不存在，创建一个新的用户
+            user = new User();
+            user.setOpenId(openid);
+            user.setUsername(request.getUserName());
+            user.setAvatarURL(request.getAvatarUrl());
+
+            // 查询学校是否存在
+            school = schoolService.findBySchoolName(request.getSchoolName());
+            if (school != null) {
+                user.setSchoolId(school.getId());
+            } else {
+                user.setSchoolId(null);
+            }
+            // 插入新的用户
+            boolean save = this.save(user);
+            if (!save){
+                throw new WallException("写入用户失败",201);
+            }
+        } else {
+            // 更新用户的信息
+            user.setUsername(request.getUserName());
+            user.setAvatarURL(request.getAvatarUrl());
+
+            // 查询学校是否存在
+            school = schoolService.findBySchoolName(request.getSchoolName());
+            if (school != null) {
+                user.setSchoolId(school.getId());
+            } else {
+                user.setSchoolId(null);
+            }
+            // 更新用户的信息
+            this.updateById(user);
+        }
+        // 如果学校不存在，返回token
+        if (school == null) {
+            return Result.build(JwtConfig.getJwtToken(user), SCHOOL_NOT_SETTLED);  //告诉用户学校没有注入，看是否要入注册学校
+        }
+        String token = JwtConfig.getJwtToken(user);
+        Map<String, Object> map = new HashMap<>();
+        map.put("token", token);
+        map.put("userInfo", user);  //这里后面可以做一个过滤，把学校名字放进去
+        // 返回 token 到小程序端
+        return Result.ok(map);
     }
 
     @Override
@@ -173,7 +264,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         // 检查时间间隔
         if (!checkTimeInterval(user.getUpdateTime())) {
-            throw new WallException( "最多一天可以修改一次头像或名字哦",400);
+            throw new WallException( FREQUENT_MOD_OF_USER_INFO);
         }
 
         // 更新属性和更新时间
@@ -222,6 +313,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         boolean res = interval.compareTo(threeDays) >= 0;
         System.out.println("res=" + res);
         return res;
+    }
+
+    @Override
+    public void updateWeChat(UserWeChatModRequest request) { //todo 前端没写，这里后面还要加表
+        Integer userId = JwtInterceptor.getUser().getId();
+        User user = new User().setCanObtainWeChat(request.getCanObtainWeChat()).setWXAccount(request.getWxAccount());
+        if (userId!=null)this.updateById(user); //这里一般都是有的，加了放心吧
+            else throw new WallException(FAIL);
     }
 
     @Override

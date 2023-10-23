@@ -1,8 +1,6 @@
 <view class="container">
-	<button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
-  <image class="avatar" src="{{avatarUrl}}"></image>
-</button>
 
+	<view style="margin: 72rpx;"></view>
   <van-field
    type="nickname"
     label="用户名"
@@ -13,7 +11,7 @@
     custom-class="input-field"
 		error-message="{{userNameError}}"
   ></van-field>
-
+<view style="margin: 44rpx;"></view>
   <van-field
     label="绑定学校"
     required

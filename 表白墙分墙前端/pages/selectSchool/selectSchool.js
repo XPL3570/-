@@ -36,18 +36,15 @@ Page({
 			userNameError:userNameError
 		});
 	},
-	onChooseAvatar(event) {
-		const tempAvatarUrl = event.detail.avatarUrl;
-		// console.log(tempAvatarUrl)
-		oos.uploadImagesAlibabaCloud(tempAvatarUrl,(url)=>{
-			if (url) {
-				this.setData({
-					avatarUrl: url,
-				});
-			}
-		});
-	},
 	onSubmit() {
+		if(!this.data.userName||!this.data.schoolName||!this.data.userNameError||!this.data.schoolNameError){
+			Dialog.alert({
+				message: '请输入完整信息！',
+			  }).then(() => {
+				// on close
+			  });
+			return;
+		}
 		wx.login({
 			success: (res) => {
 				const schoolName = this.data.schoolName;
