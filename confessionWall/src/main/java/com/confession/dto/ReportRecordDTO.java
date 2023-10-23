@@ -10,7 +10,9 @@ import java.util.Date;
 public class ReportRecordDTO {
     private Integer id;
 
-    private Integer userId;
+    private Integer userId; //举报者用户id
+
+    private Integer wallId;//投稿所属表白墙id
 
     //举报投稿id
     private Integer reportId;
@@ -19,7 +21,6 @@ public class ReportRecordDTO {
     private Integer userIdForSubmissionPublisher;
 
     private LocalDateTime createTime;
-
     // 举报建议
     private String message;
 

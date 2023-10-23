@@ -50,7 +50,7 @@ public class AcceptUserFeedbackController {
     }
 
 
-    @GetMapping("/admin/allObtaining")  //获取所有用户反馈,反应查看、最后写，可不用, todo 这里最后写
+    @GetMapping("/admin/allObtaining")  //获取所有用户反馈,反馈查看
     public Result obtainingFeedbackInformation(@ModelAttribute PageTool pageTool){
         PageResult res=service.obtainingFeedbackInformation(pageTool);
         return Result.ok(res);

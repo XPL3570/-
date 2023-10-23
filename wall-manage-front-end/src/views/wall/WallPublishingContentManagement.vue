@@ -92,16 +92,20 @@
                        width="80"></el-table-column>
       <el-table-column label="操作" width="157">
         <template v-slot:default="scope">
-
-          <el-button plain size="mini" type="primary" @click="handleClickPostStatus(scope.row)" style="margin-left: 18px; width: 100px;margin-bottom: 8px">修改状态</el-button>
-          <el-popover placement="left" trigger="click"   width="244">
-            <el-button plain size="mini" type="danger" slot="reference" style="width: 100px; margin-left: 18px">删除</el-button>
-            <p>确定要删除该投稿吗？</p>
-            <div style="text-align: right; margin: 0">
-              <el-button size="mini" type="warning" @click="handleDeletePostStatus(scope.row)">确定</el-button>
-              <el-button size="mini" type="text">取消</el-button>
-            </div>
-          </el-popover>
+          <el-button plain size="mini" type="primary" @click="handleClickPostStatus(scope.row)"
+                     style="margin-left: 18px; width: 100px;margin-bottom: 8px">修改状态</el-button>
+          <template>
+            <el-popconfirm
+                confirm-button-text='删除'
+                cancel-button-text='不用了'
+                icon="el-icon-info"
+                icon-color="red"
+                title="确定删除该投稿吗？"
+                @confirm="handleDeletePostStatus(scope.row)"
+            >
+              <el-button plain size="mini" type="danger" slot="reference" style="width: 100px; margin-left: 18px" >删除</el-button>
+            </el-popconfirm>
+        </template>
         </template>
       </el-table-column>
     </el-table>
@@ -217,12 +221,14 @@ export default {
     },
     handleDeletePostStatus(row){
       // console.log(id)
-      api.post('/api/confessionPost/admin/delete',{requestId:row.id})
+      api.post('/api/confessionPost/admin/delete',{postId:row.id,wallId: row.wallId})  //todo 要修改的，删除逻辑
           .then(
               res=>{
                 if (res.data.code===200){
                   this.getData();
                   this.$message.success('删除投稿成功！')
+                  this.visible=false;
+                  // 关闭弹出框
                 }else {
                   console.error(res);
                   this.$message.error('删除投稿失败！')
@@ -231,7 +237,6 @@ export default {
           )
     },
     getData() {
-      console.log(this.formInline)
       this.loading = true;
       this.page.page=1;
       api.get('/api/confessionPost/admin/userList', this.formInline)

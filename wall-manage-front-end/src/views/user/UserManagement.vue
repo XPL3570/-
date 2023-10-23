@@ -63,7 +63,7 @@
       <el-table-column
           width="157"
           prop="createTime"
-          label="创建时间">
+          label="注册时间">
       </el-table-column>
       <el-table-column
           prop="wXAccount"
@@ -79,12 +79,12 @@
       <el-table-column
           prop="status"
           label="用户状态">
-        <template v-slot:default="scope">
-          <span v-if="scope.row.status === 0">正常</span>
-          <span v-else-if="scope.row.status === 1">禁止投稿</span>
-          <span v-else-if="scope.row.status === 2">禁止评论</span>
-          <span v-else-if="scope.row.status === 3">禁止投稿和评论</span>
-        </template>
+          <template v-slot:default="scope">
+            <el-tag v-if="scope.row.status === 0" type="success">正常</el-tag>
+            <el-tag v-else-if="scope.row.status === 1" type="danger">禁止投稿</el-tag>
+            <el-tag v-else-if="scope.row.status === 2" type="danger">禁止评论</el-tag>
+            <el-tag v-else-if="scope.row.status === 3" type="danger">禁止投稿和评论</el-tag>
+          </template>
       </el-table-column>
       <el-table-column
           fixed="right"
@@ -223,7 +223,6 @@ export default {
         this.$message.warning('您想要修改的改用户状态和之前没有变化哦');
         return;
       }
-
       // console.log(this.editForm.userId)
       // 发送请求到后台，更新用户状态
       const postData = {

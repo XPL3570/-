@@ -333,7 +333,13 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
             this.removeUserPublishedPosts(request.getPostUserId());
         }
         if (request.getPostStatus()==2){
-            // 删除缓存 这里修改状态就不删除缓存了，等明天同步缓存把
+            //删除缓存
+            RLock lock = redissonClient.getLock(SCHOOL_WALL_MAIN_LIST_MOD_LOCK + request.getWallId());
+            lock.lock();
+            redisTemplate.opsForZSet().remove(WALL_POSTS_PREFIX + request.getWallId(),request.getId());
+            //删数据库记录
+            redisTemplate.delete(POST_SUBMISSION_RECORD + request.getId());
+            lock.unlock();
         }
     }
 
@@ -475,7 +481,7 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         }
     }
 
-    @Override //todo 待测试
+    @Override
     public void deletePost(DeleteSubmissionRequest request){ //延时双删，没必要用，这里对应的还要去找zSet下面的id的数据
         //删除缓存
         RLock lock = redissonClient.getLock(SCHOOL_WALL_MAIN_LIST_MOD_LOCK + request.getWallId());

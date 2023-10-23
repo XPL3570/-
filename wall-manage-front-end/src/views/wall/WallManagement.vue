@@ -10,8 +10,6 @@
       <el-table-column prop="wallName" label="表白墙名字"></el-table-column>
       <el-table-column prop="schoolId" label="学校id"></el-table-column>
       <el-table-column prop="schoolName" label="学校名字"></el-table-column>
-
-
       <el-table-column prop="avatarURL" label="表白墙头像" width="120">
         <template v-slot:default="scope">
           <div style="display: flex; justify-content: center;">

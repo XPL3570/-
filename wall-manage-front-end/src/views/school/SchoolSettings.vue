@@ -23,7 +23,6 @@
           </div>
         </template>
       </el-table-column>
-
       <el-table-column prop="prompt" label="首页提示语" width="144"></el-table-column>
       <el-table-column prop="isVerified" width="50" label="审核状态">
         <template v-slot="scope">{{ getStatusText(scope.row.isVerified) }}</template>
@@ -305,8 +304,9 @@ export default {
                   this.page.limit = this.formInline.limit;
                   this.page.total = res.data.data.total;
                   this.loading = false
+                }else {
+                  console.error(res);
                 }
-                // console.log(res.data);
               }
           ).catch(
           error => {

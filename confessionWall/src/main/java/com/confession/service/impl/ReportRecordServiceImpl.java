@@ -80,15 +80,20 @@ public class ReportRecordServiceImpl extends ServiceImpl<ReportRecordMapper, Rep
     private ReportRecordDTO toDto(ReportRecord record){
         ReportRecordDTO dto = new ReportRecordDTO();
         dto.setReportId(record.getReportId());
-        dto.setUserId(record.getReportId());
+        dto.setUserId(record.getUserId());
         dto.setMessage(record.getMessage());
         dto.setId(record.getId());
         dto.setCreateTime(record.getCreateTime());
         Confessionpost confessionpost = confessionpostMapper.selectById(record.getReportId());
-        dto.setUserIdForSubmissionPublisher(confessionpost.getUserId());
-        dto.setTitle(confessionpost.getTitle());
-        dto.setTextContent(confessionpost.getTextContent());
-        dto.setImageURL(confessionpost.getImageURL());
+        if (confessionpost!=null){
+            dto.setUserIdForSubmissionPublisher(confessionpost.getUserId());
+            dto.setTitle(confessionpost.getTitle());
+            dto.setTextContent(confessionpost.getTextContent());
+            dto.setImageURL(confessionpost.getImageURL());
+            dto.setWallId(confessionpost.getWallId());
+        }else {
+            dto.setUserIdForSubmissionPublisher(-44); //投稿已经删除了
+        }
         return dto;
     }
 }

@@ -66,7 +66,7 @@ Page({
 		this.loadData();
 	},
 	loadData() {
-		// console.log(this.data.confession.length);
+		console.log(this.data.confession.length);
 		if (!this.data.canLoadMore) {
 			wx.showToast({
 				title: '没有更多投稿数据了哦！',
