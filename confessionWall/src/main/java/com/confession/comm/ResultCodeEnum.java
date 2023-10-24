@@ -40,7 +40,9 @@ public enum ResultCodeEnum {
     TOO_MANY_REPORTS_TODAY(261,"您今日提交的举报信息过多哦！"),
     TOO_MANY_FEEDBACK_TODAY(262,"您今日已经提交过反馈了哦，感谢您再次反馈！"),
 
-
+    UNABLE_OBTAIN_USER_WECHAT(401,"用户不允许获取他(她)的联系方式！"),
+    FREQUENT_USER_OBTAIN_WECHAT(402,"该用户被获取联系方式频繁"),
+    FREQUENT_USER_ACCESS_WX(403,"获取联系方式过于频繁"),
     USER_NOT_EXIST(404,"用户不存在"),
     FREQUENT_MOD_OF_USER_INFO(400,"最多一天可以修改用户信息哦！"),
 

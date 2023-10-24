@@ -149,7 +149,7 @@ public class ConfessionPostController {
     }
 
     /**
-     * 删除投稿内容  todo 这里也没有同步缓存，要删除
+     * 删除投稿内容
      */
     @PostMapping("admin/delete")
     public Result adminDelete(@RequestBody @Validated DeleteSubmissionRequest request) {

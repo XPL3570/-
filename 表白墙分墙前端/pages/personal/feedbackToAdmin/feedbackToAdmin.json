@@ -1,0 +1,9 @@
+{
+	"navigationBarTitleText": "意见反馈",
+	"usingComponents": {
+		"van-button": "@vant/weapp/button/index",
+		"van-field": "@vant/weapp/field/index",
+		"van-slider": "@vant/weapp/slider/index",
+		"van-notice-bar": "@vant/weapp/notice-bar/index"
+	}
+}

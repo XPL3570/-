@@ -1,0 +1,19 @@
+<van-notice-bar color="#1989fa" background="#ecf9ff" left-icon="info-o" text="您可以在这里反馈您对小程序的看法或建议哦！感谢您的反馈！" />
+<view class="main">
+	<view style="width: 92%;">
+		<view style="margin-top: 50rpx;margin-bottom: 62rpx;margin-left: 40rpx;">请滑动输入您的评分:</view>
+		<view style="margin-left: 6%;">
+			<van-slider value="{{score}}" bind:change="onChangeScore"/>
+		</view>
+		<view style="margin:72rpx;"></view>
+	</view>
+
+	<view style="margin-left: 40rpx;">您的建议：</view>
+
+	<van-field model:value="{{ message }}" type="textarea" placeholder="请输入您的建议或看法"  autosize maxlength="499"/>
+	<view style="display: flex;justify-content: center;margin-top: 72rpx;">
+		<van-button type="primary" bindtap="submitSuggestions">提交意见</van-button>
+	</view>
+
+
+</view>

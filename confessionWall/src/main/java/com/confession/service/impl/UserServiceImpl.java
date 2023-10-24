@@ -300,7 +300,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             // 更新缓存逻辑
             redisTemplate.opsForValue().set(USER_DTO_PREFIX + userId, userDTO, 15, TimeUnit.MINUTES);
 
-
         }
     }
 
