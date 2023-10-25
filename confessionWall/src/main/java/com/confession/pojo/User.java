@@ -64,6 +64,7 @@ public class User implements Serializable {
     /**
      * 是否可以获取微信
      */
+    @TableField("CanObtainWeChat")
     private Boolean canObtainWeChat;
 
     /**

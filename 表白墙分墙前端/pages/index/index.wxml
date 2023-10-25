@@ -13,13 +13,14 @@
 	<view class="title">{{title}}</view>
 	<view wx:for="{{confession}}" wx:key="index" class="zj" wx:for-index="outIndex">
 		<view slot="title" class="userinfo">
-			<!-- <block wx:if="{{!item.userInfo.avatarURL || !item.userInfo.username}}"> -->
 			<block wx:if="{{item.isAnonymous}}">
 				<view class="nimin">匿名投稿</view>
 			</block>
 			<block wx:else>
-				<image class="avatar" src="{{item.userInfo.avatarURL}}"></image>
-				<text>{{item.userInfo.username}}</text>
+				<view bindtap="handleTapUser" bindtouchstart="touchUserStart" bindtouchend="touchUserEnd"   data-user-id="{{item.userId}}" data-user-name="{{item.userInfo.username}}" class="avatar-container">
+					<image class="avatar" src="{{item.userInfo.avatarURL}}"></image>
+					<text class="username">{{item.userInfo.username}}</text>
+				</view>
 			</block>
 		</view>
 		<!-- 投稿内容显示主区域 标题内容,长按图片就不加了-->
@@ -83,13 +84,25 @@
 </view>
 
 <!-- 举报 ActionSheet 动作面板 -->
-<van-action-sheet show="{{ reportPanelShow }}" bind:close="onCloseReportPanel"  title="举报投稿">
+<van-action-sheet show="{{ reportPanelShow }}" bind:close="onCloseReportPanel" title="举报投稿">
 	<view style="height: 800rpx;">
 		<van-cell-group>
-			<van-field  model:value="{{ reportInfo }}" autosize label="举报理由：" type="textarea" placeholder="请输入举报理由" border="{{ false }}"  maxlength="63"/>
+			<van-field model:value="{{ reportInfo }}" autosize label="举报理由：" type="textarea" placeholder="请输入举报理由" border="{{ false }}" maxlength="63" />
 		</van-cell-group>
 		<view style="margin-top: 72rpx; display: flex; justify-content: center;">
 			<van-button type="info" bindtap="submitReportPanel">提交举报</van-button>
+		</view>
+	</view>
+</van-action-sheet>
+
+<!-- 添加好友 ActionSheet 动作面板 -->
+<van-action-sheet show="{{ addUserShow }}" bind:close="onCloseaddUserInfo" title="添加“{{addUserInfo.username}}”联系方式">
+	<view style="height: 800rpx;">
+		<van-cell-group >
+			<van-field model:value="{{ applicationReason }}" autosize label="申请理由：" type="textarea" placeholder="请输入申请理由" border="{{ false }}" maxlength="20" />
+		</van-cell-group>
+		<view style="margin-top: 72rpx; display: flex; justify-content: center;">
+			<van-button type="primary" bindtap="submitApplication">提交申请</van-button>
 		</view>
 	</view>
 </van-action-sheet>

@@ -1,9 +1,12 @@
 package com.confession.service;
 
+import com.confession.dto.UserContactDTO;
 import com.confession.pojo.UserContact;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.confession.request.AgreeSetContactRequest;
 import com.confession.request.ObtainContactInfoRequest;
+
+import java.util.List;
 
 /**
  *
@@ -27,6 +30,16 @@ public interface UserContactService extends IService<UserContact> {
      * @param request 表id和同意状态
      */
     void setAgreeOrNot(AgreeSetContactRequest request);
+
+    /**
+     *  获取自己联系方式的请求 这里不分页 最多20条
+     */
+    List<UserContactDTO> getYourOwnContact();
+
+    /**
+     *  查看自己发送的申请 这里不分页 最多20条
+     */
+    List<UserContactDTO> youApplicationSent();
 
     /**
      * 获取用户当月发起获取微信联系方式的数量

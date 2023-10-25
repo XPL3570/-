@@ -21,4 +21,20 @@
         ContactValue,Status,CreateTime,
         UpdateTime,IsDeleted
     </sql>
+
+    <!-- 查询用户发起获取联系方式列表 -->
+    <select id="findApplicationSentContactList" resultType="com.confession.dto.UserContactDTO">
+        SELECT uc.Id, uc.RequesterId, uc.ReceiverId, u.Username, u.AvatarURL, uc.ApplicationReason, uc.ContactValue, uc.Status, uc.CreateTime, uc.UpdateTime
+        FROM user_contact uc
+                 INNER JOIN user u ON uc.ReceiverId = u.Id
+        WHERE uc.RequesterId = #{requesterId} ORDER BY uc.Id DESC LIMIT 20
+    </select>
+
+    <!-- 获取我的联系方式的请求-->
+    <select id="findGetMeContactList" resultType="com.confession.dto.UserContactDTO">
+        SELECT uc.Id, uc.RequesterId, uc.ReceiverId, u.Username, u.AvatarURL, uc.ApplicationReason, uc.ContactValue, uc.Status, uc.CreateTime, uc.UpdateTime
+        FROM user_contact uc
+                 INNER JOIN user u ON uc.RequesterId = u.Id
+        WHERE uc.RequesterId = #{receiverId} ORDER BY uc.Id DESC LIMIT 20
+    </select>
 </mapper>

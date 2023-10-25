@@ -28,6 +28,16 @@
 		</view>
 	</view>
 
+	<view class='panel panel-between item-center border-b' bindtap="ContactInfoView">
+		<view class='panel-start item-center'>
+			<image class='icon-65r' style="margin-right: 35rpx;" src='/image/QQ.png'></image>
+			<text class='fo-28'>联系方式</text>
+		</view>
+		<view>
+			<image src='/image/right.png' class='icon-25'></image>
+		</view>
+	</view>
+
 	<view class='panel panel-between item-center border-b' bindtap="LoveWallView">
 		<view class='panel-start item-center'>
 			<image class='icon-58r' src='/image/恋爱开销.png'></image>
@@ -40,7 +50,7 @@
 
 	<view class='panel panel-between item-center border-b' bindtap="SubmitRecordView">
 		<view class='panel-start item-center'>
-			<image src='/image/记录.png' class='icon-65r'></image>
+			<image src='/image/记录.png' class='icon-58r'></image>
 			<text class='fo-28'>投稿记录</text>
 		</view>
 		<view>
@@ -49,7 +59,7 @@
 	</view>
 	<view class='panel panel-between item-center border-b' bindtap="SubmitApplicationView">
 		<view class='panel-start item-center'>
-			<image src='/image/发布.png' class='icon-65r'></image>
+			<image src='/image/发布.png' class='icon-58r'></image>
 			<text class='fo-28'>投稿申请</text>
 		</view>
 		<view>
@@ -58,7 +68,7 @@
 	</view>
 	<view class='panel panel-between item-center border-b' bindtap="CommentResponseView">
 		<view class='panel-start item-center'>
-			<image src='/image/消息.png' class='icon-65r'></image>
+			<image src='/image/回复自己.png' class='icon-58r'></image>
 			<text class='fo-28'>评论回复</text>
 			<view  wx:if="{{ numberUnreadComments && numberUnreadComments>0 }}" style="margin-left: 24rpx;">
 			<van-tag type="primary" wx:if="{{ showCommentUnread }}" mark plain size="medium" closeable bind:close="onCloseUnread" data-ignore="true">{{numberUnreadComments}}条新的评论回复</van-tag>
@@ -81,7 +91,7 @@
 
 	<view  class='panel panel-between item-center border-b' bindtap="feedbackReviewView">
 		<view class='panel-start item-center'>
-			<image src='/image/反馈意见.png' class='icon-65r'></image>
+			<image src='/image/反馈意见.png' class='icon-58r'></image>
 			<text class='fo-28'>意见反馈</text>
 		</view>
 		<view>

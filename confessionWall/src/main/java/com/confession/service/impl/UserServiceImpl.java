@@ -317,9 +317,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public void updateWeChat(UserWeChatModRequest request) { //todo 前端没写，这里后面还要加表
         Integer userId = JwtInterceptor.getUser().getId();
-        User user = new User().setCanObtainWeChat(request.getCanObtainWeChat()).setWXAccount(request.getWxAccount());
-        if (userId!=null)this.updateById(user); //这里一般都是有的，加了放心吧
-            else throw new WallException(FAIL);
+        User user = userMapper.selectById(userId);
+        if (user==null){
+            throw new WallException(FAIL);
+        }
+        //检查修改间隔
+        if (!checkTimeInterval(user.getUpdateTime())) {
+            throw new WallException( FREQUENT_MOD_OF_USER_INFO);
+        }
+        user.setUpdateTime(LocalDateTime.now());
+        user.setCanObtainWeChat(request.getCanObtainWeChat()).setWXAccount(request.getWxAccount());
+        this.updateById(user);
     }
 
     @Override

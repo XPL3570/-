@@ -1,7 +1,9 @@
 package com.confession.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.confession.dto.UserContactDTO;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
 import com.confession.pojo.User;
@@ -17,6 +19,7 @@ import javax.annotation.Resource;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import static com.confession.comm.ResultCodeEnum.*;
 
@@ -52,12 +55,23 @@ public class UserContactServiceImpl extends ServiceImpl<UserContactMapper, UserC
         if (!receiverUser.getCanObtainWeChat()){
             throw new WallException(UNABLE_OBTAIN_USER_WECHAT);
         }
-        if (2>this.countByUserIdWithinOneMonthUsing(userId)){
+        if (this.countByUserIdWithinOneMonthUsing(userId)>=3){
             throw new WallException(FREQUENT_USER_ACCESS_WX);
         }
-        if (7>this.countByUserIdObtainedOneMonth(request.getReceiverId())){ //被获取方月被获取次数是7次 todo 写错配置文件
+        if (this.countByUserIdObtainedOneMonth(request.getReceiverId())>=7){ //被获取方月被获取次数是7次 todo 改到配置文件
             throw new WallException(FREQUENT_USER_OBTAIN_WECHAT);
         }
+        if (userService.getById(userId).getStatus()==3){ //如果被禁止投稿和评论了，就不可以加好友，然后提示加好友平凡
+            throw new WallException(FREQUENT_USER_ACCESS_WX);
+        }
+
+        LambdaQueryWrapper<UserContact> wrapper = Wrappers.lambdaQuery();
+        wrapper.eq(UserContact::getRequesterId, userId).eq(UserContact::getReceiverId,request.getReceiverId());
+
+        if (mapper.selectCount(wrapper)>0){
+            throw new WallException(APPLICATION_HAS_ALREADY);
+        }
+
         UserContact userContact = new UserContact();
         userContact.setRequesterId(userId);
         userContact.setReceiverId(request.getReceiverId());
@@ -80,6 +94,22 @@ public class UserContactServiceImpl extends ServiceImpl<UserContactMapper, UserC
         }
         this.save(contact);
     }
+
+
+    @Override
+    public List<UserContactDTO> youApplicationSent() {
+        List<UserContactDTO> list = mapper.findApplicationSentContactList(JwtInterceptor.getUser().getId());
+        return list;
+    }
+
+
+    @Override
+    public List<UserContactDTO> getYourOwnContact() {
+        List<UserContactDTO> list = mapper.findGetMeContactList(JwtInterceptor.getUser().getId());
+        return list;
+    }
+
+
 
 
     @Override

@@ -24,9 +24,9 @@ public class XSSRequestWrapper extends HttpServletRequestWrapper {
 
     private HttpServletRequest orgRequest = null;
 
-    public XSSRequestWrapper(HttpServletRequest request) throws IOException {
+    public XSSRequestWrapper(HttpServletRequest request){
         super(request);
-        System.out.println("过滤器执行了");
+//        System.out.println("过滤器执行了");
         // 过滤请求参数中的HTML标签和特殊字符
         Map<String, String[]> parameterMap = this.getParameterMap();
 

@@ -4,7 +4,8 @@ import Notify from '@vant/weapp/notify/notify';
 
 Page({
 	data: {
-		startTimeStamp:0,
+		startTimeStamp: 0,
+		startTimeStampUser: 0,//点击用户记录时间
 		title: '', //墙名字
 		prompt: '欢迎来到同校表白墙！        您的投稿是我不懈的动力！',
 		swiperOptions: {  //轮播图参数
@@ -13,9 +14,12 @@ Page({
 			interval: 2000,
 			duration: 1000,
 		},
-		reportPanelShow:false,
-		postId:null, //举报id
-		reportInfo:'', //举报信息
+		addUserInfo: {},
+		addUserShow: false,//添加好友参数展示
+		applicationReason: '', //添加好友申请理由
+		reportPanelShow: false,
+		postId: null, //举报id
+		reportInfo: '', //举报信息
 		swiperData: [
 			'../../image/Carousel/1.jpg',
 			'../../image/Carousel/2.jpg',
@@ -66,7 +70,7 @@ Page({
 		this.loadData();
 	},
 	loadData() {
-		console.log(this.data.confession.length);
+		console.log(this.data.confession);
 		if (!this.data.canLoadMore) {
 			wx.showToast({
 				title: '没有更多投稿数据了哦！',
@@ -94,19 +98,19 @@ Page({
 					});
 					//优化点，这里是把所有的日志在这里过滤了，但是不展开的数据可能不要用，这里不管
 					const updatedMainComments = item.mainComments.map((mainComment) => ({
-						...mainComment, 
-						commentTime:util.formatDate(mainComment.commentTime), 
+						...mainComment,
+						commentTime: util.formatDate(mainComment.commentTime),
 						commentContentVisible: false,
 					}));
 					const updatedSubComments = item.subComments.map((subComment) => ({
-						...subComment, 
-						commentTime:util.formatDate(subComment.commentTime), 
+						...subComment,
+						commentTime: util.formatDate(subComment.commentTime),
 					}));
 					let formattedpublishTime = util.formatDate(item.publishTime);
 					return {
 						...item,
-						publishTime:formattedpublishTime,
-						subComments:updatedSubComments,
+						publishTime: formattedpublishTime,
+						subComments: updatedSubComments,
 						mainComments: updatedMainComments,
 						subCommentsExist,
 					};
@@ -385,49 +389,101 @@ Page({
 		});
 	},
 	touchstart(e) {
-		// console.log('点击开始：',e.timeStamp)
-	  this.setData({startTimeStamp:e.timeStamp})
+		this.setData({ startTimeStamp: e.timeStamp })
 	},
 	touchend(e) {
 		// console.log('点击结束',e.timeStamp);
-	  if(e.timeStamp - this.data.startTimeStamp < 404) {
-		  return;
+		if (e.timeStamp - this.data.startTimeStamp < 404) {
+			return;
 		} else {
-		  this.setData({
-			postId:e.currentTarget.dataset.postId,
-			reportPanelShow:true,
-		  });
+			this.setData({
+				postId: e.currentTarget.dataset.postId,
+				reportPanelShow: true,
+			});
 		}
 	},
-	onCloseReportPanel(){
+	touchUserStart(e) {
+		this.setData({ startTimeStampUser: e.timeStamp })
+	},
+	touchUserEnd(e) {
+		if (wx.getStorageSync('userInfo').id===e.currentTarget.dataset.userId) { //判断这是不是自己发的
+			return; 
+		}
+		if (e.timeStamp - this.data.startTimeStampUser < 404) {
+			return;
+		} else {
+			this.setData({  //长按用户头像或名字发你获取联系方式的请求
+				addUserInfo: {
+					userId: e.currentTarget.dataset.userId,
+					username: e.currentTarget.dataset.userName
+				},
+				addUserShow: true
+			})
+			console.log(this.data.addUserInfo);
+		}
+	},
+	onCloseReportPanel() {
 		this.setData({
-			reportPanelShow:false,
-			postId:null,
-			reportInfo:''
+			reportPanelShow: false,
+			postId: null,
+			reportInfo: ''
 		});
 	},
-	submitReportPanel(){
-		console.log('提交举报')
-		console.log(this.data.postId);
-		console.log(this.data.reportInfo);
-		let zj={
-			reportId:this.data.postId,
-			message:this.data.reportInfo
+	submitReportPanel() {
+		let zj = {
+			reportId: this.data.postId,
+			message: this.data.reportInfo
 		}
-		request.requestWithToken('/api/report/sendReport','POST',zj,(res)=>{
-			if (res.data.code===200) {
-				Notify({ 
-					type: 'success',message: '提交举报成功!',   duration: 2204,
+		request.requestWithToken('/api/report/sendReport', 'POST', zj, (res) => {
+			if (res.data.code === 200) {
+				Notify({
+					type: 'success', message: '提交举报成功!', duration: 2204,
 				});
 				this.onCloseReportPanel();
-			}else if(res.data.code>200){
-				Notify({ 
+			} else if (res.data.code > 200) {
+				Notify({
 					type: 'warning', message: res.data.message, duration: 2204,
 				});
 				console.error(res.data);
 			}
-		},(res)=>{
+			this.onCloseReportPanel();
+		}, (res) => {
 			console.log(res);
 		});
+	},
+	submitApplication(){ //提交好友申请
+		//因为输入框配置了输入的长度，这里判断一下输入的最短的就可以了
+		if (this.data.applicationReason.length<4) {
+			wx.showToast({
+			  title: '您要输入最短4个字的申请理由哦！',
+			  icon:'none'
+			});
+			return;
+		}
+		let zj={
+			receiverId:this.data.addUserInfo.userId,
+			applicationReason:this.data.applicationReason
+		};
+		request.requestWithToken('/api/userContact/obtainContact','POST',zj,(res)=>{
+			// console.log(res.data);
+			if (res.data.code===200) {
+				Notify({
+					type: 'success', message: '发送成功!', duration: 3500,
+				});
+				this.onCloseaddUserInfo();
+								  
+			}else if(res.data.code>200){
+				Notify({
+					type: 'warning', message: res.data.message, duration: 4040,
+				});
+				this.onCloseaddUserInfo();
+			}
+			
+		},(res)=>{
+			console.error(res);
+		});
+	},
+	onCloseaddUserInfo() {
+		this.setData({ addUserShow: false, addUserInfo: {}, applicationReason: '' });
 	}
 })

@@ -22,19 +22,30 @@ image{
 	display: flex;
 	font-size:32rpx;
 	align-items: center; /* 垂直居中对齐 */
-	height: 70rpx; /* 自定义高度 */
+	height: 85rpx; /* 自定义高度 */
 	margin-left: 30rpx;
 }
+.avatar-container {
+	display: flex;
+	align-items: center;
+}
+
 .nimin {
   text-align: center;
   font-size: 36rpx;
   flex: 1;
+  margin-top: 30rpx;
 }
 .avatar {
   width: 65rpx;
   height: 65rpx;
-	border-radius: 50%;
-	margin-right: 20rpx;
+border-radius: 50%;
+margin-right: 20rpx;
+margin-top: 18rpx;
+}
+
+.username{
+	margin-top: 22rpx;
 }
 
 .comment-user{

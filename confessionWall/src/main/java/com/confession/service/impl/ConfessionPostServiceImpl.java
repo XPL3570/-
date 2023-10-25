@@ -527,8 +527,8 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
                     // 发布时间在3天内，缓存过期时间为3天
                     expirationSeconds = Duration.ofDays(3).getSeconds();
                 } else {
-                    // 发布时间超过5天，缓存过期时间为1小时
-                    expirationSeconds = Duration.ofHours(1).getSeconds();
+                    // 发布时间超过5天，缓存过期时间为3小时
+                    expirationSeconds = Duration.ofHours(3).getSeconds();
                 }
                 // 将查询结果放入缓存，并设置过期时间
                 redisTemplate.opsForValue().set(POST_SUBMISSION_RECORD + id, dbDto, expirationSeconds, TimeUnit.SECONDS);

@@ -34,7 +34,7 @@ public class UserContactController {
     /**
      * 查看有多少条获取自己联系方式的count
      */
-    @GetMapping("getYourOwnContactInfo")
+    @GetMapping("getYourOwnContactCount")
     public Result getYourOwnContactInfo(){
         int count = service.getYourOwnContactInfo();
         return Result.ok(count);
@@ -50,8 +50,23 @@ public class UserContactController {
     }
 
     /**
-     * 查看自己被获取的联系方式，和自己获取到的联系方式的联系方式
+     * 查看要自己的联系方式请求 这里不分页 最多20条
      */
+    @GetMapping("getYourOwnContact")
+    public Result getYourOwnContact(){
+        return Result.ok(service.getYourOwnContact());
+    }
+
+    /**
+     * 查看你发送的申请 这里不分页 最多20条
+     */
+    @GetMapping("youApplicationSent")
+    public Result applicationSent(){
+        return Result.ok(service.youApplicationSent());
+    }
+
+
+
 
 
 

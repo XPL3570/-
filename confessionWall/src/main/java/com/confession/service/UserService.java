@@ -88,7 +88,7 @@ public interface UserService extends IService<User> {
     void updateUserAttribute(String attributeName, String attributeValue);
 
     /**
-     * 用户三天内是否修改头像或者名字
+     * 用户1天内是否修改头像或者名字
      */
     boolean checkTimeInterval(LocalDateTime lastUpdateTime);
 

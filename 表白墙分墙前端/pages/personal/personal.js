@@ -97,6 +97,11 @@ Page({
 			url: './avatarMod/avatarMod',
 		})
 	},
+	ContactInfoView() {
+		wx.navigateTo({
+			url: './contactInfo/contactInfo',
+		})
+	},
 	NameModView() {
 		wx.navigateTo({
 			url: './nameMod/nameMod',
