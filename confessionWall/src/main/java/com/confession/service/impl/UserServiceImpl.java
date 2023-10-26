@@ -315,7 +315,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public void updateWeChat(UserWeChatModRequest request) { //todo 前端没写，这里后面还要加表
+    public void updateWeChat(UserWeChatModRequest request) {
         Integer userId = JwtInterceptor.getUser().getId();
         User user = userMapper.selectById(userId);
         if (user==null){

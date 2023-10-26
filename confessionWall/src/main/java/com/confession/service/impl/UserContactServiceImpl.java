@@ -84,15 +84,16 @@ public class UserContactServiceImpl extends ServiceImpl<UserContactMapper, UserC
     public void setAgreeOrNot(AgreeSetContactRequest request) {
         Integer userId = JwtInterceptor.getUser().getId();
         UserContact contact = mapper.selectById(request.getUserContactId());
-        if (contact==null||!contact.getRequesterId().equals(userId)){
+        if (contact==null||!contact.getReceiverId().equals(userId)){
             throw new WallException(FAIL); //这里是想修改的id不对，直接报错
         }
         if (request.getIsAgree()){
             contact.setStatus(1);
+            contact.setContactValue(userService.getById(userId).getWXAccount());
         }else {
             contact.setStatus(2);
         }
-        this.save(contact);
+        this.updateById(contact);
     }
 
 

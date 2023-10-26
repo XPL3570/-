@@ -51,7 +51,7 @@ Page({
 		var sbzj = {
 			schoolId: wx.getStorageSync('userInfo').schoolId
 		}
-		console.log(sbzj);
+		// console.log(sbzj);
 
 		request.requestWithToken("/api/school/getIndexInfo", "GET", sbzj,
 			(res) => {
@@ -70,7 +70,7 @@ Page({
 		this.loadData();
 	},
 	loadData() {
-		console.log(this.data.confession);
+		// console.log(this.data.confession);
 		if (!this.data.canLoadMore) {
 			wx.showToast({
 				title: '没有更多投稿数据了哦！',
@@ -124,7 +124,6 @@ Page({
 				wx.showToast({
 					title: '获取数据成功'
 				})
-				console.log('获取数据成功了ok')
 			} else {
 				wx.showToast({
 					title: '数据获取异常',
@@ -215,7 +214,6 @@ Page({
 		}
 		return confession;
 	},
-
 	//输入主评论
 	handleInput(e) {
 		const { outIndex } = e.currentTarget.dataset;

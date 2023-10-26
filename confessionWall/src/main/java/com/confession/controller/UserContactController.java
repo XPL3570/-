@@ -50,7 +50,8 @@ public class UserContactController {
     }
 
     /**
-     * 查看要自己的联系方式请求 这里不分页 最多20条
+     * 查看要自己的联系方式请求 这里不分页 最多20条 加入缓存，同意的时候删除缓存
+     * todo 缓存没有做，还有前端这个页面可以做懒加载，还有看到自己未处理的添加申请的count  这个接口还没用到
      */
     @GetMapping("getYourOwnContact")
     public Result getYourOwnContact(){
