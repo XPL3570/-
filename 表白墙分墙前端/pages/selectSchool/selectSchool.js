@@ -37,7 +37,11 @@ Page({
 		});
 	},
 	onSubmit() {
-		if(!this.data.userName||!this.data.schoolName||!this.data.userNameError||!this.data.schoolNameError){
+		// console.log(this.data.userName);
+		// console.log(this.data.schoolName);
+		// console.log(!this.data.userNameError);
+		// console.log(this.data.schoolNameError);
+		if(!this.data.userName||!this.data.schoolName||this.data.userNameError||this.data.schoolNameError){
 			Dialog.alert({
 				message: '请输入完整信息！',
 			  }).then(() => {

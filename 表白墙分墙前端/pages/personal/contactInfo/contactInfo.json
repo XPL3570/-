@@ -1,0 +1,14 @@
+{
+	"navigationBarTitleText": "我的联系方式",
+	"usingComponents": {
+		"van-field": "@vant/weapp/field/index",
+		"van-switch": "@vant/weapp/switch/index",
+		"van-cell": "@vant/weapp/cell/index",
+		"van-button": "@vant/weapp/button/index",
+		"van-tab": "@vant/weapp/tab/index",
+		"van-tabs": "@vant/weapp/tabs/index",
+		"van-tag": "@vant/weapp/tag/index",
+		"van-dialog": "@vant/weapp/dialog/index",
+		"van-notice-bar": "@vant/weapp/notice-bar/index"
+	}
+}

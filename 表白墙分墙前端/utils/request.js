@@ -28,8 +28,8 @@ function requestWithToken(url, method, data, successCallback, failCallback) {
 			const code=res.code
 		  // 发送 res.code 到后台获取openid查询用户是否登录过  没有则跳转好选择学校处注册
 		  wx.request({
-			// url: 'https://www.txbbq.xyz:2204/api/user/login',
-			url: 'http://localhost:2204/api/user/login',
+			url: 'https://www.txbbq.xyz/api/user/login',
+			// url: 'http://localhost:2204/api/user/login',
 		
 			method:'POST',
 			header: {

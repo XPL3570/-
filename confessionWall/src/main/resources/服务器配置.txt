@@ -30,12 +30,12 @@ spring:
     password: Xpl231016z.
     driver-class-name: com.mysql.jdbc.Driver
   redis:
-#    host: 119.91.214.165
+    #    host: 119.91.214.165
     host: localhost
     port: 6379
     database: 0
-#    password:
-        password: xpl231016
+      #    password:
+    password: xpl231016
     # 连接超时时间
     timeout: 10s
     lettuce:
@@ -95,7 +95,7 @@ wall:
       total: 3   #总次数
 
 aLiYun:
-#  endpoint: oss-cn-shanghai.aliyuncs.com
+  #  endpoint: oss-cn-shanghai.aliyuncs.com
   endpoint: sts.cn-shanghai.aliyuncs.com  #sts访问的节点
   keyId: LTAI5tFNr1wyRB7pDRe9193H           #这是临时角色的key
   keySecret: GIcgYHRoFq8IdeU96xsIoqj4xRtuxn  #这是临时角色的的秘钥

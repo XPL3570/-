@@ -1,0 +1,60 @@
+<van-dialog id="van-dialog" />
+<van-notice-bar
+  color="#1989fa"
+  background="#ecf9ff"
+  left-icon="info-o"
+  text="在首页长按投稿者的头像或名字就可以申请获取他的联系方式，您也可以在这里设置您的联系方式"
+/>
+
+<view class="main">
+	<van-tabs active="{{ active }}">
+		<van-tab title="添加我的">
+			<view wx:for="{{yourOwnContact}}" wx:key="index" style="margin: 25rpx;background-color: #F2F4F4;">
+				<view class="userInfo">
+					<image class="user-avatar" src="{{item.avatarURL}}"></image>
+					<span>{{item.username}} :</span>
+				</view>
+				<view style="display: flex;justify-content: space-between;margin-right: 18rpx;">
+					<view>
+						<spen class="dan">申请理由：</spen>
+						<spen>{{item.applicationReason}} </spen>
+					</view>
+					<van-tag wx:if="{{item.status === 1}}" type="success">已同意</van-tag>
+					<van-tag wx:if="{{item.status === 2}}" type="danger">不同意</van-tag>
+				</view>
+				<view wx:if="{{item.status === 0}}" style="display: flex;justify-content: flex-end;margin: 18rpx;">
+					<van-button type="primary" size="small" style="margin-right: 18rpx;" bindtap="agreeApply" data-index="{{index}}" data-id="{{item.id}}">同意申请</van-button>
+					<van-button type="danger" size="small"  bindtap="refuseApplication" data-index="{{index}}" data-id="{{item.id}}">拒绝申请</van-button>
+				</view>
+			</view>
+		</van-tab>
+		<van-tab title="我申请的">
+			<view wx:for="{{youApplicationSent}}" wx:key="index" style="margin: 25rpx;background-color: #F2F4F4;">
+				<view class="userInfo">
+					<image class="user-avatar" src="{{item.avatarURL}}"></image>
+					<span>{{item.username}} :</span>
+				</view>
+				<spen class="dan">申请理由：</spen>
+				<spen>{{item.applicationReason}} </spen>
+				<view wx:if="{{item.status===1}}">
+					<spen class="dan">联系方式：</spen>
+					<spen>{{item.contactValue}}</spen>
+				</view>
+			</view>
+		</van-tab>
+		<van-tab title="我的联系方式">
+			<view style="margin-top: 22rpx;padding: 20rpx; ">
+				<van-cell-group>
+					<van-field label="联系方式：" title-width="5em" value="{{ value }}" maxlength="255" placeholder="请输入用户名" bind:change="onChange" />
+				</van-cell-group>
+				<van-cell title="开启可获取联系方式" border="{{ false }}">
+					<van-switch checked="{{ checked }}" size="44rpx" bind:change="onChangeCzj" active-color="#07c160" inactive-color="#2e0a24" />
+				</van-cell>
+				<view wx:if="{{isShowButton}}" style="display: flex;justify-content: center; margin-top: 44rpx;">
+					<van-button round type="primary" bindtap="modifyContactInfo">确定修改</van-button>
+				</view>
+			</view>
+		</van-tab>
+
+	</van-tabs>
+</view>

@@ -1,0 +1,14 @@
+
+.dan{
+	opacity: 0.6; /* 设置透明度为0.5，数值范围为0-1，0为完全透明，1为完全不透明 */
+}
+.userInfo{
+	display: flex; 
+	justify-items: center;
+}
+.user-avatar {
+	width: 57rpx;
+	height: 57rpx;
+	  border-radius: 50%;
+	  margin-right: 20rpx;
+  }

@@ -80,24 +80,24 @@ logging:
 
 wall:
   admin:
-    daily-post-limit: 10 #墙每天投稿上限数量
+    daily-post-limit: 20 #墙每天投稿上限数量
   user:
-    daily-post-limit: 8
+    daily-post-limit: 5
     comment-limit: 10  #每天评论数量限制
   lottery:   #恋爱墙投递和读取配置   只能选择一个  投递和拿的限制都是一样的
     strategy: ONCE    # YEARLY, MONTHLY, DAILY, ONCE 其中之一  ONCE是一共只能放的
-    limit:    #次数限制
-      daily: 2     #天次数
-      yearly: 2   #年次数
-      monthly: 3   #月次数
-      total: 3   #总次数
+#    limit:    #次数限制
+#      daily: 5     #天次数
+#      yearly: 2   #年次数
+#      monthly: 3   #月次数
+#      total: 3   #总次数
 
 aLiYun:
-#  endpoint: oss-cn-shanghai.aliyuncs.com
+  #  endpoint: oss-cn-shanghai.aliyuncs.com
   endpoint: sts.cn-shanghai.aliyuncs.com  #sts访问的节点
   keyId: LTAI5tFNr1wyRB7pDRe9193H           #这是临时角色的key
   keySecret: GIcgYHRoFq8IdeU96xsIoqj4xRtuxn  #这是临时角色的的秘钥
-  bucketName: tongxiaobiaobaiqiang
+  bucketName: tongxiaobiaobaiqiang          #桶名字
   ramRoleArn: acs:ram::1204375983108350:role/ramosstxbbq  #STS临时访问角色
   endpointNode: https://tongxiaobiaobaiqiang.oss-cn-shanghai.aliyuncs.com  #实际访问的节点
 

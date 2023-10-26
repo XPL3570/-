@@ -1,11 +1,11 @@
 <view class="container">
-
 	<view style="margin: 72rpx;"></view>
+	<!-- type="nickname"  不用了 bug -->
   <van-field
-   type="nickname"
+
     label="用户名"
     required
-    placeholder="自定义或者使用微信名字"
+    placeholder="请输入用户名"
     value="{{ userName }}"
     bind:input="onInputUserName"
     custom-class="input-field"
