@@ -120,8 +120,14 @@ public interface ConfessionPostService extends IService<Confessionpost> {
 
 
     /**
-     * 删除投稿，目前只有超级管理员用
+     * 管理员删除投稿，目前只有超级管理员用
      * 先删缓存再删数据库
      */
     void deletePost(DeleteSubmissionRequest request);
+
+    /**
+     * 用户删除自己的投稿
+     */
+    void deletePostUser(DeleteSubmissionRequest request);
+
 }

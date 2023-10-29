@@ -176,6 +176,7 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
         dto.setPrompt(school.getPrompt());
         dto.setIsVerified(school.getIsVerified());
         dto.setNumberLuckyDraws(school.getNumberLuckyDraws());
+        dto.setNumberPaperInputs(school.getNumberPaperInputs());
         String aaa = school.getCarouselImages();
         if (!StringUtils.isEmpty(aaa)) {
             dto.setCarouselImages(school.getCarouselImages().split(";"));
@@ -305,10 +306,10 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
         List<String> imageList = globalCarouselImageService.getGlobalCarouselImages().stream()
                 .map(GlobalCarouselImage::getCarouselImage)
                 .collect(Collectors.toList());
-        if (com.baomidou.mybatisplus.core.toolkit.StringUtils.isBlank(school.getCarouselImages())) {
-            //todo 待测试 学校没有设置轮播图空指针
+        if (school.getCarouselImages()!=null&&school.getCarouselImages()!=""){
             imageList.addAll(Arrays.asList(school.getCarouselImages().split(";")));
         }
+
         IndexInfoDTO dto = new IndexInfoDTO();
         dto.setCarouselImages(imageList);
         String promptMessage = this.getPromptMessage(schoolId);
@@ -327,6 +328,7 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
         School school = new School();
         school.setId(request.getId());
         school.setSchoolName(request.getSchoolName());
+        school.setNumberPaperInputs(request.getNumberPaperInputs());
         school.setCarouselImages(request.getCarouselImages());
         school.setPrompt(request.getPrompt());
         school.setIsVerified(request.getIsVerified());

@@ -352,8 +352,8 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         }
         //这里两个都是索引，包左不包右
         Set<Integer> zSetMembers = redisTemplate.opsForZSet().reverseRange(WALL_POSTS_PREFIX + wallId, startIndex,startIndex+limit-1);
-        System.out.println(zSetMembers.size());
-        System.out.println(limit);
+//        System.out.println(zSetMembers);
+//        System.out.println(limit);
         List<ConfessionPostDTO> posts;
         if (zSetMembers.isEmpty()||zSetMembers.size()<limit) {
             // 查询这个key的里面集合的数量并添加   这里要加分布式锁，在添加的时候也要获取这个锁
@@ -407,8 +407,6 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         }
 
         //判断该表白墙状态，如果是被禁用的，就拒绝发布
-
-
         boolean hasImage = (confessionRequest.getImageURL() != null && !confessionRequest.getImageURL().isEmpty());
         int status = 0;
 
@@ -493,6 +491,15 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         lock.unlock();
     }
 
+    @Override
+    public void deletePostUser(DeleteSubmissionRequest request) {
+        Integer userId = JwtInterceptor.getUser().getId();
+        if (!confessionpostMapper.selectById(request.getPostId()).getUserId().equals(userId)){ //如果不是这个用户发布的就报错
+            throw new WallException("这条投稿不是该用户发布的",224);
+        }
+        this.deletePost(request);
+    }
+
 
     /**
      * 获取投稿记录集合
@@ -511,7 +518,7 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
             } else {
                 // 如果没有拿到就要查询数据库并放到缓存里面去
                 Confessionpost confessionpost = confessionpostMapper.selectById(id);
-//                System.out.println("记录：" + id + "记录是" + confessionpost);
+                System.out.println("记录：" + id + "记录是" + confessionpost);
                 ConfessionPostDTO dbDto = null;
                 if (confessionpost != null) {
                     dbDto = this.convertToDTOAll(confessionpost);

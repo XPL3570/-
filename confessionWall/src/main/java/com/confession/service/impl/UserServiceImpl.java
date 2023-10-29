@@ -113,6 +113,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public Result register(RegisterRequest request) {
+        if (request.getUserName().contains("表白墙") || request.getUserName().contains("墙")) {
+            throw new WallException("该用户名不能设置哦，您可以换一个哦", 400);
+        }
         String code = request.getCode();
         String openid = this.codeByOpenid(code);
 
@@ -125,6 +128,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             user.setOpenId(openid);
             user.setUsername(request.getUserName());
             user.setAvatarURL(request.getAvatarUrl());
+            user.setUpdateTime(LocalDateTime.now().minusDays(1));
 
             // 查询学校是否存在
             school = schoolService.findBySchoolName(request.getSchoolName());
@@ -161,6 +165,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Map<String, Object> map = new HashMap<>();
         map.put("token", token);
         map.put("userInfo", user);  //这里后面可以做一个过滤，把学校名字放进去
+        Confessionwall wall = confessionwallService.selectSchoolInWallOne(user.getSchoolId());
+        map.put("wall", wall);
+        map.put("isAdmin", false);
         // 返回 token 到小程序端
         return Result.ok(map);
     }

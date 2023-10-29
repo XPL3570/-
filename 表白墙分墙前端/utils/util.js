@@ -1,6 +1,6 @@
 var request = require('./request');
 
-//这个接口是上传头像，和图片都要用的所以没有携带token就可以调用
+//这个接口是上传头像，和图片都要用的所以没有携带token就可以调用,暂时不用了
 function uploadAndRetrieveImageUrl(filePath) {
 	return new Promise(async (resolve, reject) => {
 		try {

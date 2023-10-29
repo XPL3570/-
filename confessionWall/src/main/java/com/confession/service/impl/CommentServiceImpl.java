@@ -13,6 +13,7 @@ import com.confession.dto.CommentDTO;
 import com.confession.dto.ConfessionPostDTO;
 import com.confession.dto.UserDTO;
 import com.confession.globalConfig.exception.WallException;
+import com.confession.globalConfig.interceptor.JwtInterceptor;
 import com.confession.mapper.CommentMapper;
 import com.confession.mapper.UserMapper;
 import com.confession.pojo.Comment;
@@ -205,6 +206,15 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     }
 
     @Override
+    public void deleteComment(Integer commentId) { //todo
+        Comment comment = commentMapper.selectById(commentId);
+        if (comment==null||comment.getUserId().equals(JwtInterceptor.getUser().getId())){ //没有查询到评论
+            throw new WallException("评论不存在或者不是该用户的评论",211);
+        }
+
+    }
+
+    @Override
     public int numberUnreadCommentsByUsers(Integer userId, LocalDateTime dateTime) {
         List<Integer> userPostId = confessionPostService.getUserPostId(userId);
         LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
@@ -217,6 +227,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         Integer count = commentMapper.selectCount(queryWrapper);
         return count;
     }
+
+
 
     @Override
     public Boolean hasSensitiveWords(String text) {

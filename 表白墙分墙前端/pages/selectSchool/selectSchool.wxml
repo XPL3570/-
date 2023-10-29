@@ -1,6 +1,6 @@
 <view class="container">
 	<view style="margin: 72rpx;"></view>
-	<!-- type="nickname"  不用了 bug -->
+<!--   type="nickname" 用不了 -->
   <van-field
 
     label="用户名"

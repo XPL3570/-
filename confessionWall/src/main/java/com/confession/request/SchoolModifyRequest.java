@@ -14,6 +14,9 @@ public class SchoolModifyRequest {
     @NotNull(message = "学校恋爱墙可抽奖次数不能为空")
     private Integer numberLuckyDraws;
 
+    @NotNull(message = "学校恋爱墙可放入次数不能为空")
+    private Integer numberPaperInputs;
+
     @NotBlank(message = "学校名称不能为空")
     @Size(min=4,max = 50, message = "学校名称的长度在4-50位之间")
     private String schoolName;

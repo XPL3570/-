@@ -11,6 +11,8 @@
         <result column="CreateTime" property="createTime" />
         <result column="CarouselImages" property="carouselImages" />
         <result column="Prompt" property="prompt"/>
+        <result column="NumberLuckyDraws" property="numberLuckyDraws"/>
+        <result column="NumberPaperInputs" property="numberPaperInputs"/>
         <result column="IsDeleted" property="deleted" />
     </resultMap>
 

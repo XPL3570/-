@@ -12,6 +12,7 @@
       <el-table-column prop="createTime" label="创建时间" width="132"></el-table-column>
       <el-table-column prop="creatorName" label="创建者名字" width="90"></el-table-column>
       <el-table-column prop="numberLuckyDraws" label="恋爱墙可抽奖次数" width="90"></el-table-column>
+      <el-table-column prop="numberPaperInputs" label="恋爱墙可放入次数" width="90"></el-table-column>
       <el-table-column prop="creatorWeChat" label="创建者微信号" width="133"></el-table-column>
       <el-table-column prop="creatorPhone" label="创建者手机号" width="108"></el-table-column>
       <el-table-column prop="carouselImages" label="首页轮播图" width="244">
@@ -59,6 +60,10 @@
 
         <el-form-item label="可抽奖次数">
           <el-input v-model="schoolDataToBeModified.numberLuckyDraws" type="number"></el-input>
+        </el-form-item>
+
+        <el-form-item label="可放入次数">
+          <el-input v-model="schoolDataToBeModified.numberPaperInputs" type="number"></el-input>
         </el-form-item>
 
         <el-form-item label="学校轮播图">
@@ -265,6 +270,7 @@ export default {
         id: this.schoolDataToBeModified.id,
         schoolName: this.schoolDataToBeModified.schoolName,
         numberLuckyDraws:this.schoolDataToBeModified.numberLuckyDraws,
+        numberPaperInputs:this.schoolDataToBeModified.numberPaperInputs,
         carouselImages: this.fileList.map(item => item.url).join(';'),
         prompt: this.schoolDataToBeModified.prompt,
         isVerified: this.schoolDataToBeModified.isVerified

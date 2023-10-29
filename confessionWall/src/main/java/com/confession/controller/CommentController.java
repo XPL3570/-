@@ -5,6 +5,7 @@ import com.confession.comm.PageTool;
 import com.confession.comm.Result;
 import com.confession.dto.CommentDTO;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
+import com.confession.request.ParameterIntTypeRequest;
 import com.confession.request.PostCommentRequest;
 import com.confession.service.CommentService;
 import org.springframework.validation.annotation.Validated;
@@ -57,6 +58,16 @@ public class CommentController {
             return Result.fail();
         }
     }
+
+    /**
+     * 用户删除评论
+     */
+    @PostMapping("deleteComment")
+    public Result deleteComment(@RequestBody @Validated ParameterIntTypeRequest request){
+        commentService.deleteComment(request.getRequestId());
+        return Result.ok();
+    }
+
 
     /**
      * 查询用户评论回复 -半年内,投稿发布的回复也要

@@ -63,4 +63,9 @@ public class SchoolDTO  implements Serializable {
      */
     private Integer numberLuckyDraws;
 
+    /**
+     * 学校纸条可放入次数，也看服务器设置的策略
+     */
+    private Integer numberPaperInputs;
+
 }

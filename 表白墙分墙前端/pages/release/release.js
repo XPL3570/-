@@ -149,11 +149,17 @@ Page({
 						content: '', // 初始化投稿内容
 						fileList: [] // 初始化文件列表
 					});
+					console.log(res.data);
+					wx.setStorageSync('initializeHomepageIdentification', 1);
 					setTimeout(() => {
 						// 在跳转页面时，将提示信息存储在本地缓存中
 						wx.setStorageSync('message', res.data.message);
-						wx.switchTab({
-							url: '/pages/index/index'
+						// wx.switchTab({
+						// 	url: '/pages/index/index'
+						// });
+						wx.showToast({
+							title: res.data.message,
+							icon: 'success'
 						});
 					}, 404);
 				} else if (res.data.code === 216) {
@@ -166,7 +172,7 @@ Page({
 					wx.showToast({
 						title: '投稿异常请稍后重试',
 						icon: 'none'
-					})
+					});
 					console.log(res.data.message);
 				}
 			}, (res) => {

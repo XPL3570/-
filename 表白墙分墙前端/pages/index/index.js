@@ -38,36 +38,50 @@ Page({
 		replyIndex: -1,  //要回复的评论的投稿索引 在大集合下面
 		mainIndex: -1, //如果回复的是主评论，这就是记录主评论的下标
 	},
-	onLoad() { //获取首页数据和表白数据，分开哦
-		// console.log('index的onLoad函数触发')
+	onLoad() {
+
+		console.log('index的onLoad函数触发');
+		this.initializeHomepageData();
+
+
+	},
+	async initializeHomepageData() {
+		console.log("初始化首页数据方法调用");
+		this.setData({
+			page: 1,
+			limit: 10,
+			canLoadMore: true,
+			confession: []
+		});
+		//获取首页数据和表白数据，分开哦
 		this.setData({
 			title: wx.getStorageSync('wall').wallName
 		});
-		// console.log(wx.getStorageSync('userInfo').schoolId)
-		//获取轮播图和提示语
+
+		// 获取轮播图和提示语
 		if (wx.getStorageSync('userInfo').schoolId === undefined) {
 			return;
 		}
 		var sbzj = {
 			schoolId: wx.getStorageSync('userInfo').schoolId
+		};
+		try {
+			const res = await request.requestWithTokenPromise("/api/school/getIndexInfo", "GET", sbzj);
+			if (res.data.code === 200) {
+				this.setData({
+					prompt: res.data.data.prompt,
+					swiperData: res.data.data.carouselImages
+				});
+			} else {
+				console.error('获取首页信息失败了');
+				console.log(res);
+			}
+		} catch (error) {
+			console.error(error);
 		}
-		// console.log(sbzj);
+		console.log("初始化首页数据方法调用-zj");
+		this.loadData(); // 使用await等待this.loadData()方法的异步操作完成
 
-		request.requestWithToken("/api/school/getIndexInfo", "GET", sbzj,
-			(res) => {
-				if (res.data.code === 200) {
-					this.setData({
-						prompt: res.data.data.prompt,
-						swiperData: res.data.data.carouselImages
-					});
-				} else {
-					console.error('获取首页信息失败了')
-					console.log(res);
-				}
-			}, (res) => {
-				console.error(res);
-			});
-		this.loadData();
 	},
 	loadData() {
 		// console.log(this.data.confession);
@@ -150,6 +164,13 @@ Page({
 			});
 			// 清除本地缓存中的提示信息
 			wx.removeStorageSync('message');
+		}
+		// 初始化首页标识
+		var init = wx.getStorageSync('initializeHomepageIdentification');
+		if (init === 1) {
+			this.initializeHomepageData();
+			console.log('aaaaaaaa');
+			wx.setStorageSync('initializeHomepageIdentification', 0);
 		}
 	},
 	onChange(event) {
@@ -404,8 +425,8 @@ Page({
 		this.setData({ startTimeStampUser: e.timeStamp })
 	},
 	touchUserEnd(e) {
-		if (wx.getStorageSync('userInfo').id===e.currentTarget.dataset.userId) { //判断这是不是自己发的
-			return; 
+		if (wx.getStorageSync('userInfo').id === e.currentTarget.dataset.userId) { //判断这是不是自己发的
+			return;
 		}
 		if (e.timeStamp - this.data.startTimeStampUser < 404) {
 			return;
@@ -449,35 +470,35 @@ Page({
 			console.log(res);
 		});
 	},
-	submitApplication(){ //提交好友申请
+	submitApplication() { //提交好友申请
 		//因为输入框配置了输入的长度，这里判断一下输入的最短的就可以了
-		if (this.data.applicationReason.length<4) {
+		if (this.data.applicationReason.length < 4) {
 			wx.showToast({
-			  title: '您要输入最短4个字的申请理由哦！',
-			  icon:'none'
+				title: '您要输入最短4个字的申请理由哦！',
+				icon: 'none'
 			});
 			return;
 		}
-		let zj={
-			receiverId:this.data.addUserInfo.userId,
-			applicationReason:this.data.applicationReason
+		let zj = {
+			receiverId: this.data.addUserInfo.userId,
+			applicationReason: this.data.applicationReason
 		};
-		request.requestWithToken('/api/userContact/obtainContact','POST',zj,(res)=>{
+		request.requestWithToken('/api/userContact/obtainContact', 'POST', zj, (res) => {
 			// console.log(res.data);
-			if (res.data.code===200) {
+			if (res.data.code === 200) {
 				Notify({
 					type: 'success', message: '发送成功!', duration: 3500,
 				});
 				this.onCloseaddUserInfo();
-								  
-			}else if(res.data.code>200){
+
+			} else if (res.data.code > 200) {
 				Notify({
 					type: 'warning', message: res.data.message, duration: 4040,
 				});
 				this.onCloseaddUserInfo();
 			}
-			
-		},(res)=>{
+
+		}, (res) => {
 			console.error(res);
 		});
 	},

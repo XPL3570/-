@@ -63,11 +63,17 @@ Page({
 				request.requestWithToken('/api/user/register','POST',data, (res) => {
 						if (res.data.code === 200) {
 							// 学校已入驻，跳转到其他页面
-							wx.setStorageSync('token', res.data.token);
-							wx.setStorageSync('userInfo', res.data.userInfo);
-							wx.switchTab({
-								url: '/pages/index/index'
-							});
+							wx.setStorageSync('token', res.data.data.token);
+							wx.setStorageSync('userInfo', res.data.data.userInfo);
+							wx.setStorageSync('wall', res.data.data.wall);  //返回的是一个对象
+						wx.setStorageSync('isAdmin', res.data.data.isAdmin); //这里必然是false 直接选择好学校了
+							wx.setStorageSync('initializeHomepageIdentification', 1);
+							
+							setTimeout(() => {
+								wx.switchTab({
+									url: '/pages/index/index'
+								});
+							  }, 300); // 300 毫秒为延迟的时间
 							wx.showToast({
 								title: '绑定学校成功！',
 								icon: 'success',
@@ -90,7 +96,7 @@ Page({
 								});
 						} else {
 							wx.showToast({
-								title: res.data.messag,
+								title: res.data.message,
 								icon: 'none',
 								duration: 2000
 							});

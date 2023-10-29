@@ -1,5 +1,6 @@
 package com.confession.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -13,6 +14,7 @@ import com.confession.request.ObtainContactInfoRequest;
 import com.confession.service.UserContactService;
 import com.confession.mapper.UserContactMapper;
 import com.confession.service.UserService;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -21,6 +23,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import static com.confession.comm.RedisConstant.USER_ADD_FRIENDS;
+import static com.confession.comm.RedisConstant.USER_POSTED_NODE;
 import static com.confession.comm.ResultCodeEnum.*;
 
 /**
@@ -35,6 +39,9 @@ public class UserContactServiceImpl extends ServiceImpl<UserContactMapper, UserC
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private RedisTemplate redisTemplate;
 
     @Override
     public int getYourOwnContactInfo() {
@@ -106,7 +113,13 @@ public class UserContactServiceImpl extends ServiceImpl<UserContactMapper, UserC
 
     @Override
     public List<UserContactDTO> getYourOwnContact() {
-        List<UserContactDTO> list = mapper.findGetMeContactList(JwtInterceptor.getUser().getId());
+        Integer userId = JwtInterceptor.getUser().getId();
+//        JSON json = (JSON) redisTemplate.opsForValue().get(USER_ADD_FRIENDS + userId);
+//        if (json != null) {
+//            return json.toJavaObject(List.class);
+//        }
+        List<UserContactDTO> list = mapper.findGetMeContactList(userId);
+//        redisTemplate.opsForValue().set(USER_ADD_FRIENDS + userId,list);
         return list;
     }
 

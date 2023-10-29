@@ -100,7 +100,7 @@ public class LotteryRecordServiceImpl extends ServiceImpl<LotteryRecordMapper, L
         LambdaQueryWrapper<LotteryRecord> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(LotteryRecord::getUserId, userId)
                 .ge(LotteryRecord::getDrawAt, LocalDateTime.now().minusMonths(3))
-                .orderByDesc(LotteryRecord::getDrawAt);
+                .orderByDesc(LotteryRecord::getId);
         Page<LotteryRecord> page = new Page<>(1, 20);
         List<LotteryRecord> records = lotteryRecordMapper.selectPage(page, queryWrapper).getRecords();
         List<Lottery> list = new ArrayList<>();

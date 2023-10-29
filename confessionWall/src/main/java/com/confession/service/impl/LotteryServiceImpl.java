@@ -72,6 +72,7 @@ public class LotteryServiceImpl extends ServiceImpl<LotteryMapper, Lottery> impl
         }
         LambdaQueryWrapper<Lottery> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Lottery::getUserId, userId);
+        wrapper.orderByDesc(Lottery::getId);
         Page<Lottery> page = new Page<>(1, 20);
         List<Lottery> records = lotteryMapper.selectPage(page, wrapper).getRecords();
         redisTemplate.opsForValue().set(USER_POSTED_NODE + userId, JSONObject.toJSON(records), 20, TimeUnit.MINUTES);
@@ -83,7 +84,7 @@ public class LotteryServiceImpl extends ServiceImpl<LotteryMapper, Lottery> impl
         //这里可以也许可以用反射优化，这里先不管了
         Strategy strategy = Strategy.valueOf(wallConfig.getStrategyString().toUpperCase());
 
-        Integer luckyDraws = schoolMapper.selectById(schoolId).getNumberLuckyDraws();
+        Integer luckyDraws = schoolMapper.selectById(schoolId).getNumberPaperInputs();
         if (luckyDraws<1){
             throw new WallException(NOT_OPEN_LOVE_WALL);
         }

@@ -75,6 +75,9 @@ public class School implements Serializable {
     @TableField("NumberLuckyDraws")
     private Integer numberLuckyDraws;
 
+    @TableField("NumberPaperInputs")
+    private Integer numberPaperInputs;
+
 
     /**
      * 逻辑删除标志

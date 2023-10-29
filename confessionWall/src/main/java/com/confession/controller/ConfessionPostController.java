@@ -49,7 +49,7 @@ public class ConfessionPostController {
     @GetMapping("readConfessionWall")
     public Result readConfessionWall(@RequestParam Integer wallId, @Validated @ModelAttribute PageTool pageTool) {
         //如果每页记录数太大了，直接返回错误
-        if (pageTool.getLimit() > 19) {
+        if (pageTool.getLimit() > 19 ||wallId==null) {
             return Result.fail();
         }
         List<ConfessionPostDTO> res = confessionPostService.confessionPostService(wallId, pageTool.getPage(), pageTool.getLimit());
@@ -149,11 +149,20 @@ public class ConfessionPostController {
     }
 
     /**
-     * 删除投稿内容
+     * 超级管理员 删除投稿内容
      */
     @PostMapping("admin/delete")
     public Result adminDelete(@RequestBody @Validated DeleteSubmissionRequest request) {
         confessionPostService.deletePost(request);
+        return Result.ok();
+    }
+
+    /**
+     * 用户删除自己发布的投稿
+     */
+    @PostMapping("delete") //todo 前端待完成
+    public Result delete(@RequestBody @Validated DeleteSubmissionRequest request){
+        confessionPostService.deletePostUser(request);
         return Result.ok();
     }
 

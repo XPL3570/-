@@ -51,7 +51,7 @@
 				</view>
 			</van-tab>
 			<van-tab title="我放入的纸条">
-			
+				<van-notice-bar wrapable color="#1989fa" background="#ecf9ff" left-icon="info-o" text=" 为保护用户隐私，平台只保存您三个月内放入取到的纸条" />
 				<view wx:for="{{insertNote}}" wx:key="index" wx:for-index="outerIndex">
 					<view style="padding: 20rpx;margin-bottom: 20px;">
 						<van-cell title="微信或qq号：" value="{{item.contactInfo}}" />
@@ -84,11 +84,11 @@
 		<text>请填写信息放入{{carton}}恋爱箱</text>
 	</view>
 	<view class="content">
-		<van-field label="微信或qq号:" placeholder="请输入您的微信号" autosize type="textarea" value="{{ContactInfo}}" bindinput="handleUserInfoInput" required="ture"></van-field>
+		<van-field label="微信或qq号:" placeholder="请输入您的联系方式用于匹配" autosize type="textarea" value="{{ContactInfo}}" bindinput="handleUserInfoInput" required="ture"></van-field>
 		<van-field label="自我介绍:" placeholder="请输入您的介绍,比如兴趣，爱好等等" autosize type="textarea" value="{{Introduction}}" bindinput="handleIntroductionInput" required="ture"></van-field>
 	</view>
 	<view class="uploader">
-		<view style="margin-bottom: 30rpx;">上传您的微信二维码或其他联系方式</view>
+		<view style="margin-bottom: 30rpx;">上传其他联系方式用户匹配 </view>
 		<van-uploader file-list="{{ fileList }}" image-fit="aspectFill" accept="media" use-before-read bind:before-read="beforeRead" bind:after-read="afterRead" bind:delete="handleDeleteImage" max-count="2" />
 	</view>
 	<view class="zj">

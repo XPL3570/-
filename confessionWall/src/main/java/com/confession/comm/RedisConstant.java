@@ -22,7 +22,7 @@ public class RedisConstant {
 
     public static final String  SCHOOL_WALL_MAIN_LIST_MOD_LOCK=" school_wall_main_list_modification_lock:"; //学校表白墙修改锁
 
-    public static final String CONFESSION_PREFIX_LOCK="confession_record_lock:"; //记录锁
+    public static final String CONFESSION_PREFIX_LOCK="confession_record_lock:"; //记录锁 锁的是修改单个投稿记录
 
     public static final String POST_SUBMISSION_RECORD ="wall_submission_record";  //发布记录+投稿id
 
@@ -38,6 +38,13 @@ public class RedisConstant {
 
     //学校抽取纸条锁
     public static final String SCHOOL_EXTRACTION_LOCK="school_extraction_lock:";
+
+    //用户添加好友缓存    + 用户id  我加别人
+    public static final String USER_ADD_FRIENDS="user_add_friend:";
+
+    //用户好友申请缓存    +用户id   别人加我
+    public static final String USER_FRIEND_APPLICATION="user_friend_application:";
+
 
 }
 

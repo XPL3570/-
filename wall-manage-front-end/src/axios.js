@@ -5,8 +5,8 @@ import router from '@/router'; // 导入Vue Router实例
 //用法         const res = await http.get(api.right, params)
 
 const instance = axios.create({
-    baseURL: 'https://www.txbbq.xyz',  //todo 记得修改地址
-    // baseURL: 'http://localhost:2204',
+    // baseURL: 'https://www.txbbq.xyz',  //todo 记得修改地址
+    baseURL: 'http://localhost:2204',
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json'

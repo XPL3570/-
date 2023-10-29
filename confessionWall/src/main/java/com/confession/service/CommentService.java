@@ -49,10 +49,16 @@ public interface CommentService extends IService<Comment> {
      */
     Boolean hasSensitiveWords(String text);
 
+    /**
+     * 用户删除自己的评论，加一个redis缓存，比如允许用户每12小时删除一条评论或者投稿
+     */
+    void deleteComment(Integer commentId);
+
 
     /**
      * 查询该时间之后的评论回复数量
      */
     int numberUnreadCommentsByUsers(Integer userId, LocalDateTime dateTime);
+
 
 }
