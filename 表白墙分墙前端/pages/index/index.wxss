@@ -1,16 +1,15 @@
-.container {
-	background-color: #f5f5f5;
-	padding: 15rpx;
-  }
-  .title {
+.zjcs{
+	padding: 0 0rpx;
+	
+}
+
+.title {
 	text-align: center;
 	font-size: 44rpx;
 	margin-top: 15rpx;
-  }
-	
-	.zjcs{
-    padding: 0 10rpx;
 }
+	
+
 image{
 	width: 100%;
 }
@@ -46,6 +45,7 @@ margin-top: 18rpx;
 
 .username{
 	margin-top: 22rpx;
+	font-size: 38rpx;
 }
 
 .comment-user{
@@ -70,8 +70,13 @@ margin-top: 18rpx;
 	height: 80rpx;
 }
 
+/* .comment-input{
+	margin-top: 111rpx;
+} */
+
 .input-container {
   width: 80%;
+  margin-top: -12rpx;
 }
 .image-zj{
 	display: flex;
@@ -80,7 +85,7 @@ margin-top: 18rpx;
 }
 
 .button-container {	
-  margin-top: 10rpx;
+  margin-top: 15rpx;
 }
 
 .comment-main{

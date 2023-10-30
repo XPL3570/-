@@ -93,8 +93,13 @@ public interface UserService extends IService<User> {
     boolean checkTimeInterval(LocalDateTime lastUpdateTime);
 
     /**
-     * 更新用户的微信账号或qq和可获取的状态
+     * 更新用户的联系方式和可获取的状态
      * @param request
      */
     void updateWeChat(UserWeChatModRequest request);
+
+    /**
+     * 用户是否可以删除 ，用redis计数，每12小时2条  ,超过限制抛异常，没有就累加1
+     */
+    void userCanDelete(Integer userId);
 }

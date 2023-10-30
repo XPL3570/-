@@ -28,6 +28,6 @@
 		</van-cell>
 		<van-cell title="投稿时间" value="{{item.createTime}}"></van-cell>
 		<van-cell title="审核时间" value="{{item.publishTime}}"></van-cell>
-		<van-cell title="匿名发布" value="{{item.isAnonymous === 1?'是':'否'}}"></van-cell>
+		<van-cell title="不显示头像昵称" value="{{item.isAnonymous === 1?'是':'否'}}"></van-cell>
 	</van-collapse-item>
 </van-collapse>

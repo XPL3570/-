@@ -1,13 +1,13 @@
-<van-notice-bar left-icon="volume-o" speed="{{72}}" text="大家注意：所有信息均是用户发布！本平台只提供匹配！抽取到的纸条也不一定都是本校的！谨防被骗！！！" />
+<van-notice-bar left-icon="volume-o" speed="{{72}}" text="大家注意：所有信息均是用户发布！本平台只提供匹配！获取到的纸条也不一定都是本校的！谨防被骗！！！" />
 <van-tabs animated bind:change="handleOuterTabChange">
-	<van-tab title="抽取纸条">
+	<van-tab title="获取纸条">
 		<view class="buttons">
 			<view style="margin-top: 44rpx;">
-				<van-button color="linear-gradient(to right, #c2b0ff, #af65f6)" size="large" bind:tap="takeOutX">抽取一个本校男生纸条</van-button>
+				<van-button color="linear-gradient(to right, #c2b0ff, #af65f6)" size="large" bind:tap="takeOutX">获取一个本校男生纸条</van-button>
 			</view>
 
 			<view style="margin-top: 22rpx; ">
-				<van-button color="linear-gradient(to right, #F2BBD3, #E137B9)" size="large" bind:tap="takeOutZ">抽取一个本校女生纸条</van-button>
+				<van-button color="linear-gradient(to right, #F2BBD3, #E137B9)" size="large" bind:tap="takeOutZ">获取一个本校女生纸条</van-button>
 			</view>
 
 		</view>
@@ -27,7 +27,7 @@
 	<van-tab title="我的纸条" bind:change="handleOuterTabTap">
 		<view style="margin-top: 15rpx;"> </view>
 		<van-tabs type="card" style="margin-top: 10rpx;" active="{{ activeTab }}" bind:change="handleTabChange">
-			<van-tab title="我抽到的纸条">
+			<van-tab title="我获取到的纸条">
 				<van-notice-bar wrapable color="#1989fa" background="#ecf9ff" left-icon="info-o" text=" 为保护用户隐私，平台只保存您三个月内获取到的纸条" />
 
 				<view wx:for="{{drawnNote}}" wx:key="index" wx:for-index="outerIndex">

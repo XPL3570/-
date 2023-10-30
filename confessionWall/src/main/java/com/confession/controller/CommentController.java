@@ -5,8 +5,8 @@ import com.confession.comm.PageTool;
 import com.confession.comm.Result;
 import com.confession.dto.CommentDTO;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
-import com.confession.request.ParameterIntTypeRequest;
 import com.confession.request.PostCommentRequest;
+import com.confession.request.UserDeleteCommentRequest;
 import com.confession.service.CommentService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -60,11 +60,11 @@ public class CommentController {
     }
 
     /**
-     * 用户删除评论
+     * 用户删除评论，传递投稿id和评论id  todo 前端待写
      */
     @PostMapping("deleteComment")
-    public Result deleteComment(@RequestBody @Validated ParameterIntTypeRequest request){
-        commentService.deleteComment(request.getRequestId());
+    public Result deleteComment(@RequestBody @Validated UserDeleteCommentRequest request){
+        commentService.userDeleteComment(request);
         return Result.ok();
     }
 

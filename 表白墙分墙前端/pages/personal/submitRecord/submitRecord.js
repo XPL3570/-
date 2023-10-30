@@ -31,12 +31,17 @@ Page({
 				const newData = res.data.data;
 				const formattedData = newData.map(obj => {  
 					const formattedCreateTime = util.formatDate(obj.createTime);  
+			
+					const formattedPublishTime = util.formatDate(obj.publishTime);  
 					return {  
 					  ...obj,  
-					  createTime: formattedCreateTime  
+					  publishTime: formattedPublishTime,
+					  createTime: formattedCreateTime   
 					};  
 				  });
+
 				const newList = this.data.list.concat(formattedData);
+				console.log(newList);
 				this.setData({
 					list: newList,
 					canLoadMore: newData.length >= this.data.limit, // 判断是否可以继续加载更多数据

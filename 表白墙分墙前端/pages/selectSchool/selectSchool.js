@@ -67,13 +67,13 @@ Page({
 							wx.setStorageSync('userInfo', res.data.data.userInfo);
 							wx.setStorageSync('wall', res.data.data.wall);  //返回的是一个对象
 						wx.setStorageSync('isAdmin', res.data.data.isAdmin); //这里必然是false 直接选择好学校了
-							wx.setStorageSync('initializeHomepageIdentification', 1);
+							// wx.setStorageSync('initializeHomepageIdentification', 1);
 							
 							setTimeout(() => {
 								wx.switchTab({
 									url: '/pages/index/index'
 								});
-							  }, 300); // 300 毫秒为延迟的时间
+							  }, 224); // 300 毫秒为延迟的时间
 							wx.showToast({
 								title: '绑定学校成功！',
 								icon: 'success',

@@ -39,11 +39,8 @@ Page({
 		mainIndex: -1, //如果回复的是主评论，这就是记录主评论的下标
 	},
 	onLoad() {
-
 		console.log('index的onLoad函数触发');
 		this.initializeHomepageData();
-
-
 	},
 	async initializeHomepageData() {
 		console.log("初始化首页数据方法调用");

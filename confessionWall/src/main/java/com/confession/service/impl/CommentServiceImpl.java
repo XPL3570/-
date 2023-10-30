@@ -19,6 +19,7 @@ import com.confession.mapper.UserMapper;
 import com.confession.pojo.Comment;
 import com.confession.pojo.User;
 import com.confession.request.PostCommentRequest;
+import com.confession.request.UserDeleteCommentRequest;
 import com.confession.service.CommentService;
 import com.confession.service.ConfessionPostService;
 import com.confession.service.UserService;
@@ -35,6 +36,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -206,11 +208,51 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     }
 
     @Override
-    public void deleteComment(Integer commentId) { //todo
-        Comment comment = commentMapper.selectById(commentId);
-        if (comment==null||comment.getUserId().equals(JwtInterceptor.getUser().getId())){ //没有查询到评论
-            throw new WallException("评论不存在或者不是该用户的评论",211);
+    public void userDeleteComment(UserDeleteCommentRequest request) {
+        Comment comment = commentMapper.selectById(request.getCommentId());
+        Integer userId = JwtInterceptor.getUser().getId();
+        if (comment == null || comment.getUserId().equals(userId)) { //没有查询到评论
+            throw new WallException("评论不存在或者不是该用户的评论", 211);
         }
+        userService.userCanDelete(userId);
+        // 开始删除操作
+        //拿锁，删除，重新set回去，找没找到都不管
+        RLock lock = redissonClient.getLock(CONFESSION_PREFIX_LOCK + request.getPostId());
+        lock.lock();
+
+        String key = RedisConstant.POST_SUBMISSION_RECORD + request.getPostId();
+        JSONObject redisDtoTemp = (JSONObject) redisTemplate.opsForValue().get(key);
+//        ConfessionPostDTO postDTO;
+        if (redisDtoTemp != null) { //这里有缓存就更新,这里不为空就是有缓存,这里一般都是有缓存的
+            ConfessionPostDTO postDTO = redisDtoTemp.toJavaObject(ConfessionPostDTO.class);
+            //添加一个标识，如果在主评论已经删除了就不去遍历子评论了，默认是false
+            boolean isDeleted = false;
+            if (postDTO.getMainComments() != null && postDTO.getMainComments().size() > 0) {
+                List<CommentDTO> mainComments = postDTO.getMainComments();
+                Iterator<CommentDTO> iterator = mainComments.iterator();
+                while (iterator.hasNext()) {
+                    CommentDTO next = iterator.next();
+                    if (next.getId() == request.getCommentId()) {
+                        iterator.remove();
+                        isDeleted = true;
+                        break;
+                    }
+                }
+            }
+            if (!isDeleted && postDTO.getSubComments() != null && postDTO.getSubComments().size() > 0) {
+                List<CommentDTO> subComments = postDTO.getSubComments();
+                Iterator<CommentDTO> iterator = subComments.iterator();
+                while (iterator.hasNext()) {
+                    CommentDTO next = iterator.next();
+                    if (next.getId().equals(request.getCommentId())) {
+                        iterator.remove();
+                    }
+                }
+            }
+            // 更新缓存
+            updateCacheWithExpiration(key, postDTO);
+        }
+        lock.unlock();
 
     }
 
@@ -227,7 +269,6 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         Integer count = commentMapper.selectCount(queryWrapper);
         return count;
     }
-
 
 
     @Override

@@ -14,7 +14,7 @@
 	<view wx:for="{{confession}}" wx:key="index" class="zj" wx:for-index="outIndex">
 		<view slot="title" class="userinfo">
 			<block wx:if="{{item.isAnonymous}}">
-				<view class="nimin">匿名投稿</view>
+				<view class="nimin">不愿意显示名字的用户</view>
 			</block>
 			<block wx:else>
 				<view bindtap="handleTapUser" bindtouchstart="touchUserStart" bindtouchend="touchUserEnd"   data-user-id="{{item.userId}}" data-user-name="{{item.userInfo.username}}" class="avatar-container">

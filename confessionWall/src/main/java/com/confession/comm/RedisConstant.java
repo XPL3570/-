@@ -17,14 +17,18 @@ public class RedisConstant {
     //学校下面的表白墙信息 +id，加载学校下面的时候用一下
     public static final String WALL_UNDER_SCHOOL= "wallUnderSchool:";
 
-    // 表白墙投稿set集合 后面+表白墙id
-    public static final String WALL_POSTS_PREFIX = "confession_record:";
+    // 表白墙投稿set集合 后面+墙id
+    public static final String WALL_POSTS_PREFIX = "wall_records:";
 
     public static final String  SCHOOL_WALL_MAIN_LIST_MOD_LOCK=" school_wall_main_list_modification_lock:"; //学校表白墙修改锁
 
     public static final String CONFESSION_PREFIX_LOCK="confession_record_lock:"; //记录锁 锁的是修改单个投稿记录
 
-    public static final String POST_SUBMISSION_RECORD ="wall_submission_record";  //发布记录+投稿id
+    public static final String POST_SUBMISSION_RECORD ="wall_submission_record:";  //发布记录+投稿id
+
+
+
+    public static final String  NUMBER_USER_DELETIONS="number_user_deletions:";//用户删除操作count记录+用户id
 
     //用户已经发布投稿缓存 后面+用户id
     public static final String USER_PUBLISHED_POSTS="userPublishedPosts:";
@@ -33,7 +37,7 @@ public class RedisConstant {
     public static final String USER_PENDING_POSTS="userPendingPosts:";
 
     // 评论相关
-    public static final String USER_COMMENT_REPLY="user_comment_reply";  //用户评论回复
+    public static final String USER_COMMENT_REPLY="user_comment_reply:";  //用户评论回复+用户id
     public static final String COMMENT_PREFIX = "comment:";
 
     //学校抽取纸条锁

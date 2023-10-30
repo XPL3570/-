@@ -36,7 +36,7 @@ Page({
 	onInputWechatNumber(event) {
 		this.setData({
 			wechatNumber: event.detail,
-			wechatNumberError: event.detail.length < 6 || event.detail.length > 20 ? '微信号的长度必须在6到20之间' : '',
+			wechatNumberError: event.detail.length < 6 || event.detail.length > 20 ? '联系方式的长度必须在6到20之间' : '',
 		});
 	},
 	onInputPhoneNumber(event) {

@@ -8,7 +8,7 @@
 		<van-field class="content" label="投稿内容" placeholder="请输入投稿内容" autosize type="textarea" value="{{content}}" bindinput="handleContentInput"  size="large" required="ture"></van-field>
 	</view>
 
-	<van-checkbox class="checkbox" value="{{ checked }}" bind:change="onChange">是否匿名发布</van-checkbox>
+	<van-checkbox class="checkbox" value="{{ checked }}" bind:change="onChange">是否不显示头像名称</van-checkbox>
 	<view class="uploader">
 		<view style="margin-bottom: 30rpx;">图片上传</view>
 		<van-uploader file-list="{{ fileList }}" image-fit="aspectFill" accept="media" use-before-read bind:before-read="beforeRead"  bind:after-read="afterRead"  bind:delete="handleDeleteImage" max-count="{{maxNumberImageUploads}}" />

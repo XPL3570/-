@@ -5,6 +5,7 @@ import com.confession.comm.PageTool;
 import com.confession.dto.CommentDTO;
 import com.confession.pojo.Comment;
 import com.confession.request.PostCommentRequest;
+import com.confession.request.UserDeleteCommentRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -52,7 +53,7 @@ public interface CommentService extends IService<Comment> {
     /**
      * 用户删除自己的评论，加一个redis缓存，比如允许用户每12小时删除一条评论或者投稿
      */
-    void deleteComment(Integer commentId);
+    void userDeleteComment(UserDeleteCommentRequest request);
 
 
     /**

@@ -1,22 +1,29 @@
+<van-notice-bar
+  left-icon="volume-o"
+  text="设置本页面的所有的联系方式仅管理员联系您做二次校验，一个学校只支持注册一个哦！"
+/>
 <view class="container">
-  
+
   <van-field
-    label="学校名称"
+    label="注册学校名称："
+	title-width="7em"
     placeholder="请输入学校名称"
     value="{{ schoolName }}"
     bind:input="onInputSchoolName"
     error-message="{{ schoolNameError }}"
   ></van-field>
   <van-field
-    label="微信号"
-    placeholder="请输入您的微信号"
+    label="联系方式："
+	title-width="5em"
+    placeholder="请输入您的联系方式"
     value="{{ wechatNumber }}"
     bind:input="onInputWechatNumber"
     error-message="{{ wechatNumberError }}"
   ></van-field>
   <van-field
-    label="手机号"
-    placeholder="请输入您的手机号"
+    label="手机号："
+	title-width="4em"
+    placeholder="请输入注册该学校绑定的手机号"
     value="{{ phoneNumber }}"
     bind:input="onInputPhoneNumber"
     error-message="{{ phoneNumberError }}"

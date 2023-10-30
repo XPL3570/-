@@ -23,6 +23,7 @@ import com.confession.pojo.User;
 import com.confession.request.*;
 import com.confession.service.*;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static com.confession.comm.RedisConstant.NUMBER_USER_DELETIONS;
 import static com.confession.comm.RedisConstant.USER_DTO_PREFIX;
 import static com.confession.comm.ResultCodeEnum.*;
 
@@ -335,6 +337,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setUpdateTime(LocalDateTime.now());
         user.setCanObtainWeChat(request.getCanObtainWeChat()).setWXAccount(request.getWxAccount());
         this.updateById(user);
+    }
+
+    @Override
+    public void userCanDelete(Integer userId) {
+        String key =  NUMBER_USER_DELETIONS + userId;
+        ValueOperations<String, Integer> valueOperations = redisTemplate.opsForValue();
+        // 获取当前用户的删除次数
+        Integer deleteCount = valueOperations.get(key);
+        if (deleteCount == null) {
+            deleteCount = 0;
+        }
+
+        // 判断删除次数是否超过限制
+        if (deleteCount >= 2) {
+            throw new WallException(TOO_MANY_USER_DELETIONS);
+        }
+        // 更新删除次数并设置过期时间
+        valueOperations.set(key, deleteCount + 1, 12, TimeUnit.HOURS);
     }
 
     @Override

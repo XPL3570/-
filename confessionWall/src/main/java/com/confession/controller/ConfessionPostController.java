@@ -10,7 +10,6 @@ import com.confession.globalConfig.interceptor.JwtInterceptor;
 import com.confession.request.AuditRequest;
 import com.confession.request.ConfessionPostRequest;
 import com.confession.request.DeleteSubmissionRequest;
-import com.confession.request.ParameterIntTypeRequest;
 import com.confession.service.AdminService;
 import com.confession.service.ConfessionPostService;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +48,7 @@ public class ConfessionPostController {
     @GetMapping("readConfessionWall")
     public Result readConfessionWall(@RequestParam Integer wallId, @Validated @ModelAttribute PageTool pageTool) {
         //如果每页记录数太大了，直接返回错误
-        if (pageTool.getLimit() > 19 ||wallId==null) {
+        if (pageTool.getLimit() > 19 || wallId == null) {
             return Result.fail();
         }
         List<ConfessionPostDTO> res = confessionPostService.confessionPostService(wallId, pageTool.getPage(), pageTool.getLimit());
@@ -126,7 +125,7 @@ public class ConfessionPostController {
      * @return
      */
     @GetMapping("admin/userList")
-    public Result userList( @ModelAttribute PageTool pageTool,
+    public Result userList(@ModelAttribute PageTool pageTool,
                            @RequestParam(required = false) String fuzzyQueryContent,
                            @RequestParam(required = false) String wallName,
                            @RequestParam(required = false) String userName,
@@ -160,8 +159,8 @@ public class ConfessionPostController {
     /**
      * 用户删除自己发布的投稿
      */
-    @PostMapping("delete") //todo 前端待完成
-    public Result delete(@RequestBody @Validated DeleteSubmissionRequest request){
+    @PostMapping("delete") // todo 前端待完成
+    public Result delete(@RequestBody @Validated DeleteSubmissionRequest request) {
         confessionPostService.deletePostUser(request);
         return Result.ok();
     }

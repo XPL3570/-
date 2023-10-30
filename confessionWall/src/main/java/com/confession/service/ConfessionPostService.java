@@ -130,4 +130,6 @@ public interface ConfessionPostService extends IService<Confessionpost> {
      */
     void deletePostUser(DeleteSubmissionRequest request);
 
+
+
 }
