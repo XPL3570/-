@@ -2,7 +2,7 @@ const { LoginorRegister } = require('./utils/request.js');
 
 App({
 	onLaunch: function () {
-		wx.setStorageSync('initializeHomepageIdentification', 0); //初始化首页标识
+		wx.setStorageSync('initializeHomepageIdentification', 1); //初始化首页标识
 		this.LoginorRegister();
 	},
 	LoginorRegister:LoginorRegister,

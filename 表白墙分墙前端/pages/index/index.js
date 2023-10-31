@@ -4,7 +4,8 @@ import Notify from '@vant/weapp/notify/notify';
 
 Page({
 	data: {
-		startTimeStamp: 0,
+		startTimeStampreport: 0, //记录点击投稿 触发举报的时间
+		timer: null, //点击投稿的归零定时器
 		startTimeStampUser: 0,//点击用户记录时间
 		title: '', //墙名字
 		prompt: '欢迎来到同校表白墙！        您的投稿是我不懈的动力！',
@@ -40,7 +41,7 @@ Page({
 	},
 	onLoad() {
 		console.log('index的onLoad函数触发');
-		this.initializeHomepageData();
+		 this.initializeHomepageData();
 	},
 	async initializeHomepageData() {
 		console.log("初始化首页数据方法调用");
@@ -81,7 +82,7 @@ Page({
 
 	},
 	loadData() {
-		// console.log(this.data.confession);
+		console.log(this.data.confession);
 		if (!this.data.canLoadMore) {
 			wx.showToast({
 				title: '没有更多投稿数据了哦！',
@@ -404,18 +405,41 @@ Page({
 			replyIndex: -1,
 		});
 	},
-	touchstart(e) {
-		this.setData({ startTimeStamp: e.timeStamp })
+	touchReport(e) {
+		// this.setData({ startTimeStamp: e.timeStamp })
+		const currentTime = new Date().getTime();
+		const lastTapTime = this.data.startTimeStampreport;
+		const interval = currentTime - lastTapTime;
+		// 如果两次点击的时间间隔小于300ms，则认为是双击事件
+		if (interval < 404) {
+		  // 执行双击事件的逻辑
+		  console.log('双击事件');
+		  this.setData({
+			postId: e.currentTarget.dataset.postId,
+			reportPanelShow: true,
+		});
+		} else {
+		  // 如果不是双击事件，则更新lastTapTime的值，并启动一个计时器
+		  this.setData({
+			startTimeStampreport: currentTime
+		  });
+		 
+		  // 设置一个300ms的定时器，在定时器结束后清空lastTapTime的值
+		  clearTimeout(this.data.timer);
+		  this.data.timer = setTimeout(() => {
+			this.setData({
+			  lastTapTime: 0
+			});
+			// console.log('定时器触发，时间归零');
+		  }, 300);
+		}
 	},
 	touchend(e) {
 		// console.log('点击结束',e.timeStamp);
 		if (e.timeStamp - this.data.startTimeStamp < 404) {
 			return;
 		} else {
-			this.setData({
-				postId: e.currentTarget.dataset.postId,
-				reportPanelShow: true,
-			});
+			
 		}
 	},
 	touchUserStart(e) {

@@ -24,7 +24,7 @@
 			</block>
 		</view>
 		<!-- 投稿内容显示主区域 标题内容,长按图片就不加了-->
-		<view bindtouchstart="touchstart" bindtouchend="touchend" data-post-id="{{item.id}}">
+		<view bindtouchstart="touchReport"  data-post-id="{{item.id}}">
 			<van-cell title="{{item.title}}" size="large" label="{{item.publishTime}}" />
 			<view class="comment-main">{{item.textContent}}</view>
 		</view>

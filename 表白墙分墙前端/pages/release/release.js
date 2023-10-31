@@ -170,7 +170,7 @@ Page({
 					});
 				} else {
 					wx.showToast({
-						title: '投稿异常请稍后重试',
+						title: res.data.message,
 						icon: 'none'
 					});
 					console.log(res.data.message);
