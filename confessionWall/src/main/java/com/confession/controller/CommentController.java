@@ -84,7 +84,7 @@ public class CommentController {
      */
     @GetMapping("numberUnreadComments")
     public Result numberUnreadComments(@RequestParam("timestamp") Long timestamp){
-        Instant instant = Instant.ofEpochMilli(timestamp);
+        Instant instant = Instant.ofEpochSecond(timestamp);
         LocalDateTime dateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
         LocalDateTime sixMonthsAgo = LocalDateTime.now().minusMonths(6);
         if (dateTime.isBefore(sixMonthsAgo)) {

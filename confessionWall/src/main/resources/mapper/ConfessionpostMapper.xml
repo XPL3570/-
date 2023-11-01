@@ -32,7 +32,7 @@
     </select>
 
     <select id="getConfessionPostIDsByWallId" resultType="com.confession.comm.RecordIDCache">
-        SELECT Id as id, UNIX_TIMESTAMP(PublishTime) as timeStamp
+        SELECT Id as id, PublishTime as time
         FROM confessionpost
         WHERE (WallId = #{wallId} OR IsAdminPost = true) AND PostStatus = 1 AND IsDeleted=false
         ORDER BY PublishTime DESC

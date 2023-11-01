@@ -1,6 +1,7 @@
 var request = require('../../utils/request')
 var util = require('../../utils/util')
 import Notify from '@vant/weapp/notify/notify';
+import Dialog from '@vant/weapp/dialog/dialog';
 
 Page({
 	data: {
@@ -41,7 +42,7 @@ Page({
 	},
 	onLoad() {
 		console.log('index的onLoad函数触发');
-		 this.initializeHomepageData();
+		//  this.initializeHomepageData();
 	},
 	async initializeHomepageData() {
 		console.log("初始化首页数据方法调用");
@@ -83,6 +84,7 @@ Page({
 	},
 	loadData() {
 		console.log(this.data.confession);
+		console.log('分页参数页数：', this.data.page);
 		if (!this.data.canLoadMore) {
 			wx.showToast({
 				title: '没有更多投稿数据了哦！',
@@ -104,28 +106,7 @@ Page({
 				});
 				// console.log(res.data.data);
 				const updatedConfession = res.data.data.map((item) => { //遍历源数据
-					const subCommentsExist = item.mainComments.map((mainComment) => { //拿到主评论去找子评论找有没有匹配的
-						const matchingSubComments = item.subComments.filter(subComment => subComment.parentCommentId === mainComment.id);
-						return matchingSubComments.length > 0;
-					});
-					//优化点，这里是把所有的日志在这里过滤了，但是不展开的数据可能不要用，这里不管
-					const updatedMainComments = item.mainComments.map((mainComment) => ({
-						...mainComment,
-						commentTime: util.formatDate(mainComment.commentTime),
-						commentContentVisible: false,
-					}));
-					const updatedSubComments = item.subComments.map((subComment) => ({
-						...subComment,
-						commentTime: util.formatDate(subComment.commentTime),
-					}));
-					let formattedpublishTime = util.formatDate(item.publishTime);
-					return {
-						...item,
-						publishTime: formattedpublishTime,
-						subComments: updatedSubComments,
-						mainComments: updatedMainComments,
-						subCommentsExist,
-					};
+					return this.processConfessionData(item);//这里是处理某一个投稿数据
 				});
 				// 将加载到的数据合并到原始数据
 				const allConfession = this.data.confession.concat(updatedConfession);
@@ -141,13 +122,42 @@ Page({
 					title: '数据获取异常',
 					icon: 'error'
 				});
-				// console.log(res.data);
+				console.log(res.data);
 			}
 		})
 	},
-	onReachBottom() {
+	processConfessionData(item){ //初始化后一个投稿数据的方法
+		const subCommentsExist = item.mainComments.map((mainComment) => { //拿到主评论去找子评论找有没有匹配的
+			const matchingSubComments = item.subComments.filter(subComment => subComment.parentCommentId === mainComment.id);
+			return matchingSubComments.length > 0;
+		});
+		//优化点，这里是把所有的数据在这里过滤了，但是不展开的数据可能不要用，这里不管
+		const updatedMainComments = item.mainComments.map((mainComment) => ({
+			...mainComment,
+			commentTime: util.formatDate(mainComment.commentTime),
+			commentContentVisible: false,
+		}));
+		const updatedSubComments = item.subComments.map((subComment) => ({
+			...subComment,
+			commentTime: util.formatDate(subComment.commentTime),
+		}));
+		let formattedpublishTime = util.formatDate(item.publishTime);
+		return {
+			...item,
+			publishTime: formattedpublishTime,
+			subComments: updatedSubComments,
+			mainComments: updatedMainComments,
+			subCommentsExist,
+		};
+	},
+	onReachBottom() {//上拉获取新的数据
 		this.loadData();
 	},
+	onPullDownRefresh() {//下拉刷新页面
+		console.log('下拉方法触发')
+		this.initializeHomepageData();
+		wx.stopPullDownRefresh();
+	  },
 	// 在目标页面的onShow生命周期函数中获取并显示提示信息
 	onShow: function () {
 		// 获取本地缓存中的提示信息
@@ -165,9 +175,10 @@ Page({
 		}
 		// 初始化首页标识
 		var init = wx.getStorageSync('initializeHomepageIdentification');
+		// console.log('init=',init);
 		if (init === 1) {
 			this.initializeHomepageData();
-			console.log('aaaaaaaa');
+			// console.log('aaaaaaaa');
 			wx.setStorageSync('initializeHomepageIdentification', 0);
 		}
 	},
@@ -296,7 +307,7 @@ Page({
 			replyContent: e.detail
 		});
 	},
-	//发布子评论
+	//回复主评论
 	handleTap(e) {
 		const { outIndex, zjId, replyName, mainIndex } = e.currentTarget.dataset;
 		//拿到用户名字放到页面data渲染
@@ -307,6 +318,53 @@ Page({
 			replyIndex: outIndex,  //要回复的评论的投稿索引
 			mainIndex: mainIndex   //要回复的投稿的主评论索引
 		})
+	},
+	//长按主评论删除
+	handleLongTap(event) {
+		// 处理长按操作
+		let userId = event.currentTarget.dataset.userId;
+		if (userId === wx.getStorageSync('userInfo').id) {
+			Dialog.confirm({
+				title: '评论',
+				message: '确定要删除这条评论吗？',
+			})
+				.then(() => {  //todo 就对接接口了	
+					let outIndex = event.currentTarget.dataset.outIndex;
+					let mainIndex = event.currentTarget.dataset.mainIndex;
+					let zjId = event.currentTarget.dataset.zjId;
+					// console.log(this.data.confession[outIndex]);
+					//判断是否是主评论，删除逻辑会不一样
+					if(event.currentTarget.dataset.isMain){
+						let newConfession=this.data.confession;
+						newConfession[outIndex].mainComments.splice(mainIndex, 1);
+						newConfession[outIndex]=this.processConfessionData(newConfession[outIndex])
+						this.setData({
+							confession:	newConfession
+						});
+						console.log("删除评论主成功！");
+					}else{//删除子评论
+						let newConfession=this.data.confession;
+						newConfession[outIndex].subComments = newConfession[outIndex].subComments.filter(comment => comment.id !== zjId);
+						newConfession[outIndex]=this.processConfessionData(newConfession[outIndex]);
+						console.log(newConfession[outIndex]);
+						if(newConfession[outIndex].subCommentsExist[mainIndex]){//有子评论就展开
+							this.expandComments({
+								currentTarget: {
+								  dataset: {
+									outIndex:outIndex,
+									zjIndex:mainIndex
+								  }
+								}
+							  });
+						}
+						// console.log(this.data.confession[outIndex]);
+						this.setData({
+							confession:	newConfession
+						});
+					}
+				})
+				.catch(() => {console.log('取消删除主评论')});
+		}
 	},
 	// 输入框发送的回调函数
 	onConfirm(event) {
@@ -411,27 +469,71 @@ Page({
 		const lastTapTime = this.data.startTimeStampreport;
 		const interval = currentTime - lastTapTime;
 		// 如果两次点击的时间间隔小于300ms，则认为是双击事件
-		if (interval < 404) {
-		  // 执行双击事件的逻辑
-		  console.log('双击事件');
-		  this.setData({
-			postId: e.currentTarget.dataset.postId,
-			reportPanelShow: true,
-		});
+		if (interval < 244) {
+			// console.log(e.currentTarget.dataset.outIndex);
+			let userId = e.currentTarget.dataset.userId;
+			let postId = e.currentTarget.dataset.postId;
+			if (userId === wx.getStorageSync('userInfo').id) {
+				Dialog.confirm({
+					title: '删除投稿',
+					message: '确定要删除您发布的这条投稿吗？',
+				})
+					.then(() => {
+						console.log('触发删除接口')
+						let zj = {
+							postId: postId,
+							wallId: e.currentTarget.dataset.wallId
+						};
+						request.requestWithToken('/api/confessionPost/delete', 'POST', zj, (res) => {
+							if (res.data.code === 200) {
+								let index = e.currentTarget.dataset.outIndex; // 要删除的下标
+								if (index >= 0 && index < this.data.confession.length) {
+									let newConfession = this.data.confession.slice(); // 复制一份原数组
+									newConfession.splice(index, 1); // 删除指定下标的元素
+									this.setData({
+										confession: newConfession // 更新data中的array
+									});
+									console.log(this.data.confession);
+									console.log(newConfession)
+								}
+								wx.showToast({
+									title: '删除成功!',
+									icon: 'success'
+								});
+							} else if (res.data.code > 200) {
+								wx.showToast({
+									title: res.data.message,
+									icon: 'none'
+								});
+							} else {
+								console.error(res);
+							}
+						}, (res) => {
+							console.error(res);
+						})
+					})
+					.catch(() => { });
+			} else {
+				// 设置举报投稿id和展开举报面板
+				this.setData({
+					postId: postId,
+					reportPanelShow: true,
+				});
+			}
 		} else {
-		  // 如果不是双击事件，则更新lastTapTime的值，并启动一个计时器
-		  this.setData({
-			startTimeStampreport: currentTime
-		  });
-		 
-		  // 设置一个300ms的定时器，在定时器结束后清空lastTapTime的值
-		  clearTimeout(this.data.timer);
-		  this.data.timer = setTimeout(() => {
+			// 如果不是双击事件，则更新lastTapTime的值，并启动一个计时器
 			this.setData({
-			  lastTapTime: 0
+				startTimeStampreport: currentTime
 			});
-			// console.log('定时器触发，时间归零');
-		  }, 300);
+
+			// 设置一个300ms的定时器，在定时器结束后清空lastTapTime的值
+			clearTimeout(this.data.timer);
+			this.data.timer = setTimeout(() => {
+				this.setData({
+					lastTapTime: 0
+				});
+				// console.log('定时器触发，时间归零');
+			}, 300);
 		}
 	},
 	touchend(e) {
@@ -439,7 +541,7 @@ Page({
 		if (e.timeStamp - this.data.startTimeStamp < 404) {
 			return;
 		} else {
-			
+
 		}
 	},
 	touchUserStart(e) {

@@ -37,7 +37,7 @@ public class RedisConstant {
     public static final String USER_PENDING_POSTS="userPendingPosts:";
 
     // 评论相关
-    public static final String USER_COMMENT_REPLY="user_comment_reply:";  //用户评论回复+用户id
+    public static final String USER_COMMENT_REPLY="user_comment_reply:";  //用户评论回复+用户id +:分页参数
     public static final String COMMENT_PREFIX = "comment:";
 
     //学校抽取纸条锁

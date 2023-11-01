@@ -70,9 +70,10 @@ function LoginorRegister() {
 						wx.setStorageSync('wall', wall);  //返回的是一个对象
 						wx.setStorageSync('isAdmin', isAdmin);
 						// 跳转到主页面
-						// wx.reLaunch({
-						//   url: '/pages/index/index'
-						// });
+						wx.setStorageSync('initializeHomepageIdentification', 1);
+						wx.reLaunch({
+						  url: '/pages/index/index'
+						});
 
 						wx.showToast({
 							title: '自动登录成功!',

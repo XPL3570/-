@@ -87,6 +87,13 @@ const formatNumber = n => {
 }
 
 function formatDate(dateString) {  
+	 // 定义匹配指定时间格式的正则表达式 
+	 const regex = /^(\d{2})-(\d{2}) (\d{2}):(\d{2})$/;
+	 // 检查日期字符串是否符合指定的时间格式
+	 if (regex.test(dateString)) { //这里是为了解决重复调用，格式化异常的bug
+	   return dateString; // 返回原始的日期字符串
+	 }
+	//  console.log(regex.test(dateString))
 	// 将日期字符串解析为Date对象  
 	const date = new Date(dateString);  
 	// 获取当前年份  

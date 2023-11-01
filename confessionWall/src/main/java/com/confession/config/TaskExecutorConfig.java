@@ -16,10 +16,10 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class TaskExecutorConfig {
 
     //普通模式
-    private final int taskCorePoolSize = 10; //核心线程池数量
-    private final int taskMaxPoolSize = 60; //最大线程
-    private final int taskQueueCapacity = 150; //缓存队列条数
-    private final int taskKeepAliveSecond = 5; //允许的空闲时间
+    private final int taskCorePoolSize = 5; //核心线程池数量
+    private final int taskMaxPoolSize = 12; //最大线程
+    private final int taskQueueCapacity = 100; //缓存队列条数
+    private final int taskKeepAliveSecond = 20; //允许的空闲时间
     private final String taskNamePrefix = "task-executor-"; //线程名称前缀
 
     //普通模式

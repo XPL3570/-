@@ -28,9 +28,9 @@ Page({
 			   // 获取当前时间
 				 var currentTime = new Date();
 				 // 计算一个月前的时间
-				 var oneMonthAgo = new Date(currentTime.getTime() - 30 * 24 * 60 * 60 * 1000);
+				 var oneMonthAgo = new Date(currentTime.getTime() - 30 * 24 * 60 * 60 );
 				 // 获取一个月前的时间戳（单位：秒）
-				 lastUpdateTime = Math.floor(oneMonthAgo.getTime());
+				 lastUpdateTime = Math.floor(oneMonthAgo.getTime()/1000);
 		 }
 		//  console.log({timestamp: parseInt(lastUpdateTime, 10)})
 		 request.requestWithToken('/api/comment/numberUnreadComments','GET',{timestamp: parseInt(lastUpdateTime, 10)},
@@ -40,7 +40,7 @@ Page({
 					this.setData({
 						numberUnreadComments:res.data.data
 					});
-					wx.setStorageSync('lastUpdateTime',new Date().getTime());
+					wx.setStorageSync('lastUpdateTime',Math.floor(Date.now() / 1000));
 				}else{
 					console.error('获取用户未读评论数失败',res);
 				}

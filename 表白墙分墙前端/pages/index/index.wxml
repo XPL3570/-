@@ -1,7 +1,9 @@
-<!-- 在页面内添加对应的节点 -->
+<!-- 提示-->
 <van-notify id="van-notify" />
+<!-- 删除弹出框 -->
+<van-dialog id="van-dialog" /> 
 
-<van-notice-bar left-icon="volume-o" text="{{prompt}}" />
+<van-notice-bar left-icon="volume-o" text="{{prompt}}" speed="80" scrollable/>
 <view class="zjcs">
 	<swiper class="myswiper" indicator-dots="{{ true }}" autoplay="{{ true }}" interval="{{ 2000 }}" duration="{{ 1000 }}" indicator-color="#843454" indicator-active-color="#f56554">
 		<block wx:for="{{ swiperData }}" wx:key="index">
@@ -24,9 +26,9 @@
 			</block>
 		</view>
 		<!-- 投稿内容显示主区域 标题内容,长按图片就不加了-->
-		<view bindtouchstart="touchReport"  data-post-id="{{item.id}}">
+		<view bindtouchstart="touchReport"  data-post-id="{{item.id}}" data-user-id="{{item.userId}}" data-wall-id="{{item.wallId}}" data-out-index="{{outIndex}}">
 			<van-cell title="{{item.title}}" size="large" label="{{item.publishTime}}" />
-			<view class="comment-main">{{item.textContent}}</view>
+			<view class="content-main">{{item.textContent}}</view>
 		</view>
 		<van-cell wx:if="{{item.imageURL[0]}}">
 			<view class="image-zj">
@@ -54,7 +56,8 @@
 					</view>
 				</van-cell>
 				<!-- 点击这里回复主评论  拿到主评论的在mainComments里面的下标-->
-				<view class="comment-main" data-out-index="{{outIndex}}" data-zj-id="{{item.id}}" data-reply-name="{{item.userName}}" data-main-index="{{zjIndex}}" catchtap="handleTap">{{item.commentContent}}</view>
+				<!-- 点击回复，长按删除自己评论 -->
+				<view class="comment-main" data-out-index="{{outIndex}}" data-zj-id="{{item.id}}" data-reply-name="{{item.userName}}" data-main-index="{{zjIndex}}" catchtap="handleTap"  bindlongpress="handleLongTap" data-user-id="{{item.userId}}" data-is-main="{{true}}">{{item.commentContent}}</view>  
 
 				<!-- 展示子评论 -->
 				<view wx:if="{{item.commentContentVisible}}" style="margin-left: 30rpx;">
@@ -66,8 +69,8 @@
 							<span class="comment-zj">{{item.parentName}}</span>
 						</view>
 						<span class="comment-time">{{item.commentTime}}</span>
-						<!-- 这里是子评论回复 -->
-						<view class="comment-sub" data-reply-name="{{item.userName}}" data-zj-id="{{item.id}}" data-out-index="{{outIndex}}" data-main-index="{{zjIndex}}" catchtap="handleTap">{{item.commentContent}}</view>
+						<!-- 这里是子评论回复内容展示 -->
+						<view class="comment-sub" data-reply-name="{{item.userName}}" data-zj-id="{{item.id}}" data-out-index="{{outIndex}}" data-main-index="{{zjIndex}}" catchtap="handleTap" bindlongpress="handleLongTap" data-user-id="{{item.userId}}" data-is-main="{{false}}" >{{item.commentContent}}</view>
 					</view>
 				</view>
 			</view>

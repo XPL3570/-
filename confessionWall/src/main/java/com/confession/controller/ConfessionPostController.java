@@ -139,7 +139,7 @@ public class ConfessionPostController {
     }
 
     /**
-     * 修改发布状态  注意点：这里修改状态没有直接去删除缓存，等定时任务来更新吧
+     * 修改发布状态
      */
     @PostMapping("admin/modifyState")
     public Result modifyState(@RequestBody @Validated AuditRequest request) { //这里的请求参数表白墙id也用不到

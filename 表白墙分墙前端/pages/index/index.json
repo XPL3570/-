@@ -12,7 +12,8 @@
 		"van-button": "@vant/weapp/button/index",
 		"van-popup": "@vant/weapp/popup/index",
 		"van-notify": "@vant/weapp/notify/index",
-		"van-action-sheet": "@vant/weapp/action-sheet/index"
+		"van-action-sheet": "@vant/weapp/action-sheet/index",
+		"van-dialog": "@vant/weapp/dialog/index"
 	},
 	"onReachBottom": "onReachBottom",
 	"enablePullDownRefresh": true

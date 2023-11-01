@@ -29,6 +29,7 @@ import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -78,6 +79,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
     @Resource
     private RedissonClient redissonClient;
+
+    @Resource
+    private ThreadPoolTaskExecutor taskExecutor;
 
 
     @Override
@@ -129,7 +133,26 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
         // 获取插入数据的 ID
         Integer commentId = comment.getId();
+        //删除对应回复用户的评论回复缓存，用线程池去异步的删除吧 todo
+        taskExecutor.execute(() -> {
+            deleteUserCommentReplyCache(comment,userId);
+        });
         return commentId;
+    }
+
+    //回复之后删除评论回复的缓存
+    private void deleteUserCommentReplyCache(Comment comment,Integer myUserId) {
+        Integer userId;
+        if (comment.getParentCommentId() == null) {
+            //说明这是主评论，查询该投稿者的用户id然后删除用户id下的评论回复缓存
+            userId= confessionPostService.getById(comment.getConfessionPostReviewId()).getUserId();
+        }else { //如果不是null就是回复评论，拿着父id去查找父评论的发布者用户id
+            userId = commentMapper.selectById(comment.getParentCommentId()).getUserId();
+        }
+        if (userId.equals(myUserId)){ //如果要删除自己的评论回复数据，就不必要了
+            return;
+        }
+        for (int i = 1; i <= 3; i++) redisTemplate.delete(USER_COMMENT_REPLY+userId+":"+i);
     }
 
     // 更新缓存并设置过期时间
