@@ -133,7 +133,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
         // 获取插入数据的 ID
         Integer commentId = comment.getId();
-        //删除对应回复用户的评论回复缓存，用线程池去异步的删除吧 todo
+        //删除对应回复用户的评论回复缓存，用线程池去异步的删除吧
         taskExecutor.execute(() -> {
             deleteUserCommentReplyCache(comment,userId);
         });
@@ -164,8 +164,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 //            redisTemplate.expire(key, 30, TimeUnit.MINUTES);
 //        } else
         redisTemplate.opsForValue().set(key, postDTO);
-        if (expiration < 24 * 60 * 60) {
-            // key的过期时间小于一天
+        if (expiration < 12 * 60 * 60) {
+            // key的过期时间小于12小时
             redisTemplate.expire(key, expiration + 30 * 60, TimeUnit.SECONDS);
         } else {
             // key的过期时间大于等于一天
@@ -234,7 +234,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     public void userDeleteComment(UserDeleteCommentRequest request) {
         Comment comment = commentMapper.selectById(request.getCommentId());
         Integer userId = JwtInterceptor.getUser().getId();
-        if (comment == null || comment.getUserId().equals(userId)) { //没有查询到评论
+        if (comment == null || !comment.getUserId().equals(userId)) { //没有查询到评论
             throw new WallException("评论不存在或者不是该用户的评论", 211);
         }
         userService.userCanDelete(userId);
@@ -242,33 +242,33 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         //拿锁，删除，重新set回去，找没找到都不管
         RLock lock = redissonClient.getLock(CONFESSION_PREFIX_LOCK + request.getPostId());
         lock.lock();
-
+        commentMapper.deleteById(request.getCommentId());
         String key = RedisConstant.POST_SUBMISSION_RECORD + request.getPostId();
         JSONObject redisDtoTemp = (JSONObject) redisTemplate.opsForValue().get(key);
 //        ConfessionPostDTO postDTO;
         if (redisDtoTemp != null) { //这里有缓存就更新,这里不为空就是有缓存,这里一般都是有缓存的
+            //直接删除评论,后面再删缓存
             ConfessionPostDTO postDTO = redisDtoTemp.toJavaObject(ConfessionPostDTO.class);
-            //添加一个标识，如果在主评论已经删除了就不去遍历子评论了，默认是false
-            boolean isDeleted = false;
-            if (postDTO.getMainComments() != null && postDTO.getMainComments().size() > 0) {
+            //判断是否是主评论，这里写两个if和后面的判断是防止空指针，也可以简化，输入异常就报错
+            if (request.getIsMain()&&postDTO.getMainComments() != null && postDTO.getMainComments().size() > 0) {
                 List<CommentDTO> mainComments = postDTO.getMainComments();
                 Iterator<CommentDTO> iterator = mainComments.iterator();
                 while (iterator.hasNext()) {
                     CommentDTO next = iterator.next();
                     if (next.getId() == request.getCommentId()) {
                         iterator.remove();
-                        isDeleted = true;
                         break;
                     }
                 }
             }
-            if (!isDeleted && postDTO.getSubComments() != null && postDTO.getSubComments().size() > 0) {
+            if (!request.getIsMain()&&postDTO.getSubComments() != null && postDTO.getSubComments().size() > 0) {
                 List<CommentDTO> subComments = postDTO.getSubComments();
                 Iterator<CommentDTO> iterator = subComments.iterator();
                 while (iterator.hasNext()) {
                     CommentDTO next = iterator.next();
                     if (next.getId().equals(request.getCommentId())) {
                         iterator.remove();
+                        break;
                     }
                 }
             }
@@ -276,6 +276,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             updateCacheWithExpiration(key, postDTO);
         }
         lock.unlock();
+        //用线程池去异步的删除评论-
 
     }
 

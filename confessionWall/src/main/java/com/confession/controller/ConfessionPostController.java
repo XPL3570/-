@@ -159,7 +159,7 @@ public class ConfessionPostController {
     /**
      * 用户删除自己发布的投稿
      */
-    @PostMapping("delete") // todo 前端待完成
+    @PostMapping("delete")
     public Result delete(@RequestBody @Validated DeleteSubmissionRequest request) {
         confessionPostService.deletePostUser(request);
         return Result.ok();

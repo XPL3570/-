@@ -199,12 +199,11 @@ export default {
               // console.log(response.data);
               _self.objectData.OSSAccessKeyId=response.data.data.accessid;
               _self.objectData.Signature=response.data.data.signature;
-              // _self.objectData.securityToken=response.data.data.securityToken;
               _self.host=response.data.data.host;
               _self.objectData.key=response.data.data.dir;
               _self.objectData.policy=response.data.data.policy;
               _self.objectData.expire=response.data.data.expire;
-              _self.objectData['x-oss-security-token']=response.data.data.securityToken;
+              // _self.objectData['x-oss-security-token']=response.data.data.securityToken;
               // console.log(_self.objectData);
               //   setTimeout(function() {
               //   _self.fileListSub.push({

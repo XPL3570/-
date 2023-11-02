@@ -159,7 +159,7 @@ export default {
               _self.objectData.key=response.data.data.dir;
               _self.objectData.policy=response.data.data.policy;
               _self.objectData.expire=response.data.data.expire;
-              _self.objectData['x-oss-security-token']=response.data.data.securityToken;
+              // _self.objectData['x-oss-security-token']=response.data.data.securityToken;
               // console.log(_self.objectData);
               //   setTimeout(function() {
               //   _self.fileListSub.push({

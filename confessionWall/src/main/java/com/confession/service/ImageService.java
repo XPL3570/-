@@ -21,11 +21,10 @@ public interface ImageService {
     Result upload(MultipartFile file);
 
     /**
-     *  上次图片  传递的是base64的数组
+     *  上传图片  传递的是base64的数组
      * @return
      */
     Result uploadImage(UploadImageRequest request);
-
 
 
     /**
@@ -36,6 +35,11 @@ public interface ImageService {
     /**
      * 管理web端使用阿里云上传图片获取临时票据 ,也需要token
      */
-    Result uploadImageOOSWeb() throws ClientException;
+    Result uploadImageOOSWeb();
+
+    /**
+     * 测试官网的阿里云直传服务器签名接口
+     */
+    Result alibabaCloudDirectServerSignature() throws ClientException;
 
 }

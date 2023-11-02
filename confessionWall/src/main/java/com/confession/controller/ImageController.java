@@ -8,21 +8,12 @@ import com.confession.request.DeleteImageRequest;
 import com.confession.request.UploadImageRequest;
 import com.confession.service.ImageService;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.util.Base64Utils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.Date;
-import java.util.Random;
 
 @RestController
 public class ImageController {
@@ -33,11 +24,11 @@ public class ImageController {
     private RedisTemplate redisTemplate;
 
     @GetMapping("getStsToken")
-    public Result getStsToken(){
+    public Result getStsToken() throws ClientException {
         //这里加一个锁或者限制，来限制用户获取秘钥等参数， 比如每个小时一个用户最多只能获取18个key
         Integer userId = JwtInterceptor.getUser().getId();
         this.checkFrequency(userId);
-        return imageService.uploadImageOOS();
+        return imageService.alibabaCloudDirectServerSignature();
     }
 
     @PostMapping("/deleteImage")
@@ -69,7 +60,7 @@ public class ImageController {
 
 
     @GetMapping("/admin/getStsToken")
-    public Result getStsTokenAdmin(){
+    public Result getStsTokenAdmin() throws ClientException {
         Result res;
         //这里加一个锁或者限制，来限制用户获取秘钥等参数，一个小时最多100个
         // 定义Redis Key，格式为用户ID + 当前小时数
@@ -88,11 +79,7 @@ public class ImageController {
         count++;
         // 将新的计数器值存入Redis，设置过期时间为下一个小时
         redisTemplate.opsForValue().set(redisKey, count, Duration.ofHours(1));
-        try {
-           res= imageService.uploadImageOOSWeb();
-        } catch (ClientException e) {
-            return Result.fail();
-        }
+        res= imageService.alibabaCloudDirectServerSignature();
         if (res!=null){
             return res;
         }else {

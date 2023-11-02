@@ -82,6 +82,8 @@ wall:
   admin:
     daily-post-limit: 20 #墙每天投稿上限数量
   user:
+    can-add-friends-month: 3 #用户每个月可添加好友数量
+    can-accept-friends-month: 7 #用户每月可接受好友申请
     daily-post-limit: 10
     comment-limit: 10  #每天评论数量限制
   lottery:   #恋爱墙投递和读取配置   只能选择一个  投递和拿的限制都是一样的
@@ -93,10 +95,10 @@ wall:
 #      total: 3   #总次数
 
 aLiYun:
-  #  endpoint: oss-cn-shanghai.aliyuncs.com
-  endpoint: sts.cn-shanghai.aliyuncs.com  #sts访问的节点
-  keyId: LTAI5tFNr1wyRB7pDRe9193H           #这是临时角色的key
-  keySecret: GIcgYHRoFq8IdeU96xsIoqj4xRtuxn  #这是临时角色的的秘钥
+  endpoint: oss-cn-shanghai.aliyuncs.com
+#  endpoint: sts.cn-shanghai.aliyuncs.com
+  keyId: LTAI5t7oyp2E5ZtupPuf2LPS
+  keySecret: yf6bItLn0muhX8YPAYfdF7OBPZcwnG
   bucketName: tongxiaobiaobaiqiang          #桶名字
   ramRoleArn: acs:ram::1204375983108350:role/ramosstxbbq  #STS临时访问角色
   endpointNode: https://tongxiaobiaobaiqiang.oss-cn-shanghai.aliyuncs.com  #实际访问的节点

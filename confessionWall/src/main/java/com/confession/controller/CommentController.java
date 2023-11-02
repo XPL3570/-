@@ -60,7 +60,7 @@ public class CommentController {
     }
 
     /**
-     * 用户删除评论，传递投稿id和评论id  todo 前端待写
+     * 用户删除评论，传递投稿id和评论id 和是否是主评论来方便删除缓存
      */
     @PostMapping("deleteComment")
     public Result deleteComment(@RequestBody @Validated UserDeleteCommentRequest request){

@@ -17,6 +17,12 @@ public class WallConfig {
     @Value("${wall.user.comment-limit}")
     private int userDailyCommentLimit;
 
+    @Value("${wall.user.can-add-friends-month}")
+    private int canAddFriendsMonth;
+
+    @Value("${wall.user.can-accept-friends-month}")
+    private int canAcceptFriendsMonth;
+
 //    @Value("${wall.lottery.limit.yearly}")
 //    private int yearlyLimit;
 //

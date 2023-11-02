@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.confession.config.WallConfig;
 import com.confession.dto.UserContactDTO;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
@@ -21,10 +22,11 @@ import javax.annotation.Resource;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import static com.confession.comm.RedisConstant.USER_ADD_FRIENDS;
-import static com.confession.comm.RedisConstant.USER_POSTED_NODE;
+import static com.confession.comm.RedisConstant.*;
 import static com.confession.comm.ResultCodeEnum.*;
 
 /**
@@ -42,6 +44,9 @@ public class UserContactServiceImpl extends ServiceImpl<UserContactMapper, UserC
 
     @Resource
     private RedisTemplate redisTemplate;
+
+    @Resource
+    private WallConfig wallConfig;
 
     @Override
     public int getYourOwnContactInfo() {
@@ -62,10 +67,12 @@ public class UserContactServiceImpl extends ServiceImpl<UserContactMapper, UserC
         if (!receiverUser.getCanObtainWeChat()){
             throw new WallException(UNABLE_OBTAIN_USER_WECHAT);
         }
-        if (this.countByUserIdWithinOneMonthUsing(userId)>=3){
+        //用户发起方月可添加数量
+        if (this.countByUserIdWithinOneMonthUsing(userId)>=wallConfig.getCanAddFriendsMonth()){
             throw new WallException(FREQUENT_USER_ACCESS_WX);
         }
-        if (this.countByUserIdObtainedOneMonth(request.getReceiverId())>=7){ //被获取方月被获取次数是7次 todo 改到配置文件
+        //被获取方月被获取次数
+        if (this.countByUserIdObtainedOneMonth(request.getReceiverId())>=wallConfig.getCanAcceptFriendsMonth()){
             throw new WallException(FREQUENT_USER_OBTAIN_WECHAT);
         }
         if (userService.getById(userId).getStatus()==3){ //如果被禁止投稿和评论了，就不可以加好友，然后提示加好友平凡
@@ -85,6 +92,10 @@ public class UserContactServiceImpl extends ServiceImpl<UserContactMapper, UserC
         userContact.setApplicationReason(request.getApplicationReason());
         userContact.setStatus(0);
         this.save(userContact);
+        //删除被申请方的好友申请缓存
+        redisTemplate.delete(USER_FRIEND_APPLICATION+request.getReceiverId());
+        //删除自己的添加好友缓存
+        redisTemplate.delete(USER_ADD_FRIENDS+userId);
     }
 
     @Override
@@ -101,12 +112,32 @@ public class UserContactServiceImpl extends ServiceImpl<UserContactMapper, UserC
             contact.setStatus(2);
         }
         this.updateById(contact);
+        //删除自己的好友申请缓存
+        redisTemplate.delete(USER_FRIEND_APPLICATION+userId);
+        //删除别人的添加好友缓存
+        redisTemplate.delete(USER_ADD_FRIENDS+contact.getReceiverId());
     }
 
 
     @Override
     public List<UserContactDTO> youApplicationSent() {
-        List<UserContactDTO> list = mapper.findApplicationSentContactList(JwtInterceptor.getUser().getId());
+        Integer userId = JwtInterceptor.getUser().getId();
+        Object cachedValue = redisTemplate.opsForValue().get(USER_ADD_FRIENDS + userId);
+        if (cachedValue != null) {
+            if (cachedValue instanceof List) {
+                return (List<UserContactDTO>) cachedValue;
+            } else {
+                // 缓存中存储的是空值，直接返回空列表
+                return Collections.emptyList();
+            }
+        }
+        List<UserContactDTO> list = mapper.findApplicationSentContactList(userId);
+        if (list.isEmpty()) {
+            // 数据库中不存在该数据，将空值存入缓存
+            redisTemplate.opsForValue().set(USER_ADD_FRIENDS + userId, Collections.emptyList(),20, TimeUnit.MINUTES);
+        } else {
+            redisTemplate.opsForValue().set(USER_ADD_FRIENDS + userId, list,20, TimeUnit.MINUTES);
+        }
         return list;
     }
 
@@ -114,17 +145,23 @@ public class UserContactServiceImpl extends ServiceImpl<UserContactMapper, UserC
     @Override
     public List<UserContactDTO> getYourOwnContact() {
         Integer userId = JwtInterceptor.getUser().getId();
-//        JSON json = (JSON) redisTemplate.opsForValue().get(USER_ADD_FRIENDS + userId);
-//        if (json != null) {
-//            return json.toJavaObject(List.class);
-//        }
+        Object value = redisTemplate.opsForValue().get(USER_FRIEND_APPLICATION + userId);
+        if (value != null) {
+            if (value instanceof List) {
+                return (List<UserContactDTO>) value;
+            } else {
+                // handle the case when cache value is not a list
+                redisTemplate.delete(USER_FRIEND_APPLICATION + userId);
+            }
+        }
         List<UserContactDTO> list = mapper.findGetMeContactList(userId);
-//        redisTemplate.opsForValue().set(USER_ADD_FRIENDS + userId,list);
+        if (list.isEmpty()){
+            redisTemplate.opsForValue().set(USER_FRIEND_APPLICATION + userId, Collections.emptyList(),20, TimeUnit.MINUTES);
+        }else {
+            redisTemplate.opsForValue().set(USER_FRIEND_APPLICATION + userId, list,20, TimeUnit.MINUTES);
+        }
         return list;
     }
-
-
-
 
     @Override
     public int countByUserIdWithinOneMonthUsing(Integer userId) {

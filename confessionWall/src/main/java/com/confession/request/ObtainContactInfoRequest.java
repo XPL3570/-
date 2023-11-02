@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 //获取其他用户联系方式请求包装类
 @Data
 public class ObtainContactInfoRequest {
-    @NotNull(message = "id不能是null")
+    @NotNull(message = "要添加的用户id不能是null")
     @Min(value = 0,message = "不能小于0")
     private Integer receiverId;
 

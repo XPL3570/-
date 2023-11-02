@@ -57,7 +57,7 @@
 				</van-cell>
 				<!-- 点击这里回复主评论  拿到主评论的在mainComments里面的下标-->
 				<!-- 点击回复，长按删除自己评论 -->
-				<view class="comment-main" data-out-index="{{outIndex}}" data-zj-id="{{item.id}}" data-reply-name="{{item.userName}}" data-main-index="{{zjIndex}}" catchtap="handleTap"  bindlongpress="handleLongTap" data-user-id="{{item.userId}}" data-is-main="{{true}}">{{item.commentContent}}</view>  
+				<view class="comment-main" data-out-index="{{outIndex}}" data-zj-id="{{item.id}}" data-reply-name="{{item.userName}}" data-main-index="{{zjIndex}}" catchtap="handleTap"  bindlongpress="handleLongTap" data-user-id="{{item.userId}}" data-is-main="{{true}}" data-comment-id="{{item.id}}">{{item.commentContent}}</view>  
 
 				<!-- 展示子评论 -->
 				<view wx:if="{{item.commentContentVisible}}" style="margin-left: 30rpx;">
@@ -70,7 +70,7 @@
 						</view>
 						<span class="comment-time">{{item.commentTime}}</span>
 						<!-- 这里是子评论回复内容展示 -->
-						<view class="comment-sub" data-reply-name="{{item.userName}}" data-zj-id="{{item.id}}" data-out-index="{{outIndex}}" data-main-index="{{zjIndex}}" catchtap="handleTap" bindlongpress="handleLongTap" data-user-id="{{item.userId}}" data-is-main="{{false}}" >{{item.commentContent}}</view>
+						<view class="comment-sub" data-reply-name="{{item.userName}}" data-zj-id="{{item.id}}" data-out-index="{{outIndex}}" data-main-index="{{zjIndex}}" catchtap="handleTap" bindlongpress="handleLongTap" data-user-id="{{item.userId}}" data-is-main="{{false}}" data-comment-id="{{item.id}}">{{item.commentContent}}</view>
 					</view>
 				</view>
 			</view>

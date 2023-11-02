@@ -361,11 +361,9 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         Set<Integer> zSetMembers = redisTemplate.opsForZSet().reverseRange(WALL_POSTS_PREFIX + wallId, startIndex, startIndex + limit-1);
 //        System.out.println(zSetMembers);
 //        System.out.println(limit);
-
-
         List<ConfessionPostDTO> posts;
         if (zSetMembers.isEmpty() || zSetMembers.size() < limit) {
-            // 查询这个key的里面集合的数量并添加   这里要加分布式锁，在添加的时候也要获取这个锁
+            // 查询这个key的里面集合的数量并添加   这里要加分布式锁，在添加的时候也要获  取这个锁
             RLock lock = redissonClient.getLock(SCHOOL_WALL_MAIN_LIST_MOD_LOCK + wallId);
             lock.lock();
             // 计算需要从那个索引下面取值+已经有的值

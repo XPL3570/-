@@ -35,9 +35,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
-import java.util.Date;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class ImageServiceImpl implements ImageService {
@@ -96,7 +94,7 @@ public class ImageServiceImpl implements ImageService {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             String format = simpleDateFormat.format(new Date());
 
-            String key="src/"+format+"/"+this.generateFileName(".jpg"); //todo 后期优化，这里后缀名不拿了
+            String key="src/"+format+"/"+this.generateFileName(".jpg"); //优化点 后期优化，这里后缀名不拿了
 
             keyDTO.setKey(key);
 
@@ -129,8 +127,8 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
-    @Override //测试没有过，用之前的 这里基本都是官网的
-    public Result uploadImageOOSWeb() throws ClientException {
+    @Override
+    public Result uploadImageOOSWeb(){
         String endpoint = config.getEndpoint();
         // 从环境变量中获取步骤1生成的RAM用户的访问密钥（AccessKey ID和AccessKey Secret）。
         String accessKeyId = config.getKeyId();
@@ -143,7 +141,7 @@ public class ImageServiceImpl implements ImageService {
         // 临时访问凭证最后获得的权限是步骤4设置的角色权限和该Policy设置权限的交集，即仅允许将文件上传至目标存储空间examplebucket下的src目录。
         // 如果policy为空，则用户将获得该角色下所有权限。
         // 设置临时访问凭证的有效时间为300秒。
-        Long durationSeconds = 1000L; //todo,这个过期时间都这么长了，是不是可以放在内存里面不用多次生产了
+        Long durationSeconds = 1000L;
         ImageUploadKeyWebDTO keyDTO;
         try {
             // regionId表示RAM的地域ID。以华东1（杭州）地域为例，regionID填写为cn-hangzhou。也可以保留默认值，默认值为空字符串（""）。
@@ -189,7 +187,7 @@ public class ImageServiceImpl implements ImageService {
             keyDTO.setAccessid(response.getCredentials().getAccessKeyId());
             keyDTO.setExpire(response.getCredentials().getExpiration() );   //  //过期时间，到时候看要不要加
             keyDTO.setHost(config.getEndpointNode());  //设置访问节点
-            keyDTO.setSecurityToken(response.getCredentials().getSecurityToken());
+//            keyDTO.setSecurityToken(response.getCredentials().getSecurityToken());
         } catch (ClientException e) {
             System.out.println("Failed：");
             System.out.println("Error code: " + e.getErrCode());
@@ -204,59 +202,66 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
-//    @Override //测试没有过，用之前的 这里基本都是官网的
-//    public Result uploadImageOOSWeb() throws ClientException {
-//        System.setProperty("OSS_ACCESS_KEY_ID", config.getKeyId());
-//        System.setProperty("OSS_ACCESS_KEY_SECRET",config.getKeySecret());
-//        // 从环境变量中获取访问凭证。运行本代码示例之前，请确保已设置环境变量OSS_ACCESS_KEY_ID和OSS_ACCESS_KEY_SECRET。
-//        EnvironmentVariableCredentialsProvider credentialsProvider = CredentialsProviderFactory.newEnvironmentVariableCredentialsProvider();
-//        // Endpoint以华东1（杭州）为例，其它Region请按实际情况填写。
-//        String endpoint = config.getEndpoint();
-//        // 填写Bucket名称，例如examplebucket。
-//        String bucket = config.getBucketName();
-//        // 填写Host名称，格式为https://bucketname.endpoint。
-//        String host = config.getEndpointNode();
-//        // 设置上传回调URL，即回调服务器地址，用于处理应用服务器与OSS之间的通信。OSS会在文件上传完成后，把文件上传信息通过此回调URL发送给应用服务器。
-////        String callbackUrl = "https://192.168.0.0:8888";
-//        // 设置上传到OSS文件的前缀，可置空此项。置空后，文件将上传至Bucket的根目录下。
+    @Override
+    public Result alibabaCloudDirectServerSignature() throws ClientException {
+        // 从环境变量中获取访问凭证。运行本代码示例之前，请确保已设置环境变量OSS_ACCESS_KEY_ID和OSS_ACCESS_KEY_SECRET。
+        EnvironmentVariableCredentialsProvider credentialsProvider = CredentialsProviderFactory.newEnvironmentVariableCredentialsProvider();
+        credentialsProvider.getCredentials().getSecurityToken();
+        // Endpoint以华东1（杭州）为例，其它Region请按实际情况填写。
+        String endpoint = config.getEndpoint();
+        // 填写Bucket名称，例如examplebucket。
+        String bucket = config.getBucketName();
+        // 填写Host名称，格式为https://bucketname.endpoint。
+        String host = config.getEndpointNode();
+        // 设置上传到OSS文件的前缀，可置空此项。置空后，文件将上传至Bucket的根目录下。
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM/dd");
+        String format = simpleDateFormat.format(new Date());
+        String dir="src/"+format+"/"+this.generateFileName(".jpg");
 //        String dir = "src/";
-//
-//        // 创建OSSClient实例。
-//        OSS ossClient = new OSSClientBuilder().build(endpoint, credentialsProvider);
-//        try {
-//            long expireTime = 30;
-//            long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
-//            Date expiration = new Date(expireEndTime);
-//            // PostObject请求最大可支持的文件大小为5 GB，即CONTENT_LENGTH_RANGE为5*1024*1024*1024。
-//            PolicyConditions policyConds = new PolicyConditions();
-//            policyConds.addConditionItem(PolicyConditions.COND_CONTENT_LENGTH_RANGE, 0, 4*1024*1024);
-//            policyConds.addConditionItem(MatchMode.StartWith, PolicyConditions.COND_KEY, dir);
-//
-//            String postPolicy = ossClient.generatePostPolicy(expiration, policyConds);
-//            byte[] binaryData = postPolicy.getBytes("utf-8");
-//            String accessId = credentialsProvider.getCredentials().getAccessKeyId();
-//            String encodedPolicy = BinaryUtil.toBase64String(binaryData);
-//            String postSignature = ossClient.calculatePostSignature(postPolicy);
-//
-//            ImageUploadKeyWebDTO dto = new ImageUploadKeyWebDTO();
-//            dto.setAccessid(accessId);
-//            dto.setPolicy(encodedPolicy);
-//            dto.setExpire(String.valueOf(expireEndTime / 1000));
-//            dto.setHost(host);
-//            dto.setDir(dir);
-//            dto.setSignature(postSignature);
-//
-//            System.out.println(dto);
-//            return Result.ok(dto);
-//
-//        } catch (Exception e) {
-//            // Assert.fail(e.getMessage());
-//            System.out.println(e.getMessage());
-//        } finally {
-//            ossClient.shutdown();
-//        }
-//        return Result.fail();
-//    }
+
+        // 创建OSSClient实例。
+        OSS ossClient = new OSSClientBuilder().build(endpoint, credentialsProvider);
+
+        try {
+            long expireTime = 30;
+            long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
+            Date expiration = new Date(expireEndTime);
+            // PostObject请求最大可支持的文件大小为5 GB，即CONTENT_LENGTH_RANGE为5*1024*1024*1024。
+            PolicyConditions policyConds = new PolicyConditions();
+            policyConds.addConditionItem(PolicyConditions.COND_CONTENT_LENGTH_RANGE, 0, 2*1024*1024);
+            policyConds.addConditionItem(MatchMode.StartWith, PolicyConditions.COND_KEY, dir);
+
+            String postPolicy = ossClient.generatePostPolicy(expiration, policyConds);
+            byte[] binaryData = postPolicy.getBytes("utf-8");
+            String accessId = credentialsProvider.getCredentials().getAccessKeyId();
+            String encodedPolicy = BinaryUtil.toBase64String(binaryData);
+            String postSignature = ossClient.calculatePostSignature(postPolicy);
+//            Map<String, String> respMap = new LinkedHashMap<String, String>();
+//            respMap.put("accessid", accessId);
+//            respMap.put("policy", encodedPolicy);
+//            respMap.put("signature", postSignature);
+//            respMap.put("dir", dir);
+//            respMap.put("host", host);
+//            respMap.put("expire", String.valueOf(expireEndTime / 1000));
+//            System.out.println(respMap);
+            ImageUploadKeyWebDTO keyDTO=new ImageUploadKeyWebDTO();
+            keyDTO.setDir(dir); //直接直接是存放文件了，不是可访问目录
+            keyDTO.setPolicy(encodedPolicy);
+            keyDTO.setSignature(postSignature);
+            keyDTO.setAccessid(accessId);
+            keyDTO.setExpire(String.valueOf(expireEndTime / 1000) );    //过期时间，到时候看要不要加
+            keyDTO.setHost(host);  //设置访问节点
+            System.out.println(keyDTO);
+            return Result.ok(keyDTO);
+        } catch (Exception e) {
+
+            System.out.println(e.getMessage());
+        } finally {
+            ossClient.shutdown();
+        }
+        return Result.fail();
+    }
+
 
     private static final String UPLOAD_PATH = "e:\\表白墙项目图片上传地址\\"; // 设置图片上传路径，这里是windows系统的
 
@@ -283,8 +288,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
 
-/*    @Override
-    public Result deleteImage(DeleteImageRequest request) {
+    public Result deleteImageFeiQi(DeleteImageRequest request) { //删除本地图片，这里弃用
         try {
             // 提取图片的相对路径或文件名
             String imagePath = getImagePathFromUrl(request.getDeleteUrl());
@@ -306,7 +310,7 @@ public class ImageServiceImpl implements ImageService {
         } catch (Exception e) {
             return Result.fail("删除异常：" + e.getMessage());
         }
-    }*/
+    }
 
     private String getImagePathFromUrl(String imageUrl) {
         try {

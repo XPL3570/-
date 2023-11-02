@@ -1,9 +1,9 @@
 <view class='pa-30'>
-	<view class='bg-m ra-10 pa-40 text-center'>
+	<view class='bg-m ra-10 pa-40'>
 		<image class="avatar" style='width: 150rpx;height: 150rpx;' src="{{avatarUrl}}" mode='aspectFill'></image>
-		<view class="nixing" style="display: flex;">
-			<view class="nickName1">用户名：</view>
-			<view class="nickName2" style="flex: 1;">{{userName}}</view>
+		<view class="nixing">
+			<view style="margin-left: -24rpx;">用户名：</view>
+			<view style="margin-top: 10rpx;">{{userName}}</view>
 		</view>
 	</view>
 

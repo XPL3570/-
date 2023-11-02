@@ -13,6 +13,7 @@
 	margin-top: 0rpx;
 	margin-left: 150rpx;
 	display: flex;
+	flex-direction: row;
 	justify-content: center;
 	align-items: center;
 }

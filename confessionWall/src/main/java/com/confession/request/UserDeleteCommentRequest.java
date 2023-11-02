@@ -15,4 +15,7 @@ public class UserDeleteCommentRequest{
 
     @NotNull(message = "评论id不能是null")
     private Integer commentId;
+
+    @NotNull(message = "是否是主评论不能是null")
+    private Boolean isMain;
 }

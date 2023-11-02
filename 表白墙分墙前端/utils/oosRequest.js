@@ -11,45 +11,60 @@ const policyText = {
 };
 
 //使用回调函数让调用方拿到url
-function uploadImagesAlibabaCloud(filePathTemp,callback) {
+function uploadImagesAlibabaCloud(filePathTemp, callback) {
+	const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp'];
+	const fileExtension = filePathTemp.substring(filePathTemp.lastIndexOf('.')).toLowerCase();
+	if (!allowedExtensions.includes(fileExtension)) {
+		wx.showToast({
+			title: '不支持上传该类型的图片',
+			icon: 'none'
+		})
+		return; // 结束方法
+	}
 	let keyTemp = {};
 	api.requestWithToken('/getStsToken', 'GET', null,
 		(res) => {
-			// console.log(res);
 			if (res.data.code === 200) {
 				keyTemp = res.data.data;
-				//这里下面还有一次过滤，这里数据是从后端拿的，用的阿里云的sdk，先试试不用转换的
-				const host = keyTemp.host;
-				const signature = keyTemp.signature;
-				const ossAccessKeyId = keyTemp.accessKeyId;
-				const policy = keyTemp.policyBase64Str;
-				const key = keyTemp.key;
-				const securityToken = keyTemp.securityToken;
-				const filePath = filePathTemp; // 待上传文件的文件路径。
+				// console.log(keyTemp);
+				let host = keyTemp.host;
+				let signature = keyTemp.signature;
+				let OSSAccessKeyId = keyTemp.accessid;
+				let policy = keyTemp.policy;
+				let key = keyTemp.dir;
+				// const securityToken = keyTemp.securityToken;
 				wx.uploadFile({
 					url: host,
-					filePath: filePath,
+					filePath: filePathTemp,// 待上传文件的文件路径。
 					name: 'file', // 必须填file。
 					formData: {
+						host,
 						key,
 						policy,
-						OSSAccessKeyId: ossAccessKeyId,
+						OSSAccessKeyId,
 						signature,
-						'x-oss-security-token': securityToken // 使用STS签名时必传。
+						// 'x-oss-security-token': securityToken // 使用STS签名时必传。
 					},
 					success: (res) => {
-						// console.log(res);
-						// if (res.statusCode === 204) {
-						// 	console.log('上传成功');
-						// }
-						callback(keyTemp.host + '/' + keyTemp.key);
+						callback(keyTemp.host + '/' + keyTemp.dir);
 					},
 					fail: err => {
+						wx.showToast({
+							title: '上传图片异常',
+							icon: 'none'
+						})
 						console.log(err);
 						callback(null); // 或传递错误信息
 					}
 				});
-			} else {
+			} else if (res.data.code === 244) {
+				wx.showToast({
+					title: res.data.message,
+					icon: 'none',
+					expiration:3500
+				})
+			}
+			else {
 				console.error(res.data);
 				callback(null); // 或传递错误信息
 			}

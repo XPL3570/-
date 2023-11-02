@@ -32,12 +32,12 @@ public interface UserContactService extends IService<UserContact> {
     void setAgreeOrNot(AgreeSetContactRequest request);
 
     /**
-     *  获取自己联系方式的请求 这里不分页 最多20条
+     *  好友申请      取自己联系方式的请求 这里不分页 最多20条
      */
     List<UserContactDTO> getYourOwnContact();
 
     /**
-     *  查看自己发送的申请 这里不分页 最多20条
+     *  添加好友 查看自己发送的申请 这里不分页 最多20条
      */
     List<UserContactDTO> youApplicationSent();
 

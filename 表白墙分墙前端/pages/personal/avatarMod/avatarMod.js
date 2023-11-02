@@ -31,7 +31,7 @@ Page({
 			success: (res) => {
 			  const tempFilePath = res.tempFiles[0].tempFilePath;
 			  oos.uploadImagesAlibabaCloud(tempFilePath,(url)=>{
-				console.log('上传成功，服务器返回的图片地址为:', url);
+				// console.log('上传成功，服务器返回的图片地址为:', url);
 				this.setData({
 				  avatarUrl: url,
 				});
@@ -40,7 +40,7 @@ Page({
 				};
 				request.requestWithToken('/api/user/avatar', 'POST', data,
 				  (res) => {
-					console.log(res.data.code)
+					// console.log(res.data.code)
 					if (res.data.code === 200) {
 					const userInfo = wx.getStorageSync('userInfo');
 					 // 修改 avatarURL 属性

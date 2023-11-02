@@ -12,7 +12,7 @@ function uploadAndRetrieveImageUrl(filePath) {
 		}
 	});
 }
-//根据url删除图片，这个接口可以在前端或者后端加一个校验，限制接口调用次数，比较危险
+//根据url删除图片，这个接口可以在前端或者后端加一个校验，限制接口调用次数，比较危险 弃用
 function URLDeleteImage(fileUrl) {
 	const data = {
 		deleteUrl: fileUrl
@@ -29,7 +29,7 @@ function URLDeleteImage(fileUrl) {
 	});
 }
 
-function imageToBase64(filePath) {
+function imageToBase64(filePath) { //转换成base64编码 弃用
 	return new Promise((resolve, reject) => {
 		wx.getFileSystemManager().readFile({
 			filePath: filePath,

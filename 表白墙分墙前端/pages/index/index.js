@@ -45,7 +45,7 @@ Page({
 		//  this.initializeHomepageData();
 	},
 	async initializeHomepageData() {
-		console.log("初始化首页数据方法调用");
+		// console.log("初始化首页数据方法调用");
 		this.setData({
 			page: 1,
 			limit: 10,
@@ -83,8 +83,8 @@ Page({
 
 	},
 	loadData() {
-		console.log(this.data.confession);
-		console.log('分页参数页数：', this.data.page);
+		// console.log(this.data.confession);
+		// console.log('分页参数页数：', this.data.page);
 		if (!this.data.canLoadMore) {
 			wx.showToast({
 				title: '没有更多投稿数据了哦！',
@@ -329,39 +329,56 @@ Page({
 				message: '确定要删除这条评论吗？',
 			})
 				.then(() => {  //todo 就对接接口了	
+					let zjId = event.currentTarget.dataset.zjId;
 					let outIndex = event.currentTarget.dataset.outIndex;
 					let mainIndex = event.currentTarget.dataset.mainIndex;
-					let zjId = event.currentTarget.dataset.zjId;
-					// console.log(this.data.confession[outIndex]);
-					//判断是否是主评论，删除逻辑会不一样
-					if(event.currentTarget.dataset.isMain){
-						let newConfession=this.data.confession;
-						newConfession[outIndex].mainComments.splice(mainIndex, 1);
-						newConfession[outIndex]=this.processConfessionData(newConfession[outIndex])
-						this.setData({
-							confession:	newConfession
-						});
-						console.log("删除评论主成功！");
-					}else{//删除子评论
-						let newConfession=this.data.confession;
-						newConfession[outIndex].subComments = newConfession[outIndex].subComments.filter(comment => comment.id !== zjId);
-						newConfession[outIndex]=this.processConfessionData(newConfession[outIndex]);
-						console.log(newConfession[outIndex]);
-						if(newConfession[outIndex].subCommentsExist[mainIndex]){//有子评论就展开
-							this.expandComments({
-								currentTarget: {
-								  dataset: {
-									outIndex:outIndex,
-									zjIndex:mainIndex
-								  }
+					let postId=this.data.confession[outIndex].id;
+					let isMain=event.currentTarget.dataset.isMain;
+					let commentId=event.currentTarget.dataset.commentId;
+					let sbzj={
+						postId,commentId,isMain
+					};
+					// console.log(sbzj);
+					request.requestWithToken('/api/comment/deleteComment','POST',sbzj,(res)=>{
+						if (res.data.code===200) {
+							Notify({ type: 'success', message: '删除评论成功' });
+							if(isMain){//判断是否是主评论，删除逻辑会不一样
+								let newConfession=this.data.confession;
+								newConfession[outIndex].mainComments.splice(mainIndex, 1);
+								newConfession[outIndex]=this.processConfessionData(newConfession[outIndex])
+								this.setData({
+									confession:	newConfession
+								});
+								console.log("删除评论主成功！");
+							}else{//删除子评论
+								let newConfession=this.data.confession;
+								newConfession[outIndex].subComments = newConfession[outIndex].subComments.filter(comment => comment.id !== zjId);
+								newConfession[outIndex]=this.processConfessionData(newConfession[outIndex]);
+								console.log(newConfession[outIndex]);
+								if(newConfession[outIndex].subCommentsExist[mainIndex]){//有子评论就展开
+									this.expandComments({
+										currentTarget: {
+										  dataset: {
+											outIndex:outIndex,
+											zjIndex:mainIndex
+										  }
+										}
+									  });
 								}
-							  });
+								// console.log(this.datNotify({ type: 'warning', message: '通知内容' });a.confession[outIndex]);
+								this.setData({
+									confession:	newConfession
+								});
+							}
+						}else if(res.data.code>200){
+							Notify({ type: 'warning', message: res.data.message });
+						}else{
+							console.error(res.data);
 						}
-						// console.log(this.data.confession[outIndex]);
-						this.setData({
-							confession:	newConfession
-						});
-					}
+					},(res)=>{
+						console.error(res);
+					});
+					// console.log(this.data.confession[outIndex]);
 				})
 				.catch(() => {console.log('取消删除主评论')});
 		}
