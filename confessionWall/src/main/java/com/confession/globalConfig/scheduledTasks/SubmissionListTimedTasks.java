@@ -1,7 +1,7 @@
 package com.confession.globalConfig.scheduledTasks;
 
 import com.confession.mapper.ConfessionwallMapper;
-import com.confession.pojo.Confessionwall;
+import com.confession.pojo.ConfessionWall;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -33,8 +33,8 @@ public class SubmissionListTimedTasks {
 
     @Scheduled(cron = "0 0 3 * * ?")
     public void organizeListAllConfessionWalls(){
-        List<Confessionwall> list = confessionwallMapper.selectList(null);
-        for (Confessionwall confessionwall : list) {
+        List<ConfessionWall> list = confessionwallMapper.selectList(null);
+        for (ConfessionWall confessionwall : list) {
             this.cleanUpWallList(confessionwall.getId());
         }
     }

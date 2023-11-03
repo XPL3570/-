@@ -152,7 +152,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         if (userId.equals(myUserId)){ //如果要删除自己的评论回复数据，就不必要了
             return;
         }
-        for (int i = 1; i <= 3; i++) redisTemplate.delete(USER_COMMENT_REPLY+userId+":"+i);
+        for (int i = 1; i < 4; i++) redisTemplate.delete(USER_COMMENT_REPLY+userId+":"+i);
     }
 
     // 更新缓存并设置过期时间

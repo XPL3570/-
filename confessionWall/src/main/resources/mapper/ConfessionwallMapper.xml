@@ -3,7 +3,7 @@
 <mapper namespace="com.confession.mapper.ConfessionwallMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.confession.pojo.Confessionwall">
+    <resultMap id="BaseResultMap" type="com.confession.pojo.ConfessionWall">
         <id column="Id" property="id" />
         <result column="SchoolId" property="schoolId" />
         <result column="CreatorUserId" property="creatorUserId" />

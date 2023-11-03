@@ -1,8 +1,6 @@
 package com.confession.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
@@ -12,7 +10,6 @@ import com.confession.globalConfig.exception.WallException;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
 import com.confession.pojo.Admin;
 import com.confession.pojo.Confessionpost;
-import com.confession.pojo.Confessionwall;
 import com.confession.request.AdminLoginRequest;
 import com.confession.request.ConfessionPostRequest;
 import com.confession.service.AdminService;

@@ -39,6 +39,7 @@ public enum ResultCodeEnum {
     ALREADY_REPORTED_IT(260,"您已经提交对该投稿的举报信息"),
     TOO_MANY_REPORTS_TODAY(261,"您今日提交的举报信息过多哦！"),
     TOO_MANY_FEEDBACK_TODAY(262,"您今日已经提交过反馈了哦，感谢您再次反馈！"),
+    ABNORMAL_WALL_STATUS(270,"表白墙状态异常，请稍后重试，请联系管理员解除"),
     TOO_MANY_USER_DELETIONS(411,"当前删除操作过多，请稍后重试！"),
     UNABLE_OBTAIN_USER_WECHAT(401,"该用户不允许获取他(她)的联系方式！"),
     FREQUENT_USER_OBTAIN_WECHAT(402,"该用户被获取联系方式频繁"),

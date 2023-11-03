@@ -112,7 +112,7 @@ public class ConfessionPostController {
 
     /**
      * 超级管理员查看发布内容列表
-     * 这里的sql后面应该可以优化，中间牵扯到两个外表，可以用小表驱动大表，还有的查询多余字段
+     * 这里的sql后面应该可以优化，中间牵扯到两个外表，可以用小表驱动大表，还有的查询多余字段，这里的查询还有有点问题 一个优化点
      *
      * @param pageTool          分页参数
      * @param fuzzyQueryContent 模糊查询标题和文字内容

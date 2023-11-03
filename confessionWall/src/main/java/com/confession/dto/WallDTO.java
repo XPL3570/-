@@ -47,7 +47,7 @@ public class WallDTO implements Serializable {
     /**
      * 状态，0表示正常，1表示被禁用
      */
-    private Integer status;
+    private Boolean status;
 
 
 }

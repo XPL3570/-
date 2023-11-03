@@ -9,13 +9,14 @@ Page({
 		numberUnreadComments:0, //未读评论数量
 		options: [
 			{ name: '微信', icon: 'wechat', openType: 'share' },
-			{ name: 'QQ', icon: 'qq' },
+			{ name: 'QQ', icon: 'qq',openType: 'share' },
 			{ name: '微博', icon: 'weibo' },
-			{ name: '复制链接', icon: 'link' },
+			{ name: '复制链接', icon: 'link', openType: 'copyLink' },
 			{ name: '二维码', icon: 'qrcode' },
 		],
 	},
 	onLoad(){
+		this.onCopyLink();
 		this.setData({
 			isAdmin	:wx.getStorageSync('isAdmin')
 		});
@@ -47,8 +48,6 @@ Page({
 		 },(res)=>{
 			 console.error(res);
 		 });
-		 
-
 	},
 	onShow() {
 		const userInfo = wx.getStorageSync('userInfo');
@@ -60,6 +59,24 @@ Page({
 			});
 		}
 	},
+	handleAvatarTap() {
+		wx.showToast({
+		  title: '长按头像修改哦！',
+		  icon:'none'
+		})
+	  },
+	  handleLongAvatarTap(){
+		this.AvatarModView();
+	  },
+	handleNameTap() {
+		wx.showToast({
+		  title: '长按用户名修改哦！',
+		  icon:'none'
+		})
+	  },
+	  handleLongNameTap() {
+		this.NameModView();
+	  },
 	SubmitApplicationView() {
 		wx.navigateTo({
 			url: './submitApplication/submitApplication',
@@ -124,8 +141,35 @@ Page({
 	onClose() {
 		this.setData({ showShare: false });
 	},
+	onCopyLink() {
+		wx.setClipboardData({
+		  data: '小程序链接',
+		  success: function () {
+			wx.showToast({
+			  title: '链接已复制',
+			  icon: 'success',
+			  duration: 2000
+			});
+		  }
+		});
+	  },
+	  onShareAppMessage() {
+		return {
+		  title: '分享标题',
+		  path: '/pages/index/index?param1=value1&param2=value2',
+		  imageUrl: '/path/to/share-image.jpg'
+		};
+	  },
+	  onShareTimeline() {
+		return {
+		  title: '分享标题',
+		  query: 'param1=value1&param2=value2',
+		  imageUrl: '/path/to/share-image.jpg'
+		};
+	  },
 
 	onSelect(event) {
 		//这个是选择之后的操作，这里先不写
+		console.log(event);
 	},
 })

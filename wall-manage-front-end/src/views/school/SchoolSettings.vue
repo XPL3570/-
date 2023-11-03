@@ -256,15 +256,10 @@ export default {
         });
       }
       this.schoolAvatarCache = [];
-      // if (this.schoolDataToBeModified.avatarURL) {
-      //   this.schoolAvatarCache.push({
-      //     url: this.schoolDataToBeModified.avatarURL
-      //   })
-      // }
       console.log(this.schoolDataToBeModified);
     },
     confirmDialogSchoolInfo() { //提交学校修改
-      console.log(this.schoolDataToBeModified);
+      // console.log(this.schoolDataToBeModified);
       let zj = {
         id: this.schoolDataToBeModified.id,
         schoolName: this.schoolDataToBeModified.schoolName,

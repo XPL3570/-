@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @Setter
 @Accessors(chain = true)
 @TableName("confessionwall")
-public class Confessionwall implements Serializable {
+public class ConfessionWall implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -67,10 +67,10 @@ public class Confessionwall implements Serializable {
     private LocalDateTime createTime;
 
     /**
-     * 状态，0表示正常，1表示被禁用
+     * 是否禁用 状态，false表示正常，ture表示被禁用
      */
     @TableField("Status")
-    private Integer status;
+    private Boolean status;
 
 
     /**

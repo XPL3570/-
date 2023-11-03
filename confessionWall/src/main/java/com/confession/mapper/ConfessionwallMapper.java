@@ -1,7 +1,7 @@
 package com.confession.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.confession.pojo.Confessionwall;
+import com.confession.pojo.ConfessionWall;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -15,7 +15,7 @@ import org.apache.ibatis.annotations.Param;
  * @since 2023年08月20日
  */
 @Mapper
-public interface ConfessionwallMapper extends BaseMapper<Confessionwall> {
+public interface ConfessionwallMapper extends BaseMapper<ConfessionWall> {
 
     /**
      * 查询学校id和墙id是否有记录数

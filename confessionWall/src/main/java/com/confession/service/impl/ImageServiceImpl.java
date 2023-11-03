@@ -251,7 +251,7 @@ public class ImageServiceImpl implements ImageService {
             keyDTO.setAccessid(accessId);
             keyDTO.setExpire(String.valueOf(expireEndTime / 1000) );    //过期时间，到时候看要不要加
             keyDTO.setHost(host);  //设置访问节点
-            System.out.println(keyDTO);
+//            System.out.println(keyDTO);
             return Result.ok(keyDTO);
         } catch (Exception e) {
 

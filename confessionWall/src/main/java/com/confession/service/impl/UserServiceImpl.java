@@ -17,7 +17,7 @@ import com.confession.dto.UserManageDTO;
 import com.confession.globalConfig.exception.WallException;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
 import com.confession.mapper.UserMapper;
-import com.confession.pojo.Confessionwall;
+import com.confession.pojo.ConfessionWall;
 import com.confession.pojo.School;
 import com.confession.pojo.User;
 import com.confession.request.*;
@@ -75,7 +75,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 
     @Resource
-    private ConfessionwallService confessionwallService;
+    private ConfessionWallService confessionwallService;
 
 
     @Override
@@ -101,7 +101,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         user.setOpenId("");
         //查询该学校下的一个墙id，如果有多个就返回第一个
-        Confessionwall wall = confessionwallService.selectSchoolInWallOne(user.getSchoolId());
+        ConfessionWall wall = confessionwallService.selectSchoolInWallOne(user.getSchoolId());
         String token = JwtConfig.getJwtToken(user);
         boolean isAdmin = adminService.isAdmin(user.getId(), wall.getId());
         Map<String, Object> responseMap = new HashMap<>();
@@ -167,7 +167,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Map<String, Object> map = new HashMap<>();
         map.put("token", token);
         map.put("userInfo", user);  //这里后面可以做一个过滤，把学校名字放进去
-        Confessionwall wall = confessionwallService.selectSchoolInWallOne(user.getSchoolId());
+        ConfessionWall wall = confessionwallService.selectSchoolInWallOne(user.getSchoolId());
         map.put("wall", wall);
         map.put("isAdmin", false);
         // 返回 token 到小程序端

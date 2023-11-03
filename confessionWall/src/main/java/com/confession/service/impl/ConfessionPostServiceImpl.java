@@ -19,7 +19,7 @@ import com.confession.mapper.ConfessionpostMapper;
 import com.confession.mapper.ConfessionwallMapper;
 import com.confession.mapper.UserMapper;
 import com.confession.pojo.Confessionpost;
-import com.confession.pojo.Confessionwall;
+import com.confession.pojo.ConfessionWall;
 import com.confession.pojo.User;
 import com.confession.request.AuditRequest;
 import com.confession.request.ConfessionPostRequest;
@@ -77,7 +77,7 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
     private ConfessionwallMapper confessionwallMapper;
 
     @Resource
-    private ConfessionwallService confessionwallService;
+    private ConfessionWallService confessionwallService;
 
     @Resource
     private RedisTemplate redisTemplate;
@@ -266,9 +266,9 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         // 墙名字模糊查询  注意和用户名都要加上非空判断，是空直接返回
         if (StringUtils.isNotBlank(wallName)) {
             List<Integer> wallIds = confessionwallMapper.selectList
-                            (new LambdaQueryWrapper<Confessionwall>().like(Confessionwall::getWallName, wallName))
+                            (new LambdaQueryWrapper<ConfessionWall>().like(ConfessionWall::getWallName, wallName))
                     .stream()
-                    .map(Confessionwall::getId)
+                    .map(ConfessionWall::getId)
                     .collect(Collectors.toList());
             if (wallIds.isEmpty()) {
                 return new PageResult(null, page.getTotal(), 0);
@@ -403,20 +403,23 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
     public int userSubmitConfessionWall(ConfessionPostRequest confessionRequest) {
         Integer userId = JwtInterceptor.getUser().getId();
 
+        //判断该表白墙状态，如果是被禁用的，就拒绝发布
+        ConfessionWall confessionwall = confessionwallMapper.selectById(confessionRequest.getWallId());
+        if (confessionwall==null||confessionwall.getStatus()){
+            throw new WallException(ABNORMAL_WALL_STATUS);
+        }
         //判断用户是否可以发布投稿
         User user = userMapper.selectById(userId);
         Integer userStatus = user.getStatus();
         if (userStatus == 1 || userStatus == 3) {
             throw new WallException(CANNOT_POST);
         }
-
         //判断该用户每天的投稿有没有超过限制
         int count = this.getPostCountByUserIdAndDate(userId, LocalDate.now());
         if (count >= wallConfig.getUserDailyPostLimit()) {
             throw new WallException(CONTRIBUTE_OVER_LIMIT);
         }
-
-        //判断该表白墙状态，如果是被禁用的，就拒绝发布
+        //判断是否有图片
         boolean hasImage = (confessionRequest.getImageURL() != null && !confessionRequest.getImageURL().isEmpty());
         int status = 0;
 
@@ -444,9 +447,8 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
             if (status == 1) {
                 this.removeUserPublishedPosts(userId);
                 redisTemplate.delete("userPostIds:" + userId);//重新加载用户发布id，这里查看评论回复会有
-//                for (int i = 1; i < 5; i++) {
-//                    redisTemplate.delete(USER_COMMENT_REPLY + userId + ":" + i);  //评论回复的缓存
-//                }
+                //评论回复的缓存
+                for (int i = 1; i < 4; i++) redisTemplate.delete(USER_COMMENT_REPLY + userId + ":" + i);
             } else {
                 this.removeUserPendingPosts(userId);
             }

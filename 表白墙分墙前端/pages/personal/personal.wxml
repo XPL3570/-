@@ -1,14 +1,14 @@
 <view class='pa-30'>
 	<view class='bg-m ra-10 pa-40'>
-		<image class="avatar" style='width: 150rpx;height: 150rpx;' src="{{avatarUrl}}" mode='aspectFill'></image>
-		<view class="nixing">
+		<image class="avatar" bindtap="handleAvatarTap" bindlongtap="handleLongAvatarTap" style='width: 150rpx;height: 150rpx;' src="{{avatarUrl}}" mode='aspectFill'></image>
+		<view class="nixing"  bindtap="handleNameTap" bindlongtap="handleLongNameTap">
 			<view style="margin-left: -24rpx;">用户名：</view>
 			<view style="margin-top: 10rpx;">{{userName}}</view>
 		</view>
 	</view>
 
 
-	<view class='panel panel-between item-center ma-t20  border-b' bindtap='NameModView'>
+	<!-- <view class='panel panel-between item-center ma-t20  border-b' bindtap='NameModView'>
 		<view class='panel-start item-center'>
 			<image class='icon-58r' src='/image/修改.png'></image>
 			<text class='fo-28'>修改名字</text>
@@ -26,9 +26,9 @@
 		<view>
 			<image src='/image/right.png' class='icon-25'></image>
 		</view>
-	</view>
+	</view> -->
 
-	<view class='panel panel-between item-center border-b' bindtap="ContactInfoView">
+	<view class='panel panel-between item-center ma-t20  border-b' bindtap="ContactInfoView">
 		<view class='panel-start item-center'>
 			<image class='icon-65r' style="margin-right: 35rpx;" src='/image/QQ.png'></image>
 			<text class='fo-28'>联系方式</text>

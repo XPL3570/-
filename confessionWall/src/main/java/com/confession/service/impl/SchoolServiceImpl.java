@@ -249,9 +249,9 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
                     .set(User::getSchoolId, school.getId());
             userMapper.update(null, userWrapper);
 
-            LambdaUpdateWrapper<Confessionwall> updateWrapperWall = new LambdaUpdateWrapper<>(); //表白墙
-            updateWrapperWall.eq(Confessionwall::getSchoolId, schoolExamineRequest.getSchoolId())
-                    .set(Confessionwall::getStatus, 0); //0是设置成正常
+            LambdaUpdateWrapper<ConfessionWall> updateWrapperWall = new LambdaUpdateWrapper<>(); //表白墙
+            updateWrapperWall.eq(ConfessionWall::getSchoolId, schoolExamineRequest.getSchoolId())
+                    .set(ConfessionWall::getStatus, 0); //0是设置成正常
             confessionwallMapper.update(null, updateWrapperWall);
 
             LambdaQueryWrapper<SchoolApplication> wrapper = new LambdaQueryWrapper<>();
@@ -263,8 +263,8 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
             admin.setPhoneNumber(schoolInfo.getPhoneNumber());
             admin.setWeChatId(schoolInfo.getWechatNumber());
             admin.setUserId(school.getCreatorId());
-            Confessionwall confessionwall = confessionwallMapper.selectOne(new LambdaQueryWrapper<Confessionwall>()
-                    .eq(Confessionwall::getSchoolId, schoolExamineRequest.getSchoolId()));
+            ConfessionWall confessionwall = confessionwallMapper.selectOne(new LambdaQueryWrapper<ConfessionWall>()
+                    .eq(ConfessionWall::getSchoolId, schoolExamineRequest.getSchoolId()));
             admin.setConfessionWallId(confessionwall.getId());
             admin.setPermission(0); //普通管理
             adminMapper.insert(admin);

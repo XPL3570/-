@@ -1,4 +1,4 @@
-<van-notice-bar color="#1989fa" background="#ecf9ff" left-icon="info-o" text="您可以在这里反馈您对小程序的看法或建议哦！感谢您的反馈！" />
+<van-notice-bar color="#1989fa" background="#ecf9ff" left-icon="info-o" text="您可以在这里反馈您对小程序的看法或建议哦！感谢您的反馈！商务合作或者小程序bug发现可以联系QQ:3317063932" />
 <view class="main">
 	<view style="width: 92%;">
 		<view style="margin-top: 50rpx;margin-bottom: 62rpx;margin-left: 40rpx;">请滑动输入您的评分:</view>

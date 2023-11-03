@@ -4,22 +4,14 @@ package com.confession.controller;
 import com.confession.comm.PageResult;
 import com.confession.comm.PageTool;
 import com.confession.comm.Result;
-import com.confession.config.JwtConfig;
-import com.confession.globalConfig.exception.WallException;
 import com.confession.globalConfig.interceptor.JwtInterceptor;
-import com.confession.pojo.Confessionwall;
 import com.confession.pojo.User;
 import com.confession.request.*;
-import com.confession.service.AdminService;
-import com.confession.service.ConfessionwallService;
-import com.confession.service.SchoolService;
 import com.confession.service.UserService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.confession.comm.ResultCodeEnum.FREQUENT_MOD_OF_USER_INFO;
 
