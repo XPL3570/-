@@ -3,6 +3,7 @@ package com.confession.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.confession.comm.PageResult;
@@ -342,12 +343,13 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
 
     @Override
     public void deleteAllSchoolHomepageCaches() {  //最后来优化，反正现在没这么多学校
-        redisTemplate.executePipelined((RedisCallback<Object>) connection -> {
-            for (int i = 1; i <= 2244; i++) {
-                connection.del((SCHOOL_INDEX_INFO + i).getBytes());
-            }
-            return null;
-        });
+        List<Integer> schoolIdList = schoolMapper.selectObjs(Wrappers.<School>lambdaQuery().select(School::getId))
+                .stream()
+                .map(obj -> Integer.parseInt(obj.toString()))
+                .collect(Collectors.toList());
+        for (Integer schoolId : schoolIdList) {
+            redisTemplate.delete(SCHOOL_INDEX_INFO+schoolId);
+        }
     }
 
 }

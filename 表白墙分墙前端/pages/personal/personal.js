@@ -142,30 +142,30 @@ Page({
 		this.setData({ showShare: false });
 	},
 	onCopyLink() {
-		wx.setClipboardData({
-		  data: '小程序链接',
-		  success: function () {
-			wx.showToast({
-			  title: '链接已复制',
-			  icon: 'success',
-			  duration: 2000
-			});
-		  }
-		});
-	  },
-	  onShareAppMessage() {
-		return {
-		  title: '分享标题',
-		  path: '/pages/index/index?param1=value1&param2=value2',
-		  imageUrl: '/path/to/share-image.jpg'
-		};
+	// 	wx.setClipboardData({
+	// 	  data: '小程序链接',
+	// 	  success: function () {
+	// 		wx.showToast({
+	// 		  title: '链接已复制',
+	// 		  icon: 'success',
+	// 		  duration: 2000
+	// 		});
+	// 	  }
+	// 	});
+	//   },
+	//   onShareAppMessage() {
+	// 	return {
+	// 	  title: '分享标题',
+	// 	  path: '/pages/index/index?param1=value1&param2=value2',
+	// 	  imageUrl: '/path/to/share-image.jpg'
+	// 	};
 	  },
 	  onShareTimeline() {
-		return {
-		  title: '分享标题',
-		  query: 'param1=value1&param2=value2',
-		  imageUrl: '/path/to/share-image.jpg'
-		};
+		// return {
+		//   title: '分享标题',
+		//   query: 'param1=value1&param2=value2',
+		//   imageUrl: '/path/to/share-image.jpg'
+		// };
 	  },
 
 	onSelect(event) {

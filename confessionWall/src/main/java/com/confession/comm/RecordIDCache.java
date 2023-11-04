@@ -23,7 +23,7 @@ public class RecordIDCache {
 
     public Long getTimeInMillis() {
         long timestamp = time.toInstant(ZoneOffset.UTC).toEpochMilli();
-        int randomNumber = random.nextInt(1000);
+        int randomNumber = random.nextInt(999);
 //        System.out.println("生产的时间戳："+(timestamp + randomNumber));
         return timestamp + randomNumber;
     }

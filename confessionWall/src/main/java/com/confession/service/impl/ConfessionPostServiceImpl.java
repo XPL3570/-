@@ -441,7 +441,7 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         confessionPost.setIsAnonymous(confessionRequest.getIsAnonymous());
         confessionPost.setPostStatus(status);
         this.save(confessionPost);
-        if (status == 1)
+        if (status == 1)                                                                               //toInstant(ZoneOffset.UTC).toEpochMilli()
             this.obtainWallLockSyncCache(confessionRequest.getWallId(), confessionPost.getId(), LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli(), true);
         try {
             if (status == 1) {

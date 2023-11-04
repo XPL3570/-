@@ -247,7 +247,7 @@ export default {
     showSchoolSetting(row) {  //打开编辑学校
       this.fileList = [];//先重置图片数据
       this.isDialogSchoolOpen = true;
-      this.schoolDataToBeModified = row;
+      this.schoolDataToBeModified = {...row};
       // console.log(this.schoolDataToBeModified.avatarURL);
       // console.log(row);
       if (this.schoolDataToBeModified.carouselImages) {
@@ -256,7 +256,7 @@ export default {
         });
       }
       this.schoolAvatarCache = [];
-      console.log(this.schoolDataToBeModified);
+      // console.log(this.schoolDataToBeModified);
     },
     confirmDialogSchoolInfo() { //提交学校修改
       // console.log(this.schoolDataToBeModified);

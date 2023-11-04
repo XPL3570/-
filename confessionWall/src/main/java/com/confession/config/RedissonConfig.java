@@ -19,20 +19,20 @@ public class RedissonConfig {
     @Value("${spring.redis.password}")
     private String redisPassword;
 //
-//    @Bean  //线上
-//    public RedissonClient redissonClient() {
-//        Config config = new Config();
-//        config.useSingleServer()
-//                .setAddress("redis://" + redisHost + ":" + redisPort)
-//                .setPassword(redisPassword);
-//        return Redisson.create(config);
-//    }
-
-    @Bean  //本地
+    @Bean  //线上
     public RedissonClient redissonClient() {
         Config config = new Config();
         config.useSingleServer()
-                .setAddress("redis://"+redisHost+":"+redisPort);
+                .setAddress("redis://" + redisHost + ":" + redisPort)
+                .setPassword(redisPassword);
         return Redisson.create(config);
     }
+
+//    @Bean  //本地
+//    public RedissonClient redissonClient() {
+//        Config config = new Config();
+//        config.useSingleServer()
+//                .setAddress("redis://"+redisHost+":"+redisPort);
+//        return Redisson.create(config);
+//    }
 }

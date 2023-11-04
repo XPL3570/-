@@ -114,7 +114,7 @@ export default {
       console.log(row);
       this.wallDataToBeModified={}; //重置
       this.isDialogWallOpen = true;
-      this.wallDataToBeModified = row;
+      this.wallDataToBeModified = {...row};
       // console.log(this.wallDataToBeModified);
     },
     CancelWallMod(){
