@@ -27,14 +27,20 @@ public class EncryptionUtil {
 
     private static final String INITIALIZATION_VECTOR = "ThisIsASecretKey";  // 请替换为你自己的初始化向量
 
-    public static String encrypt(String data) throws Exception {
+    //加密
+    public static String encrypt(String data)  {
         SecretKey secretKey = new SecretKeySpec(SECRET_KEY.getBytes(StandardCharsets.UTF_8), "AES");
         IvParameterSpec iv = new IvParameterSpec(INITIALIZATION_VECTOR.getBytes(StandardCharsets.UTF_8));
+        byte[] encryptedData=null;
+        try {
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, iv);
 
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey, iv);
+            encryptedData = cipher.doFinal(data.getBytes(StandardCharsets.UTF_8));
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
 
-        byte[] encryptedData = cipher.doFinal(data.getBytes(StandardCharsets.UTF_8));
         return Base64.getEncoder().encodeToString(encryptedData);
     }
 
@@ -52,7 +58,7 @@ public class EncryptionUtil {
 
 
     public static void main(String[] args) throws Exception {
-        String plainText = "123a";
+        String plainText = "222";
         String encryptedText = EncryptionUtil.encrypt(plainText);
         System.out.println(encryptedText);
         String decryptedText = EncryptionUtil.decrypt(encryptedText);

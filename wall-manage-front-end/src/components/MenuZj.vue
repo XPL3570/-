@@ -43,7 +43,7 @@ export default {
                   icon: '首页设置',
                   menuName: '首页设置',
                   hasThird: 'N',
-                  url: 'home/homeSettings',
+                  url: 'webApi/home/homeSettings',
                   menus: null
                 }
               ]
@@ -60,7 +60,7 @@ export default {
                   icon: '审核',
                   menuName: '学校入驻审核',
                   hasThird: 'N',
-                  url: 'school/schoolReview',
+                  url: 'webApi/school/schoolReview',
                   menus: null
                 },
                 {
@@ -68,7 +68,7 @@ export default {
                   icon: '列表',
                   menuName: '学校管理列表',
                   hasThird: 'N',
-                  url: 'school/schoolSettings',
+                  url: 'webApi/school/schoolSettings',
                   menus: null
                 },
               ]
@@ -85,7 +85,7 @@ export default {
                   icon: '全部发布',
                   menuName: '内容发布（所有人可见）',
                   hasThird: 'N',
-                  url: 'wall/confessionRelease',
+                  url: 'webApi/wall/confessionRelease',
                   menus: null
                 },
                 {
@@ -93,7 +93,7 @@ export default {
                   icon: '列表模式',
                   menuName: '表白墙列表',
                   hasThird: 'N',
-                  url: 'wall/wallManagement',
+                  url: 'webApi/wall/wallManagement',
                   menus: null
                 },
                 {
@@ -101,7 +101,7 @@ export default {
                   icon: '表白墙发布内容管理',
                   menuName: '发布内容管理',
                   hasThird: 'N',
-                  url: 'wall/WallPublishingContentManagement',
+                  url: 'webApi/wall/WallPublishingContentManagement',
                   menus: null
                 },
                 {
@@ -109,7 +109,7 @@ export default {
                   icon: '投稿举报列表',
                   menuName: '投稿举报列表',
                   hasThird: 'N',
-                  url: 'wall/SubmissionReportList',
+                  url: 'webApi/wall/SubmissionReportList',
                   menus: null
                 },
               ]
@@ -126,7 +126,7 @@ export default {
                   icon: '用户列表',
                   menuName: '用户管理',
                   hasThird: 'N',
-                  url: 'user/userManagement',
+                  url: 'webApi/user/userManagement',
                   menus: null
                 },
                 {
@@ -134,7 +134,7 @@ export default {
                   icon: '管理员列表',
                   menuName: '管理员列表管理',
                   hasThird: 'N',
-                  url: 'user/administrators',
+                  url: 'webApi/user/administrators',
                   menus: null
                 },
               ]
@@ -151,7 +151,7 @@ export default {
                   icon: '未读反馈',
                   menuName: '未读反馈',
                   hasThird: 'N',
-                  url: 'feedback/UnreadFeedback',
+                  url: 'webApi/feedback/UnreadFeedback',
                   menus: null
                 },
                 {
@@ -159,7 +159,7 @@ export default {
                   icon: '所有反馈',
                   menuName: '所有反馈信息',
                   hasThird: 'N',
-                  url: 'feedback/allFeedback',
+                  url: 'webApi/feedback/allFeedback',
                   menus: null
                 },
               ]

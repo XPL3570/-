@@ -38,21 +38,6 @@
           label="申请时间"
           width="157">
       </el-table-column>
-<!--      <el-table-column-->
-<!--          prop="avatarURL"-->
-<!--          label="学校头像"-->
-<!--          width="115">-->
-<!--        <template v-slot:default="scope">-->
-<!--          <div style="display: flex; justify-content: center;">-->
-<!--            <img :src="scope.row['avatarURL']" alt="avatar"  height="72"  @click="showDetail(scope.row['avatarURL'])"/>-->
-<!--          </div>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-<!--      <el-table-column-->
-<!--          prop="description"-->
-<!--          label="描述内容"-->
-<!--          width="300">-->
-<!--      </el-table-column>-->
       <el-table-column
           prop="wechatNumber"
           label="微信号"
@@ -64,7 +49,6 @@
           width="120">
       </el-table-column>
       <el-table-column
-
           label="操作"
           width="200">
         <!-- 使用 v-slot:default="scope" 来获取当前行的数据 -->

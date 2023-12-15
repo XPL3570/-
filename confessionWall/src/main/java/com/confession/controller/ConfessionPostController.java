@@ -23,10 +23,7 @@ import static com.confession.comm.ResultCodeEnum.LOGIN_ACL;
 
 
 /**
- * <p>
- * 前端控制器
- * </p>
- *
+ * 投稿内容控制器
  * @author 作者 xpl
  * @since 2023年08月20日
  */

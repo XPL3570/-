@@ -39,7 +39,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
     }
 
 
-    @Override
+    @Override              //线上可以去掉，这里是本地存储写的
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/upload/**")
                 .addResourceLocations("file:e:\\表白墙项目图片上传地址\\") // 设置图片上传路径

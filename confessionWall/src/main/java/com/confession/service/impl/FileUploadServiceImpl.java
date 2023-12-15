@@ -18,9 +18,9 @@ public class FileUploadServiceImpl implements FileUploadService {
 
     @Value("${aLiYun.endpoint}")
     private String endPoint;
-    @Value("${aLiYun.keyId}")
+//    @Value("${aLiYun.keyId}")
     private String accessKey;
-    @Value("${aLiYun.keySecret}")
+//    @Value("${aLiYun.keySecret}")
     private String secretKey;
     @Value("${aLiYun.bucketName}")
     private String bucketName;

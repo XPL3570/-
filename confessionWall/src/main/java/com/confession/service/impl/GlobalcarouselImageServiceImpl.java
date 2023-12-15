@@ -38,8 +38,8 @@ public class GlobalcarouselImageServiceImpl extends ServiceImpl<GlobalCarouselIm
     @Override
     public List<GlobalCarouselImage> getGlobalCarouselImages() {
         LambdaQueryWrapper<GlobalCarouselImage> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(GlobalCarouselImage::getIsDisable,0);
-        List<GlobalCarouselImage> list = mapper.selectList(null);
+        wrapper.eq(GlobalCarouselImage::getIsDisable,false);
+        List<GlobalCarouselImage> list = mapper.selectList(wrapper);
         return list;
     }
 

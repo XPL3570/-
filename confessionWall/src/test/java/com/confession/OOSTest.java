@@ -21,15 +21,7 @@ public class OOSTest {
         System.out.println("获取签名时间:"+(endTime-startTime)+"ms");
     }
 
-//    @Test
-    public void testOOSWeb(){
-        for (int i = 0; i < 10; i++) {
-            long startTime = System.currentTimeMillis();
-            imageService.uploadImageOOSWeb();
-            long endTime = System.currentTimeMillis();
-            System.out.println("获取签名时间:"+(endTime-startTime)+"ms");
-        }
-    }
+
 
 //    @Test
     public void testSBZJ() throws ClientException {

@@ -14,7 +14,7 @@ import javax.annotation.Resource;
 
 
 /**
- * 表白墙
+ * 表白墙控制器
  *
  * @author 作者 xpl
  * @since 2023年08月20日

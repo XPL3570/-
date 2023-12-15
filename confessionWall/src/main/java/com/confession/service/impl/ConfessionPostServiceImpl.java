@@ -333,7 +333,7 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         }
         if (request.getPostStatus() == 1) {
             //同步表白墙缓存
-            obtainWallLockSyncCache(request.getWallId(), request.getId(), new Date().toInstant().getEpochSecond(), true);
+            obtainWallLockSyncCache(request.getWallId(), request.getId(), LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli(), true);
             //删除用户缓存
             this.removeUserPendingPosts(request.getPostUserId());
             this.removeUserPublishedPosts(request.getPostUserId());
@@ -488,7 +488,7 @@ public class ConfessionPostServiceImpl extends ServiceImpl<ConfessionpostMapper,
         redisTemplate.opsForValue().set(key, this.convertToDTOAll(byId), 3, TimeUnit.DAYS);
 
         for (Integer wallsId : wallsIds) {
-            obtainWallLockSyncCache(wallsId, postIds, new Date().toInstant().getEpochSecond(), false);
+            obtainWallLockSyncCache(wallsId, postIds, LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli(), false);
         }
     }
 

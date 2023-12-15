@@ -15,6 +15,11 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.time.Duration;
 
+/**
+ *  图片上传控制器
+ *
+ *  获取阿里云token
+ */
 @RestController
 public class ImageController {
 
@@ -86,7 +91,6 @@ public class ImageController {
             return Result.fail();
         }
     }
-
 
 
 

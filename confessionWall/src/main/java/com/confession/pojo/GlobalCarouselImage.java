@@ -38,7 +38,7 @@ public class GlobalCarouselImage implements Serializable {
 
 
     /**
-     * 是否禁用 0正常，1禁用
+     * 是否禁用 false正常，true禁用
      */
     @TableField("IsDisable")
     private Boolean isDisable;

@@ -3,14 +3,17 @@ package com.confession.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.confession.comm.EncryptionUtil;
+import com.confession.comm.ResultCodeEnum;
 import com.confession.config.JwtConfig;
 import com.confession.globalConfig.exception.WallException;
+import com.confession.globalConfig.interceptor.JwtInterceptor;
 import com.confession.mapper.AdminMapper;
 import com.confession.pojo.Admin;
+import com.confession.request.AddWallAdminRequest;
 import com.confession.request.AdminLoginRequest;
+import com.confession.request.AdminModPwdRequest;
 import com.confession.service.AdminService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -33,15 +36,6 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
 
     @Override
     public boolean isAdmin(Integer userId, Integer wallId) {
-        // 查询用户是否是超级管理员
-//        LambdaQueryWrapper<Admin> superAdminQuery = Wrappers.<Admin>lambdaQuery()
-//                .eq(Admin::getUserId, userId)
-//                .eq(Admin::getPermission, 1);
-//        int superAdminCount = getBaseMapper().selectCount(superAdminQuery);
-//        if (superAdminCount > 0) {
-//            return true;
-//        }
-        // 查询用户是否是该表白墙的管理员
         LambdaQueryWrapper<Admin> wallAdminQuery = Wrappers.<Admin>lambdaQuery()
                 .eq(Admin::getUserId, userId)
                 .eq(Admin::getConfessionWallId, wallId);
@@ -84,7 +78,41 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
             throw new WallException("账号或密码错误",201);
         }
         return map;
+    }
 
+    @Override
+    public void modifyPwd(AdminModPwdRequest request) {
+        String newPassword = request.getNewPassword();
+        String originalPassword = request.getOriginalPassword();
+        if (newPassword.equals(request.getNewPasswordConfirmation())){
+            throw new WallException("两次输入的新密码不一致",201);
+        }
+        if (originalPassword.equals(newPassword)){
+            throw new WallException("新老密码一致！！！",201);
+        }
+        Integer adminId = JwtInterceptor.getUser().getId();
+        Admin admin = adminMapper.selectById(adminId);
+        if (admin==null){
+            throw new WallException(ResultCodeEnum.FAIL);
+        }
+        if (!admin.getPassword().equals(EncryptionUtil.encrypt(originalPassword))){
+            throw new WallException("密码不对!",204);
+        }
+        admin.setPassword(newPassword);
+        adminMapper.updateById(admin);
+    }
 
+    @Override
+    public void adminService(AddWallAdminRequest request) {
+        Admin admin = new Admin();
+        admin.setUserId(request.getUserId());
+        admin.setWeChatId(request.getWeChatId());
+        admin.setSchoolId(request.getSchoolId());
+        admin.setConfessionWallId(request.getWallId());
+        admin.setPhoneNumber(request.getPhoneNum());
+        int insert = adminMapper.insert(admin);
+        if (insert<1){
+            throw new WallException("写入普通管理员失败失败，",204);
+        }
     }
 }

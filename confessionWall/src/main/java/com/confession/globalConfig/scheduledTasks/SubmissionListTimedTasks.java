@@ -31,6 +31,9 @@ public class SubmissionListTimedTasks {
     @Resource
     private ConfessionwallMapper confessionwallMapper;
 
+    /**
+     * 重置表白墙ZSet列表长度
+     */
     @Scheduled(cron = "0 0 3 * * ?")
     public void organizeListAllConfessionWalls(){
         List<ConfessionWall> list = confessionwallMapper.selectList(null);

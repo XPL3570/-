@@ -46,161 +46,87 @@ public class ImageServiceImpl implements ImageService {
     @Resource
     private ImageDeleteRecordService imageDeleteRecordService;
 
-    // todo 优化点，一次调用执行了一秒，下面的管理员会代码短不好，，先都使用这个这里使用到了tst，下面的不好说，后面优化
-    @Override
-    public Result uploadImageOOS() {       // STS接入地址，例如sts.cn-hangzhou.aliyuncs.com。
-        String endpoint = config.getEndpoint();
-        // 从环境变量中获取步骤1生成的RAM用户的访问密钥（AccessKey ID和AccessKey Secret）。
-        String accessKeyId = config.getKeyId();
-        String accessKeySecret = config.getKeySecret();
-        // 从环境变量中获取步骤3生成的RAM角色的RamRoleArn。
-        String roleArn = config.getRamRoleArn();
-        // 自定义角色会话名称，用来区分不同的令牌，例如可填写为SessionTest。
-        String roleSessionName = "RamOssTxbbq";
-        // 以下Policy用于限制仅允许使用临时访问凭证向目标存储空间examplebucket下的src目录上传文件。
-        // 临时访问凭证最后获得的权限是步骤4设置的角色权限和该Policy设置权限的交集，即仅允许将文件上传至目标存储空间examplebucket下的src目录。
-        // 如果policy为空，则用户将获得该角色下所有权限。
-        // 设置临时访问凭证的有效时间为1000秒。 限制15分钟到一小时
-        Long durationSeconds = 1000L; //todo,这个过期时间都这么长了，是不是可以放在内存里面不用多次生产了
-        ImageUploadKeyDTO keyDTO;
-        try {
-            // regionId表示RAM的地域ID。以华东1（杭州）地域为例，regionID填写为cn-hangzhou。也可以保留默认值，默认值为空字符串（""）。
-            String regionId = "";
-            // 添加endpoint。适用于Java SDK 3.12.0及以上版本。
-//            DefaultProfile.addEndpoint(config.getBucketName(), regionId);
-            // 添加endpoint。适用于Java SDK 3.12.0以下版本。
-            DefaultProfile.addEndpoint("", regionId, "Sts", endpoint);
-            // 构造default profile。
-            IClientProfile profile = DefaultProfile.getProfile(regionId, accessKeyId, accessKeySecret);
-            // 构造client。
-            DefaultAcsClient client = new DefaultAcsClient(profile);
-            final AssumeRoleRequest request = new AssumeRoleRequest();
-            // 适用于Java SDK 3.12.0及以上版本。
+    //  优化点，一次调用执行了一秒，下面的管理员会代码短不好，，先都使用这个这里使用到了tst，下面的不好说，后面优化 改用另一种方式
+//    @Override
+//    public Result uploadImageOOS() {       // STS接入地址，例如sts.cn-hangzhou.aliyuncs.com。
+//        String endpoint = config.getEndpoint();
+//        // 从环境变量中获取步骤1生成的RAM用户的访问密钥（AccessKey ID和AccessKey Secret）。
+////        String accessKeyId = config.getKeyId();
+////        String accessKeySecret = config.getKeySecret();
+//        // 从环境变量中获取步骤3生成的RAM角色的RamRoleArn。
+//        String roleArn = config.getRamRoleArn();
+//        // 自定义角色会话名称，用来区分不同的令牌，例如可填写为SessionTest。
+//        String roleSessionName = "RamOssTxbbq";
+//        // 以下Policy用于限制仅允许使用临时访问凭证向目标存储空间examplebucket下的src目录上传文件。
+//        // 临时访问凭证最后获得的权限是步骤4设置的角色权限和该Policy设置权限的交集，即仅允许将文件上传至目标存储空间examplebucket下的src目录。
+//        // 如果policy为空，则用户将获得该角色下所有权限。
+//        // 设置临时访问凭证的有效时间为1000秒。 限制15分钟到一小时
+//        Long durationSeconds = 1000L;
+//        ImageUploadKeyDTO keyDTO;
+//        try {
+//            // regionId表示RAM的地域ID。以华东1（杭州）地域为例，regionID填写为cn-hangzhou。也可以保留默认值，默认值为空字符串（""）。
+//            String regionId = "";
+//            // 添加endpoint。适用于Java SDK 3.12.0及以上版本。
+////            DefaultProfile.addEndpoint(config.getBucketName(), regionId);
+//            // 添加endpoint。适用于Java SDK 3.12.0以下版本。
+//            DefaultProfile.addEndpoint("", regionId, "Sts", endpoint);
+//            // 构造default profile。
+////            IClientProfile profile = DefaultProfile.getProfile(regionId, accessKeyId, accessKeySecret);
+//            // 构造client。
+//            DefaultAcsClient client = new DefaultAcsClient(profile);
+//            final AssumeRoleRequest request = new AssumeRoleRequest();
+//            // 适用于Java SDK 3.12.0及以上版本。
+////            request.setMethod(MethodType.POST);
+//            // 适用于Java SDK 3.12.0以下版本。
 //            request.setMethod(MethodType.POST);
-            // 适用于Java SDK 3.12.0以下版本。
-            request.setMethod(MethodType.POST);
-            request.setRoleArn(roleArn);
-            request.setRoleSessionName(roleSessionName);
-//            request.setPolicy(policy);  //不设置，默认拥有改角色的所有权限
-            request.setDurationSeconds(durationSeconds);
-            final AssumeRoleResponse response = client.getAcsResponse(request);
-            keyDTO = new ImageUploadKeyDTO();
-            //  response.getCredentials().getExpiration() //过期时间，到时候看要不要加
-            keyDTO.setAccessKeyId(response.getCredentials().getAccessKeyId());
-
-            keyDTO.setSecurityToken(response.getCredentials().getSecurityToken());
-            keyDTO.setHost(config.getEndpointNode());  //设置访问节点
-
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            String format = simpleDateFormat.format(new Date());
-
-            String key="src/"+format+"/"+this.generateFileName(".jpg"); //优化点 后期优化，这里后缀名不拿了
-
-            keyDTO.setKey(key);
-
-            OSSClient ossClient = new OSSClient(endpoint, response.getCredentials().getAccessKeyId(), response.getCredentials().getAccessKeySecret());
-            long expireTime = 30;
-            long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
-            Date expiration = new Date(expireEndTime);
-            PolicyConditions policyConds = new PolicyConditions();
-            policyConds.addConditionItem(PolicyConditions.COND_CONTENT_LENGTH_RANGE, 0, 2 * 1024 * 1024);
-            //根据参数dir计算的policy，如果和前端uploadfile中参数key的相应字段不一致的话是会报错的
-            policyConds.addConditionItem(MatchMode.StartWith, PolicyConditions.COND_KEY, key);
-            String postPolicy = ossClient.generatePostPolicy(expiration, policyConds);
-            byte[] binaryData = postPolicy.getBytes();
-            String encodedPolicy = BinaryUtil.toBase64String(binaryData); //base64转码之后的权限标识
-            String postSignature = ossClient.calculatePostSignature(postPolicy);
-            ossClient.shutdown();//业务完成一定要调用shutdown
-            keyDTO.setPolicyBase64Str(encodedPolicy);
-            keyDTO.setSignature(postSignature);
-        } catch (ClientException e) {
-            System.out.println("Failed：");
-            System.out.println("Error code: " + e.getErrCode());
-            System.out.println("Error message: " + e.getErrMsg());
-            System.out.println("RequestId: " + e.getRequestId());
-            throw new WallException("获取上传秘钥失败！", 201);
-        }
-        if (keyDTO != null) {
-            return Result.ok(keyDTO);
-        } else {
-            return Result.fail();
-        }
-    }
-
-    @Override
-    public Result uploadImageOOSWeb(){
-        String endpoint = config.getEndpoint();
-        // 从环境变量中获取步骤1生成的RAM用户的访问密钥（AccessKey ID和AccessKey Secret）。
-        String accessKeyId = config.getKeyId();
-        String accessKeySecret = config.getKeySecret();
-        // 从环境变量中获取步骤3生成的RAM角色的RamRoleArn。
-        String roleArn = config.getRamRoleArn();
-        // 自定义角色会话名称，用来区分不同的令牌，例如可填写为SessionTest。
-        String roleSessionName = "RamOssTxbbq";
-        // 以下Policy用于限制仅允许使用临时访问凭证向目标存储空间examplebucket下的src目录上传文件。
-        // 临时访问凭证最后获得的权限是步骤4设置的角色权限和该Policy设置权限的交集，即仅允许将文件上传至目标存储空间examplebucket下的src目录。
-        // 如果policy为空，则用户将获得该角色下所有权限。
-        // 设置临时访问凭证的有效时间为300秒。
-        Long durationSeconds = 1000L;
-        ImageUploadKeyWebDTO keyDTO;
-        try {
-            // regionId表示RAM的地域ID。以华东1（杭州）地域为例，regionID填写为cn-hangzhou。也可以保留默认值，默认值为空字符串（""）。
-            String regionId = "";
-            DefaultProfile.addEndpoint("", regionId, "Sts", endpoint);
-            // 构造default profile。
-            IClientProfile profile = DefaultProfile.getProfile(regionId, accessKeyId, accessKeySecret);
-            // 构造client。
-            DefaultAcsClient client = new DefaultAcsClient(profile);
-            final AssumeRoleRequest request = new AssumeRoleRequest();
-            // 适用于Java SDK 3.12.0及以上版本。
-//            request.setMethod(MethodType.POST);
-            // 适用于Java SDK 3.12.0以下版本。
-            request.setMethod(MethodType.POST);
-            request.setRoleArn(roleArn);
-            request.setRoleSessionName(roleSessionName);
-//            request.setPolicy(policy);  //不设置，默认拥有改角色的所有权限
-            request.setDurationSeconds(durationSeconds);
-            final AssumeRoleResponse response = client.getAcsResponse(request);
-            keyDTO = new ImageUploadKeyWebDTO();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            String format = simpleDateFormat.format(new Date());
-
-            String key="src/"+format+"/"+this.generateFileName(".jpg");
-
-            OSSClient ossClient = new OSSClient(endpoint, response.getCredentials().getAccessKeyId(), response.getCredentials().getAccessKeySecret());
-            long expireTime = 30;
-            long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
-            Date expiration = new Date(expireEndTime);
-            PolicyConditions policyConds = new PolicyConditions();
-            policyConds.addConditionItem(PolicyConditions.COND_CONTENT_LENGTH_RANGE, 0, 2 * 1024 * 1024);
-            //根据参数dir计算的policy，如果和前端uploadfile中参数key的相应字段不一致的话是会报错的
-            policyConds.addConditionItem(MatchMode.StartWith, PolicyConditions.COND_KEY, key);
-            String postPolicy = ossClient.generatePostPolicy(expiration, policyConds);
-
-            byte[] binaryData = postPolicy.getBytes();
-            String encodedPolicy = BinaryUtil.toBase64String(binaryData); //base64转码之后的权限标识
-            String postSignature = ossClient.calculatePostSignature(postPolicy);
-            ossClient.shutdown();//业务完成一定要调用shutdown
-            keyDTO.setDir(key); //直接直接是文件了，不是可访问目录
-            keyDTO.setPolicy(encodedPolicy);
-            keyDTO.setSignature(postSignature);
-            keyDTO.setAccessid(response.getCredentials().getAccessKeyId());
-            keyDTO.setExpire(response.getCredentials().getExpiration() );   //  //过期时间，到时候看要不要加
-            keyDTO.setHost(config.getEndpointNode());  //设置访问节点
+//            request.setRoleArn(roleArn);
+//            request.setRoleSessionName(roleSessionName);
+////            request.setPolicy(policy);  //不设置，默认拥有改角色的所有权限
+//            request.setDurationSeconds(durationSeconds);
+//            final AssumeRoleResponse response = client.getAcsResponse(request);
+//            keyDTO = new ImageUploadKeyDTO();
+//            //  response.getCredentials().getExpiration() //过期时间，到时候看要不要加
+//            keyDTO.setAccessKeyId(response.getCredentials().getAccessKeyId());
+//
 //            keyDTO.setSecurityToken(response.getCredentials().getSecurityToken());
-        } catch (ClientException e) {
-            System.out.println("Failed：");
-            System.out.println("Error code: " + e.getErrCode());
-            System.out.println("Error message: " + e.getErrMsg());
-            System.out.println("RequestId: " + e.getRequestId());
-            throw new WallException("获取上传秘钥失败！", 201);
-        }
-        if (keyDTO != null) {
-            return Result.ok(keyDTO);
-        } else {
-            return Result.fail();
-        }
-    }
+//            keyDTO.setHost(config.getEndpointNode());  //设置访问节点
+//
+//            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//            String format = simpleDateFormat.format(new Date());
+//
+//            String key="src/"+format+"/"+this.generateFileName(".jpg"); //优化点 后期优化，这里后缀名不拿了
+//
+//            keyDTO.setKey(key);
+//
+//            OSSClient ossClient = new OSSClient(endpoint, response.getCredentials().getAccessKeyId(), response.getCredentials().getAccessKeySecret());
+//            long expireTime = 30;
+//            long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
+//            Date expiration = new Date(expireEndTime);
+//            PolicyConditions policyConds = new PolicyConditions();
+//            policyConds.addConditionItem(PolicyConditions.COND_CONTENT_LENGTH_RANGE, 0, 2 * 1024 * 1024);
+//            //根据参数dir计算的policy，如果和前端uploadfile中参数key的相应字段不一致的话是会报错的
+//            policyConds.addConditionItem(MatchMode.StartWith, PolicyConditions.COND_KEY, key);
+//            String postPolicy = ossClient.generatePostPolicy(expiration, policyConds);
+//            byte[] binaryData = postPolicy.getBytes();
+//            String encodedPolicy = BinaryUtil.toBase64String(binaryData); //base64转码之后的权限标识
+//            String postSignature = ossClient.calculatePostSignature(postPolicy);
+//            ossClient.shutdown();//业务完成一定要调用shutdown
+//            keyDTO.setPolicyBase64Str(encodedPolicy);
+//            keyDTO.setSignature(postSignature);
+//        } catch (ClientException e) {
+//            System.out.println("Failed：");
+//            System.out.println("Error code: " + e.getErrCode());
+//            System.out.println("Error message: " + e.getErrMsg());
+//            System.out.println("RequestId: " + e.getRequestId());
+//            throw new WallException("获取上传秘钥失败！", 201);
+//        }
+//        if (keyDTO != null) {
+//            return Result.ok(keyDTO);
+//        } else {
+//            return Result.fail();
+//        }
+//    }
+
 
     @Override
     public Result alibabaCloudDirectServerSignature() throws ClientException {

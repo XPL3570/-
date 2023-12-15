@@ -18,10 +18,7 @@ import java.time.ZoneId;
 import java.util.List;
 
 /**
- * <p>
- * 前端控制器
- * </p>
- *
+ * 评论控制器
  * @author 作者 xpl
  * @since 2023年08月20日
  */

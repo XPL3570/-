@@ -14,10 +14,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * <p>
- *  前端控制器
- * </p>
- *
+ * 纸条控制器
  * @author 作者 xpl
  * @since 2023年09月16日
  */

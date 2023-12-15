@@ -11,8 +11,9 @@ import org.springframework.stereotype.Component;
 @ToString
 public class ALiYunConfig {
     private String endpoint;
-    private String keyId;
-    private String keySecret;
+    //注意这两个id和秘钥设置在环境变量里面，详细查看阿里云文档，  客户端直传
+//    private String keyId;
+//    private String keySecret;
     private String bucketName;
     private String ramRoleArn;
 

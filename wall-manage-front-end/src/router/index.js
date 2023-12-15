@@ -1,12 +1,11 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
-
 // 启用路由
 Vue.use(Router);
 
 export default new Router({
-        // mode: 'history', // 使用history模式，去掉URL中的#
+    mode: 'history', // 使用history模式，去掉URL中的#
     routes: [
         {
             path: '/',
@@ -16,9 +15,27 @@ export default new Router({
             meta: {
                 requireAuth: false
             }
-         },
+        },
         {
-            path: '/login',
+            path: '/webApi',
+            name: '',
+            component: () => import('../views/loginZj.vue'),
+            hidden: true,
+            meta: {
+                requireAuth: false
+            }
+        },
+        {
+            path: '/webApi/login',
+            name: '登录',
+            component: () => import('../views/loginZj.vue'),
+            hidden: true,
+            meta: {
+                requireAuth: false
+            }
+        },
+        {
+            path: '/webApi/carouselChart',
             name: '登录',
             component: () => import('../views/loginZj.vue'),
             hidden: true,
@@ -29,11 +46,11 @@ export default new Router({
         {
             path: '/index',
             name: '首页',
-            component: ()=>import('../views/index.vue'),
+            component: () => import('../views/index.vue'),
             iconCls: 'el-icon-tickets',
-            children:[
+            children: [
                 {
-                    path: '/school/schoolReview',
+                    path: '/webApi/school/schoolReview',
                     name: '学校审核',
                     component: () => import('../views/school/SchoolReview.vue'),
                     meta: {
@@ -41,35 +58,35 @@ export default new Router({
                     }
                 },
                 {
-                    path: '/school/schoolSettings',
+                    path: '/webApi/school/schoolSettings',
                     name: '学校管理',
                     component: () => import('../views/school/SchoolSettings.vue'),
                     meta: {
                         requireAuth: true
                     }
-                },    {
-                    path: '/user/userManagement',
+                }, {
+                    path: '/webApi/user/userManagement',
                     name: '用户管理',
                     component: () => import('../views/user/UserManagement.vue'),
                     meta: {
                         requireAuth: true
                     }
-                },    {
-                    path: '/wall/wallManagement',
+                }, {
+                    path: '/webApi/wall/wallManagement',
                     name: '表白墙管理',
                     component: () => import('../views/wall/WallManagement.vue'),
                     meta: {
                         requireAuth: true
                     }
-                },    {
-                    path: '/wall/confessionRelease',
+                }, {
+                    path: '/webApi/wall/confessionRelease',
                     name: '表白墙投稿',
                     component: () => import('../views/wall/ConfessionRelease.vue'),
                     meta: {
                         requireAuth: true
                     }
-                },    {
-                    path: '/wall/WallPublishingContentManagement',
+                }, {
+                    path: '/webApi/wall/WallPublishingContentManagement',
                     name: '表白墙发布内容管理',
                     component: () => import('../views/wall/WallPublishingContentManagement.vue'),
                     meta: {
@@ -77,7 +94,7 @@ export default new Router({
                     }
                 },
                 {
-                    path: '/user/userManagement',
+                    path: '/webApi/user/userManagement',
                     name: '用户管理',
                     component: () => import('../views/user/UserManagement.vue'),
                     meta: {
@@ -85,7 +102,7 @@ export default new Router({
                     }
                 },
                 {
-                    path: '/user/administrators',
+                    path: '/webApi/user/administrators',
                     name: '管理员列表管理',
                     component: () => import('../views/user/ListOfRegularAdministrators.vue'),
                     meta: {
@@ -93,7 +110,7 @@ export default new Router({
                     }
                 },
                 {
-                    path: '/home/homeSettings',
+                    path: '/webApi/home/homeSettings',
                     name: '管理员列表管理',
                     component: () => import('../views/home/HomeSettings.vue'),
                     meta: {
@@ -101,7 +118,7 @@ export default new Router({
                     }
                 },
                 {
-                    path: '/feedback/allFeedback',
+                    path: '/webApi/feedback/allFeedback',
                     name: '所有反馈信息',
                     component: () => import('../views/feedback/AllFeedback.vue'),
                     meta: {
@@ -109,7 +126,7 @@ export default new Router({
                     }
                 },
                 {
-                    path: '/feedback/UnreadFeedback',
+                    path: '/webApi/feedback/UnreadFeedback',
                     name: '未读反馈信息',
                     component: () => import('../views/feedback/UnreadFeedback.vue'),
                     meta: {
@@ -117,7 +134,7 @@ export default new Router({
                     }
                 },
                 {
-                    path: '/wall/SubmissionReportList',
+                    path: '/webApi/wall/SubmissionReportList',
                     name: '投稿举报列表',
                     component: () => import('../views/wall/SubmissionReportList.vue'),
                     meta: {

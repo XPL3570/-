@@ -415,7 +415,8 @@ Page({
 					commentContent: this.data.replyContent,
 					commentTime: util.currentTime(),
 					userName: wx.getStorageSync('userInfo').username,
-					avatarURL: wx.getStorageSync('userInfo').avatarURL
+					avatarURL: wx.getStorageSync('userInfo').avatarURL,
+					userId:wx.getStorageSync('userInfo').id
 				};
 				var confession = this.data.confession;
 

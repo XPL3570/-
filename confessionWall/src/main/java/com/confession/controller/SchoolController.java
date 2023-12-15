@@ -15,11 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 
-/**
- * <p>
- * 前端控制器
- * </p>
- *
+/** 学校控制器
  * @author 作者 xpl
  * @since 2023年08月20日
  */

@@ -3,7 +3,7 @@ txbbq:
   # 名称
   name: tongxiaobbq
   # 版本
-  version: 1.1.0
+  version: 1.1.1
 server:
   port: 2204
   servlet:
@@ -88,19 +88,14 @@ wall:
     comment-limit: 10  #每天评论数量限制
   lottery:   #恋爱墙投递和读取配置   只能选择一个  投递和拿的限制都是一样的
     strategy: DAILY    # YEARLY, MONTHLY, DAILY, ONCE 其中之一  ONCE是一共只能放的
-#    limit:    #次数限制
-#      daily: 5     #天次数
-#      yearly: 2   #年次数
-#      monthly: 3   #月次数
-#      total: 3   #总次数
 
 aLiYun:
   endpoint: oss-cn-shanghai.aliyuncs.com
-#  endpoint: sts.cn-shanghai.aliyuncs.com
+  #  endpoint: sts.cn-shanghai.aliyuncs.com
   keyId: LTAI5t7oyp2E5ZtupPuf2LPS
   keySecret: yf6bItLn0muhX8YPAYfdF7OBPZcwnG
   bucketName: tongxiaobiaobaiqiang          #桶名字
-  ramRoleArn: acs:ram::1204375983108350:role/ramosstxbbq  #STS临时访问角色
+  #ramRoleArn: acs:ram::1204375983108350:role/ramosstxbbq  #STS临时访问角色
   endpointNode: https://tongxiaobiaobaiqiang.oss-cn-shanghai.aliyuncs.com  #实际访问的节点
 
 

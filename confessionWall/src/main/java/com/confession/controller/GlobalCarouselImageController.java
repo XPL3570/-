@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 
 /**
- * 全局轮播图
+ * 全局轮播图 控制器
  *
  * 这里有一个全局轮播图的开关，可以把所有的轮播图信息设置成禁用，前端也先通过这个判断禁用图片和总图片的数量来判断这个开关是否开启
  *

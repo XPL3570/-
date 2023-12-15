@@ -42,7 +42,8 @@
 		"useStaticServer": true,
 		"checkInvalidKey": true,
 		"disableUseStrict": false,
-		"useCompilerPlugins": false
+		"useCompilerPlugins": false,
+		"condition": true
 	},
 	"compileType": "miniprogram",
 	"condition": {},
@@ -54,5 +55,9 @@
 		"ignore": [],
 		"include": []
 	},
-	"appid": "wxade44f34c116d260"
+	"appid": "wxade44f34c116d260",
+	"projectArchitecture": "multiPlatform",
+	"simulatorPluginLibVersion": {
+		"wxext14566970e7e9f62": "2.27.3"
+	}
 }

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 
 /**
- * 用户获取其他用户联系方式控制成
+ * 用户获取其他用户联系方式控制器
  *
  * @author 作者 xpl
  * @since 2023年10月24日

@@ -66,7 +66,7 @@ export default {
           this.loginIng = true
           api.post('/admin/login',this.ruleForm).then(res => {
             // console.log(res.data.data.token);
-            if (res.data.ok) {
+            if (res.data.code===200) {
               if (this.rememberUser) {
                 //保存帐号到cookie，有效期7天
                 setCookie('user', this.ruleForm.account, 7)
@@ -82,10 +82,11 @@ export default {
                 // 缓存用户个人信息
                 localStorage.setItem('userdata', JSON.stringify(res.data.data.admin))
                 this.$store.commit('login', 'true')
-                this.$router.push({ path:'/user/userManagement'})
+                this.$router.push({ path:'/webApi/user/userManagement'})
               }, 404)
             } else {
               this.loginIng = false
+              this.$message.error(res.data.message);
               return false
             }
           })
@@ -128,11 +129,5 @@ export default {
 }
 .remember {
   margin: 0px 0px 35px 0px;
-}
-.code-box {
-  text-align: right;
-}
-.codeimg {
-  height: 40px;
 }
 </style>

@@ -23,18 +23,6 @@ public class WallConfig {
     @Value("${wall.user.can-accept-friends-month}")
     private int canAcceptFriendsMonth;
 
-//    @Value("${wall.lottery.limit.yearly}")
-//    private int yearlyLimit;
-//
-//    @Value("${wall.lottery.limit.monthly}")
-//    private int monthlyLimit;
-//
-//    @Value("${wall.lottery.limit.daily}")
-//    private int dailyLimit;
-//
-//    @Value("${wall.lottery.limit.total}")
-//    private int totalLimit;
-
     @Value("${wall.lottery.strategy}")
     private String strategyString;
 }

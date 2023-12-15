@@ -35,12 +35,8 @@ public interface ImageService {
     /**
      * 使用阿里云上传图片获取临时票据 ,也需要token 弃用了
      */
-    Result uploadImageOOS();
+//    Result uploadImageOOS();
 
-    /**
-     * 管理web端使用阿里云上传图片获取临时票据 ,也需要token  弃用了
-     */
-    Result uploadImageOOSWeb();
 
 
 
