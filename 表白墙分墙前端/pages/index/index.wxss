@@ -1,8 +1,6 @@
 .zjcs{
 	padding: 0 0rpx;
-	
 }
-
 .title {
 	text-align: center;
 	font-size: 44rpx;
@@ -146,6 +144,3 @@ margin-top: 18rpx;
 .popup-buttom{
 	padding-right: 20rpx;
 }
-
-  
-  

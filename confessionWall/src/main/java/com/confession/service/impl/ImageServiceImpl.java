@@ -46,7 +46,6 @@ public class ImageServiceImpl implements ImageService {
     @Resource
     private ImageDeleteRecordService imageDeleteRecordService;
 
-    //  优化点，一次调用执行了一秒，下面的管理员会代码短不好，，先都使用这个这里使用到了tst，下面的不好说，后面优化 改用另一种方式
 //    @Override
 //    public Result uploadImageOOS() {       // STS接入地址，例如sts.cn-hangzhou.aliyuncs.com。
 //        String endpoint = config.getEndpoint();
@@ -189,7 +188,8 @@ public class ImageServiceImpl implements ImageService {
     }
 
 
-    private static final String UPLOAD_PATH = "e:\\表白墙项目图片上传地址\\"; // 设置图片上传路径，这里是windows系统的
+    // 设置图片上传路径，这里是windows系统的，这是本地上传接口，这里弃用了
+    private static final String UPLOAD_PATH = "e:\\表白墙项目图片上传地址\\";
 
     private static final String DOMAIN_NAME_ADDRESS = "http://127.0.0.1:2204/upload/";  //后面可以改成读取配置文件，设置成域名
 

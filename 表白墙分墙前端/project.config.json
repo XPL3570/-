@@ -51,13 +51,13 @@
 		"tabIndent": "tab",
 		"tabSize": 4
 	},
+	"simulatorPluginLibVersion": {
+		"wxext14566970e7e9f62": "2.27.3"
+	},
+	"appid": "wxade44f34c116d260",
 	"packOptions": {
 		"ignore": [],
 		"include": []
 	},
-	"appid": "wxade44f34c116d260",
-	"projectArchitecture": "multiPlatform",
-	"simulatorPluginLibVersion": {
-		"wxext14566970e7e9f62": "2.27.3"
-	}
+	"projectArchitecture": "multiPlatform"
 }

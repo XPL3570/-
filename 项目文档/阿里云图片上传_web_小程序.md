@@ -1,5 +1,7 @@
 项目本来是想把图片信息都存在本地的，但是后来买云服务器才发现他有带宽限制，那个速度图片理论上根本访问不了，所以想到用阿里云的oos对象存储来存图片，含泪重写
 
+
+
 ## 第一步
 
 登录 ->阿里云-> 控制台 ->对象存储oos->Bucket列表->点击创建的你的节点(在列表的左边)->然后再点击左边**概览**，拿到Bucket域名，然后去设置小程序
@@ -242,9 +244,93 @@ module.exports = {
 };
 ```
 
-## web上传
+## 项目最后使用的另外一种——服务器获取阿里云秘钥，客户端直传
 
+**核心就是在服务器设置阿里云id和秘钥获取一个临时的秘钥给前端，然后前端拿到秘钥和其他参数直接上传**
 
+也试了其他的好多办法，后端主要代码了，也就不这么点，踩了不少的坑也，之后找到的这一个，比如tst临时角色之后再去申请秘钥，太慢了，首次1s，后续也800ms左右，这是比较快的一种方式了，生产秘钥时间短，
+
+```java
+    @GetMapping("getStsToken")
+    public Result getStsToken() throws ClientException {
+        //这里加一个锁或者限制，来限制用户获取秘钥等参数， 比如每个小时一个用户最多只能获取18个key
+        Integer userId = JwtInterceptor.getUser().getId();
+        this.checkFrequency(userId);
+        return imageService.alibabaCloudDirectServerSignature();
+    }
+
+ @Override
+    public Result alibabaCloudDirectServerSignature() throws ClientException {
+        // 从环境变量中获取访问凭证。运行本代码示例之前，请确保已设置环境变量OSS_ACCESS_KEY_ID和OSS_ACCESS_KEY_SECRET。
+        EnvironmentVariableCredentialsProvider credentialsProvider = CredentialsProviderFactory.newEnvironmentVariableCredentialsProvider();
+        credentialsProvider.getCredentials().getSecurityToken();
+        // Endpoint以华东1（杭州）为例，其它Region请按实际情况填写。
+        String endpoint = config.getEndpoint();
+        // 填写Bucket名称，例如examplebucket。
+        String bucket = config.getBucketName();
+        // 填写Host名称，格式为https://bucketname.endpoint。
+        String host = config.getEndpointNode();
+        // 设置上传到OSS文件的前缀，可置空此项。置空后，文件将上传至Bucket的根目录下。
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM/dd");
+        String format = simpleDateFormat.format(new Date());
+        String dir="src/"+format+"/"+this.generateFileName(".jpg");
+//        String dir = "src/";
+        // 创建OSSClient实例。
+        OSS ossClient = new OSSClientBuilder().build(endpoint, credentialsProvider);
+        try {
+            long expireTime = 30;
+            long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
+            Date expiration = new Date(expireEndTime);
+            // PostObject请求最大可支持的文件大小为5 GB，即CONTENT_LENGTH_RANGE为5*1024*1024*1024。
+            PolicyConditions policyConds = new PolicyConditions();
+            policyConds.addConditionItem(PolicyConditions.COND_CONTENT_LENGTH_RANGE, 0, 2*1024*1024);
+            policyConds.addConditionItem(MatchMode.StartWith, PolicyConditions.COND_KEY, dir);
+
+            String postPolicy = ossClient.generatePostPolicy(expiration, policyConds);
+            byte[] binaryData = postPolicy.getBytes("utf-8");
+            String accessId = credentialsProvider.getCredentials().getAccessKeyId();
+            String encodedPolicy = BinaryUtil.toBase64String(binaryData);
+            String postSignature = ossClient.calculatePostSignature(postPolicy);
+            ImageUploadKeyWebDTO keyDTO=new ImageUploadKeyWebDTO();
+            keyDTO.setDir(dir); //直接直接是存放文件了，不是可访问目录
+            keyDTO.setPolicy(encodedPolicy);
+            keyDTO.setSignature(postSignature);
+            keyDTO.setAccessid(accessId);
+            keyDTO.setExpire(String.valueOf(expireEndTime / 1000) );    //过期时间，到时候看要不要加
+            keyDTO.setHost(host);  //设置访问节点
+//            System.out.println(keyDTO);
+            return Result.ok(keyDTO);
+        } catch (Exception e) {
+
+            System.out.println(e.getMessage());
+        } finally {
+            ossClient.shutdown();
+        }
+        return Result.fail();
+    }
+```
+
+### 封装的实体类
+
+```java
+@Data
+public class ImageUploadKeyWebDTO {
+    //访问keyId
+    String accessid;
+    //临时秘钥签名
+    String signature;
+    //具体访问节点
+    String host;
+    //文件存放的相对路劲,对应的前端是key
+    String dir;
+    //base64转码之后的权限标识
+    String policy;
+    //由服务器端指定的Policy过期时间，格式为Unix时间戳（自UTC时间1970年01月01号开始的秒数）。
+    String expire;
+    //安全token
+//    String securityToken;
+}
+```
 
 
 

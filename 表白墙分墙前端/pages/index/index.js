@@ -56,7 +56,6 @@ Page({
 		this.setData({
 			title: wx.getStorageSync('wall').wallName
 		});
-
 		// 获取轮播图和提示语
 		if (wx.getStorageSync('userInfo').schoolId === undefined) {
 			return;
